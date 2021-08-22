@@ -22,8 +22,7 @@
 * Index page
 */
 
-$htmlO
-utput = null;
+$htmlOutput = null;
 $pages = array("wifi", "svx", "sa");
 $page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
