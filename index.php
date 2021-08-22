@@ -117,7 +117,7 @@ switch ($page) {
                 <nav <?php echo $mobile; ?>class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                     <div class="container-fluid">
                         <!--<button class="btn btn-primary" id="sidebarToggle">Menu</button>-->
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><h1 class="sidebar-heading bg-light fw-light mt-1 text-dark">RoLinkX Dashboard</h1><i class="icon-dashboard" style="font-size:40px;color:purple"></i>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
     							<li class="nav-item"><a class="<?php echo ($page == '') ? 'active p-2' : ''; ?> nav-link" href="./">Status</a></li>
@@ -129,14 +129,22 @@ switch ($page) {
                     </div>
                 </nav>
                 <!-- Page content-->
-                <div id='main-content' class="container-fluid mb-1">
+                <div id='main-content' class="container-fluid mb-5">
 				<!-- OUTPUT BELOW -->
 					<?php echo $htmlOutput; ?>
 				<!-- OUTPUT ABOVE -->
                 </div>
             </div>
-        </div>
+
     	<div id="sysmsg"></div>
+    	</div>
+		<footer class="page-footer fixed-bottom font-small bg-light">
+		  <!-- Copyright -->
+		  <div class="text-center p-2">
+© 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+		  </div>
+		  <!-- Copyright -->
+		</footer>
         <!-- jQuery-->
         <script src="js/jquery.js"></script>
         <!-- jQuery Toast plugin-->
