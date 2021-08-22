@@ -1,0 +1,368 @@
+<?php
+/*
+*   RoLinkX Dashboard v0.1a
+*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*
+*   This program is free software; you can redistribute it and/or modify
+*   it under the terms of the GNU General Public License as published by
+*   the Free Software Foundation; either version 2 of the License, or
+*   (at your option) any later version.
+*
+*   This program is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU General Public License for more details.
+*
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software
+*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/*
+* Forms module
+* Note : Some code borrowed from https://github.com/RaspAP/raspap-webgui
+*/
+
+
+if (isset($_GET['scan'])) echo scanWifi(1);
+
+/* Wi-Fi form */
+function getSSIDs() {
+	$storedSSID = null;
+	$storedPwds = null;
+
+	preg_match_all('/ssid="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultSSID);
+	if (empty($resultSSID)) return false;
+	foreach ($resultSSID[1] as $key => $ap) {
+		if ($key <= 2) {
+  			$storedSSID[] = $ap;
+  		}
+	}
+
+	preg_match_all('/psk="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultPWDS);
+	if (empty($resultPWDS)) return false;
+	foreach ($resultPWDS[1] as $key => $pw) {
+		if ($key <= 2) {
+  			$storedPwds[] = $pw;
+  		}
+	}
+
+	return array($storedSSID, $storedPwds);
+}
+
+function scanWifi($ext = 0) {
+	$apList = NULL;
+	exec('sudo wpa_cli -i wlan0 scan');
+	exec('sudo wpa_cli -i wlan0 scan_results', $reply);
+	if (empty($reply)) return;
+	array_shift($reply);
+
+	foreach ($reply as $network) {
+		$arrNetwork = preg_split("/[\t]+/", $network);
+		if (!isset($arrNetwork[4])) continue;
+		$ssid = trim($arrNetwork[4]);
+		if (empty($ssid) || preg_match('[\x00-\x1f\x7f\'\`\´\"]', $ssid)) {
+            continue;
+        }
+        $networks[$ssid]['ssid'] = $ssid;
+		$networks[$ssid] = array(
+				'rssi' => $arrNetwork[2],
+                'protocol' => authType($arrNetwork[3]),
+                'channel' => freqToChan($arrNetwork[1])
+            );
+	}
+
+	if (!empty($networks)) {
+		$cnt = 1;
+		if ($ext != 1) {
+			$apList = '<div class="accordion mb-3" id="wifiNetworks">
+	<div class="accordion-item">
+    <h2 class="accordion-header" id="heading">
+		<button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks</button>
+    </h2>
+    <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
+		<div id="updateList" class="accordion-body">';
+    	}
+      	$apList .= '<table class="table"><thead><tr>
+			<th scope="col">#</th>
+			<th scope="col">SSID</th>
+			<th scope="col">RSSI</th>
+			<th scope="col">Auth</th>
+			<th scope="col">Ch.</th>
+			</tr></thead>
+			<tbody>';
+
+		foreach ($networks as $name => $data) {
+			if ($data['rssi'] >= -80) {
+				$lvlQuality = 'class="alert-success"';
+			} elseif ($data['rssi'] >= -90) {
+				$lvlQuality = 'class="alert-warning"';
+			} else {
+				$lvlQuality = 'class="alert-light"';
+			}
+
+			$apList .= '<tr '. $lvlQuality .'><th scope="row">'. $cnt .'</th>
+						<td>'. $name .'</td>
+						<td>'. $data['rssi'] .'</td>
+						<td>'. $data['protocol'] .'</td>
+						<td>'. $data['channel'] .'</td>
+						</tr>';
+			++$cnt;
+		}
+		$apList .= '</tbody></table>';
+		if ($ext != 1) {
+			$apList .= '</div></div></div></div>';
+		}
+	}
+ return $apList;
+}
+
+function authType($type) {
+    $options = array();
+    preg_match_all('/\[([^\]]+)\]/s', $type, $matches);
+
+    foreach ($matches[1] as $match) {
+        if (preg_match('/^(WPA\d?)/', $match, $protocol_match)) {
+            $protocol = $protocol_match[1];
+            $matchArr = explode('-', $match);
+            $options[] = htmlspecialchars($protocol, ENT_QUOTES);
+        }
+    }
+
+    if (count($options) === 0) {
+        return 'Open';
+    } else {
+        return implode(' / ', $options);
+    }
+}
+
+function freqToChan($freq) {
+    if ($freq >= 2412 && $freq <= 2484) {
+        $channel = ($freq - 2407)/5;
+    } elseif ($freq >= 4915 && $freq <= 4980) {
+        $channel = ($freq - 4910)/5 + 182;
+    } elseif ($freq >= 5035 && $freq <= 5865) {
+        $channel = ($freq - 5030)/5 + 6;
+    } else {
+        $channel = -1;
+    }
+    if ($channel >= 1 && $channel <= 196) {
+        return $channel;
+    } else {
+        return 'Invalid Channel';
+    }
+}
+
+function wifiForm() {
+	$ssidList	= getSSIDs();
+	$apsList	= scanWifi();
+
+	$ssidNet_1	= (empty($ssidList[0][0])) ? 'Your SSID' : $ssidList[0][0] . ' (saved)';
+	$ssidNet_2	= (empty($ssidList[0][1])) ? 'Your SSID' : $ssidList[0][1] . ' (saved)';
+	$ssidNet_3	= (empty($ssidList[0][2])) ? 'Your SSID' : $ssidList[0][2] . ' (saved)';
+	$pwdNet_1	= (empty($ssidList[1][0])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][0]);
+	$pwdNet_2	= (empty($ssidList[1][1])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][1]);
+	$pwdNet_3	= (empty($ssidList[1][2])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][2]);
+
+	$wifiForm = '<h2 class="mt-4 alert alert-info fw-bold">Configurare interfață Wi-Fi</h2>';
+	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
+	$wifiForm .= '<div class="card">
+		<div class="card-header">Edit your networks</div>
+		<div class="card-body">
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 9rem;">[1] Name (SSID)</span>
+		  <input id="wlan_network_1" type="text" class="form-control" placeholder="'. $ssidNet_1 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 9rem;">[1] Key (Password)</span>
+		  <input id="wlan_authkey_1" type="text" class="form-control" placeholder="'. $pwdNet_1 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
+		</div>
+	<hr/>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 9rem;">[2] Name (SSID)</span>
+		  <input id="wlan_network_2" type="text" class="form-control" placeholder="'. $ssidNet_2 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 9rem;">[2] Key (Password)</span>
+		  <input id="wlan_authkey_2" type="text" class="form-control" placeholder="'. $pwdNet_2 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
+		</div>
+	<hr/>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 9rem;">[3] Name (SSID)</span>
+		  <input id="wlan_network_3" type="text" class="form-control" placeholder="'. $ssidNet_3 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 9rem;">[3] Key (Password)</span>
+		  <input id="wlan_authkey_3" type="text" class="form-control" placeholder="'. $pwdNet_3 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
+		</div>
+		<div class="d-flex justify-content-center mt-4">
+			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Salvează</button>
+			<button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
+		</div>
+		</div>
+	</div>' . PHP_EOL;
+
+	$wifiForm .= '<script>
+	var auto_refresh = setInterval( function () {
+		$("#updateList").load("includes/forms.php?scan");
+	}, 6000);
+	</script>' . PHP_EOL;
+	return $wifiForm;
+}
+
+/* SVXLink form */
+function svxForm() {
+
+	/* Get current variables */
+	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
+
+	preg_match('/(HOST=)(\S+)/', $cfgFileData, $varReflector);
+	preg_match('/(PORT=)(\d+)/', $cfgFileData, $varPort);
+	preg_match('/(CALLSIGN=")(\S+)"/', $cfgFileData, $varCallSign);
+	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
+	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
+
+	$reflectorValue		= (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
+	$portValue			= (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
+	$callSignValue		= (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
+	$authKeyValue		= (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
+	$beaconValue		= (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
+
+	$svxForm = '<h2 class="mt-4 alert alert-warning fw-bold">Configurare SVXLink</h2>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
+		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 8rem;">Port</span>
+		  <input id="svx_prt" type="text" class="form-control" placeholder="5301" aria-label="Port" aria-describedby="inputGroup-sizing-sm" '. $portValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 8rem;">Callsign</span>
+		  <input id="svx_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $callSignValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 8rem;">Auth Key</span>
+		  <input id="svx_key" type="text" class="form-control" placeholder="nod_portabil" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $authKeyValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text" style="width: 8rem;">Callsign (baliză)</span>
+		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $beaconValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
+		  <select id="svx_sid" class="form-select">
+		    <option value="0">Disabled</option>
+		    <option value="5">5 minute</option>
+		    <option value="10">10 minute</option>
+		    <option value="15" selected>15 minute</option>
+			<option value="30">30 minute</option>
+			<option value="60">60 minute</option>
+		  </select>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
+		  <select id="svx_lid" class="form-select">
+		    <option value="0" selected>Disabled</option>
+		    <option value="5">5 minute</option>
+		    <option value="10">10 minute</option>
+		    <option value="15">15 minute</option>
+			<option value="30">30 minute</option>
+			<option value="60" selected>60 minute</option>
+		  </select>
+		</div>
+		<div class="d-flex justify-content-center mt-4">
+			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg">Salvează</button>
+		</div>
+	</form>' . PHP_EOL;
+	return $svxForm;
+}
+
+/* SA818 radio */
+function sa818Form() {
+	$ctcss_opts = array(
+		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
+		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
+		"11" => "97.4", "12" => "100.0", "13" => "103.5", "14" => "107.2",
+		"15" => "110.9", "16" => "114.8", "17" => "118.8", "18" => "123",
+		"19" => "127.3", "20" => "131.8", "21" => "136.5", "22" => "141.3",
+		"23" => "146.2", "24" => "151.4", "25" => "156.7", "26" => "162.2",
+		"27" => "167.9", "28" => "173.8", "29" => "179.9", "30" => "186.2",
+		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
+		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
+		);
+	$sa818Form = '<h2 class="mt-4 alert alert-danger fw-bold">Configurare modul SA818</h2>
+		<div class="form-floating mb-1">
+			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
+				<option selected disabled>Selecteaza o valoare</option>';
+					/* Generate frequency list (2m & 70cm, no repeater inputs/outputs) */
+					for ($f=145.200; $f<=145.600; $f+=0.0125) {
+						$sa818Form .= '<option value="'. sprintf("%0.4f",$f) .'">'. str_replace('000', '00',sprintf("%0.4f",$f)) .'</option>' . PHP_EOL;
+					}
+					for ($f=431.900; $f<=436.925; $f+=0.025) {
+						$sa818Form .= '<option value="'. sprintf("%0.4f",$f) .'">'. sprintf("%0.3f",$f) .'</option>' . PHP_EOL;
+					}
+	$sa818Form .= '</select>
+			<label for="sa_grp">Frecvenţă (MHz)</label>
+		</div>
+		<div class="form-floating mb-1">
+			<select id="sa_dev" class="form-select" aria-label="Deviaţie (kHz)">
+				<option selected disabled>Selecteaza o valoare</option>
+				<option value="0">12.5</option>
+				<option value="1" selected>25</option>
+			</select>
+			<label for="sa_dev">Deviaţie (kHz)</label>
+		</div>
+		<div class="form-floating mb-1">
+			<select id="sa_tpl" class="form-select" aria-label="CTCSS (Hz)">
+				<option selected disabled>Selecteaza o valoare</option>';
+					/* Build CTCSS selects */
+					foreach ($ctcss_opts as $key => $val) {
+						$selected = ($key == 13) ? ' selected' : '';
+						$sa818Form .= '<option value="00' . $key . '"'. $selected .'>' . $val . '</option>' . PHP_EOL;
+					}
+			$sa818Form .= '</select>
+			<label for="sa_tpl">CTCSS (Hz)</label>
+		</div>
+		<div class="form-floating mb-1">
+			<select id="sa_sql" class="form-select" aria-label="Squelch">
+				<option selected disabled>Selecteaza o valoare</option>';
+					/* Generate squelch values */
+					for ($sq=1; $sq<=8; $sq+=1) {
+						$selected = ($sq == 5) ? ' selected' : '';
+						$sa818Form .= '<option value="'. $sq . '"'. $selected .'>'. $sq .'</option>' . PHP_EOL;
+					}
+	$sa818Form .= '</select>
+			<label for="sa_sql">Squelch</label>
+		</div>
+		<div class="form-floating mb-1">
+			<select id="sa_vol" class="form-select" aria-label="Volum">
+				<option value="">Default</option>';
+					/* Generate volume values */
+					for ($vol=1; $vol<=8; $vol+=1) {
+						$selected = ($vol == 2) ? ' selected' : '';
+						$sa818Form .= '<option value="'. $vol . '"'. $selected .'>'. $vol .'</option>' . PHP_EOL;
+					}
+	$sa818Form .= '</select>
+			<label for="sa_vol">Volum</label>
+		</div>
+		<div class="form-floating mb-1">
+			<select id="sa_flt" class="form-select" aria-label="Filtre">
+				<option value="">Default</option>
+				<option value="0,0,0" selected>Bypass All</option>
+				<option value="1,0,0">Enable Pre/De-Emphasis</option>
+				<option value="0,1,0">Enable High Pass</option>
+				<option value="0,0,1">Enable Low Pass</option>
+				<option value="0,1,1">Enable Low Pass & High Pass</option>
+				<option value="1,1,0">Enable Pre/De-Emphasis & High Pass</option>
+				<option value="1,0,1">Enable Pre/De-Emphasis & Low Pass</option>
+				<option value="1,1,1">Enable All</option>
+			</select>
+			<label for="sa_flt">Filtre</label>
+		</div>
+		<div class="d-flex justify-content-center mt-4">
+			<button id="programm" type="button" class="btn btn-danger btn-lg">Programeaza!</button>
+		</div>
+	</form>' . PHP_EOL;
+	return $sa818Form;
+}
