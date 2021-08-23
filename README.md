@@ -16,14 +16,15 @@ Requirements (software):<br>
  2. Change dir to RoLinkX-Dashboard ( $cd RoLinkX-Dashboard/ )
  3. Execute setup.sh ( $sudo ./setup.sh )
  
- Some basic checks are done by the script but usually the web application destination should be /var/www/html/
+ Some basic checks are done by the script but usually the web application destination should be /var/www/html/  
+ 
  Once installed, open a browser window and try your luck using :<br>
- http://device_hostname/rolink<br>
+ **http://device_hostname/rolink**<br>
  or<br>
- http://<device_ip>/rolink
+ **http://<device_ip>/rolink**
  
- Remember, this is a pre-beta release, don't expect it to work flawlessly.
+ *Remember, this is a pre-beta release, don't expect it to work flawlessly.*
  
- Good luck!
+ **Good luck!**
  
  //Razvan YO6NAM
