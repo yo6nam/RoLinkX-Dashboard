@@ -10,6 +10,10 @@ Requirements (hardware):<br>
 Requirements (software):<br>
 - Armbian Buster (mainline based kernel 5.10.y)
 - lighttpd & php-cgi
+- SVXLink compiled as RoLink ( install it using ***bash <(curl -s https://svx.439100.ro/install.sh)*** )
+ 
+Other requirements:<br>
+- Network Manager disabled ( ***systemctl disable network-manager*** )
  
  Steps to install :<br>
  1. Clone to your device ( $git clone https://github.com/yo6nam/RoLinkX-Dashboard )
