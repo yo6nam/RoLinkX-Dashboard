@@ -48,3 +48,7 @@ Or, single line : ***git clone https://github.com/yo6nam/RoLinkX-Dashboard;cd Ro
  **Good luck!**
  
  //Razvan YO6NAM
+ 
+ # Credits
+[RaspAp] (https://github.com/RaspAP/raspap-webgui)  
+[Rémy Sanchez] for php_serial.class.php
