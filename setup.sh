@@ -2,6 +2,32 @@
 # RoLinkX Dashboard v0.1a
 # Setup script for minimum dashboard requirements
 
+# Modify Network
+if systemctl is-enabled network-manager | grep enabled >/dev/null; then
+	printf 'Network Manager is enabled. We must disable it\n'
+	read -p "Do you want to proceed? (y/n)" -n 1 -r
+	printf '\n'
+	if [[ $REPLY =~ ^[Yy]$ ]];then
+		# Setup eth0
+		if cat /etc/network/interfaces | grep 'auto eth0' >/dev/null;then
+			printf 'LAN interface already configured\n';
+		else
+			printf '\nauto eth0\nallow-hotplug eth0\niface eth0 inet dhcp\n' | tee -a /etc/network/interfaces > /dev/null
+		fi
+		# Setup wlan0
+		if cat /etc/network/interfaces | grep 'auto wlan0' >/dev/null;then
+			printf 'WLAN interface already configured\n';
+		else
+			printf '\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces > /dev/null
+		fi
+		# Now it's safe to disable NM
+		systemctl stop network-manager
+		systemctl disable network-manager
+	else
+		printf "Bye!\n"; exit 0;
+	fi
+fi
+
 if netstat -tnlp | grep "lighttpd" >/dev/null; then
 	printf 'Check : lighttpd is present\n'
 else
@@ -9,19 +35,19 @@ else
 	read -p "Do you want to proceed with installation? (y/n)" -n 1 -r
 	printf '\n'
 	if [[ $REPLY =~ ^[Yy]$ ]];then
-		sudo apt-get update
-		sudo apt-get install lighttpd php7.3-fpm php-cgi -y
+		apt-get update
+		apt-get install lighttpd php7.3-fpm php-cgi -y
 	fi
 fi
 
 if [ ! $(command -v php-cgi) ]; then
 	printf 'Check : php-cgi not installed, installing...\n'
-	sudo apt-get install php7.3-fpm php-cgi -y
+	apt-get install php7.3-fpm php-cgi -y
 fi
 
 if [ -d "/var/www/html" ]; then
-    sudo lighttpd-enable-mod fastcgi-php
-    sudo service lighttpd force-reload
+    lighttpd-enable-mod fastcgi-php
+    service lighttpd force-reload
     printf "Copying files...\n"
     cp -r . /var/www/html/rolink
     printf "Setting up permissions\n"
