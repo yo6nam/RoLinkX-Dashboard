@@ -385,7 +385,7 @@ function sa818Form() {
 			<label for="sa_flt">Filtre</label>
 		</div>
 		<div class="d-flex justify-content-center mt-4">
-			<button id="programm" type="button" class="btn btn-danger btn-lg">Programeaza!</button>
+			<button id="programm" type="button" class="btn btn-danger btn-lg">Programează!</button>
 		</div>
 	</form>' . PHP_EOL;
 	return $sa818Form;

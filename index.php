@@ -46,7 +46,7 @@ switch ($page) {
     $htmlOutput = sa818Form();
     break;
   default:
-	$htmlOutput = '<h2 class="m-2 mt-4 alert alert-success fw-bold">Status</h2>
+	$htmlOutput = '<h2 class="m-2 mt-2 alert alert-success fw-bold">Status</h2>
 	<div class="card m-2">
 	<div class="card-body">';
 	$htmlOutput .= hostName();
@@ -76,7 +76,6 @@ switch ($page) {
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>RoLinkX Dashboard</title>
-        <!-- Favicon(s)-->
         <link rel="apple-touch-icon" sizes="57x57" href="assets/fav/apple-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="assets/fav/apple-icon-60x60.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="assets/fav/apple-icon-72x72.png">
@@ -94,14 +93,12 @@ switch ($page) {
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
-        <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
-    <body>
-        <div class="d-flex" id="wrapper">
-            <!-- Sidebar-->
+	<body>
+		<div class="d-flex" id="wrapper">
             <div class="border-end bg-white" id="sidebar-wrapper">
                 <div class="sidebar-heading border-bottom bg-light fw-bold">RoLinkX Dashboard</div>
                 <div class="list-group list-group-flush">
@@ -111,12 +108,9 @@ switch ($page) {
                     <a class="<?php echo ($page == 'sa') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=sa">SA818</a>
                 </div>
             </div>
-            <!-- Page content wrapper -->
             <div id="page-content-wrapper">
-                <!-- Top navigation-->
                 <nav <?php echo $mobile; ?>class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                     <div class="container-fluid">
-                        <!--<button class="btn btn-primary" id="sidebarToggle">Menu</button>-->
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><h1 class="sidebar-heading bg-light fw-light mt-1 text-dark">RoLinkX Dashboard</h1><i class="icon-dashboard" style="font-size:40px;color:purple"></i>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
@@ -128,32 +122,20 @@ switch ($page) {
                         </div>
                     </div>
                 </nav>
-                <!-- Page content-->
                 <div id='main-content' class="container-fluid mb-5">
-				<!-- OUTPUT BELOW -->
 					<?php echo $htmlOutput; ?>
-				<!-- OUTPUT ABOVE -->
                 </div>
             </div>
-
-    	<div id="sysmsg"></div>
-    	</div>
+			<div id="sysmsg"></div>
+		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-		  <!-- Copyright -->
-		  <div class="text-center p-2">
-© 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
-		  </div>
-		  <!-- Copyright -->
+			<div class="text-center p-2">
+v0.1 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+			</div>
 		</footer>
-        <!-- jQuery-->
         <script src="js/jquery.js"></script>
-        <!-- jQuery Toast plugin-->
-        <script src="js/jquery.toast.min.js"></script>
-        <!-- iziModal plugin-->
         <script src="js/iziModal.min.js"></script>
-        <!-- Bootstrap core JS-->
         <script src="js/bootstrap.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js?cb=<?php echo rand(1000,9999); ?>"></script>
+        <script src="js/scripts.js"></script>
     </body>
 </html>
