@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.1b
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,19 +22,26 @@
 * SVXLink configuration module
 */
 
-$cfgFile = '/opt/rolink/conf/rolink.conf';
-$newFile = '/tmp/rolink.conf.tmp';
-$oldVar = $newVar = array();
+$cfgFile		= '/opt/rolink/conf/rolink.conf';
+$newFile		= '/tmp/rolink.conf.tmp';
+$profilesPath	= dirname(__FILE__) . '/../profiles/';
+$oldVar = $newVar = $profiles = array();
+$newProfile = false;
 $changes = 0;
 
-// Get POST vars
-$frmReflector	= (isset($_POST['ref'])) ? filter_input(INPUT_POST, 'ref', FILTER_SANITIZE_STRING) : '';
-$frmPort		= (isset($_POST['prt'])) ? filter_input(INPUT_POST, 'prt', FILTER_SANITIZE_STRING) : '';
-$frmCallsign	= (isset($_POST['cal'])) ? filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_STRING) : '';
-$frmAuthKey		= (isset($_POST['key'])) ? filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING) : '';
-$frmBeacon		= (isset($_POST['clb'])) ? filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_STRING) : '';
-$frmShortId		= (isset($_POST['sid'])) ? filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING) : '';
-$frmLongId		= (isset($_POST['lid'])) ? filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING) : '';
+// Retrieve GET vars
+$frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_STRING) : '';
+
+// Retrieve POST vars (defaults if empty values to avoid locking the config file)
+$frmProfile		= (isset($_POST['prn'])) ? filter_input(INPUT_POST, 'prn', FILTER_SANITIZE_STRING) : '';
+$frmReflector	= (empty($_POST['ref'])) ? 'svx.439100.ro' : filter_input(INPUT_POST, 'ref', FILTER_SANITIZE_STRING);
+$frmPort		= (empty($_POST['prt'])) ? '1234' : filter_input(INPUT_POST, 'prt', FILTER_SANITIZE_NUMBER_INT);
+$frmCallsign	= (empty($_POST['cal'])) ? 'YO1XYZ-P' : filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_STRING);
+$frmAuthKey		= (empty($_POST['key'])) ? 'password' : filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING);
+$frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_STRING);
+$frmShortId		= (empty($_POST['sid'])) ? '' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
+$frmLongId		= (empty($_POST['lid'])) ? '' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
+$frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
 // Add file contents to buffer
 $oldCfg = file_get_contents($cfgFile);
@@ -56,45 +63,97 @@ $beaconValue		= (isset($varBeacon[2])) ?  $varBeacon[2] : '';
 $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
 
+/* Profile defaults */
+$profiles['reflector']	= $reflectorValue;
+$profiles['port']		= $portValue;
+$profiles['callsign']	= $callSignValue;
+$profiles['key']		= $authKeyValue;
+$profiles['beacon']		= $beaconValue;
+
+/* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
 $newVar[0]	= '${1}' . $frmBeacon;
-$changes	= ($beaconValue != $frmBeacon) ? ++$changes : $changes;
+if ($beaconValue != $frmBeacon) {
+	++$changes;
+	$profiles['beacon'] = $frmBeacon;
+}
 
 $oldVar[1]	= '/(HOST=)(\S+)/';
 $newVar[1]	= '${1}' . $frmReflector;
-$changes	= ($reflectorValue != $frmReflector) ? ++$changes : $changes;
+if ($reflectorValue != $frmReflector) {
+	++$changes;
+	$profiles['reflector'] = $frmReflector;
+}
 
 $oldVar[2]	= '/(PORT=)(\d+)/';
 $newVar[2]	= '${1}' . $frmPort;
-$changes	= ($portValue != $frmPort) ? ++$changes : $changes;
+if ($portValue != $frmPort) {
+	++$changes;
+	$profiles['port'] = $frmPort;
+}
 
 $oldVar[3]	= '/(CALLSIGN=")(\S+)"/';
 $newVar[3]	= '${1}'. $frmCallsign .'"';
-$changes	= ($callSignValue != $frmCallsign) ? ++$changes : $changes;
+if ($callSignValue != $frmCallsign) {
+	++$changes;
+	$profiles['callsign'] = $frmCallsign;
+}
 
 $oldVar[4]	= '/(AUTH_KEY=)"(\S+)"/';
 $newVar[4]	= '${1}"'. $frmAuthKey .'"';
-$changes	= ($authKeyValue != $frmAuthKey) ? ++$changes : $changes;
+if ($authKeyValue != $frmAuthKey) {
+	++$changes;
+	$profiles['key'] = $frmAuthKey;
+}
 
 $oldVar[5]	= '/(SHORT_IDENT_INTERVAL=)(\d+)/';
 $newVar[5]	= '${1}'. $frmShortId;
-$changes	= ($shortIdentValue != $frmShortId) ? ++$changes : $changes;
+if ($shortIdentValue != $frmShortId) {
+	++$changes;
+}
 
 $oldVar[6]	= '/(LONG_IDENT_INTERVAL=)(\d+)/';
 $newVar[6]	= '${1}'. $frmLongId;
-$changes	= ($longIdentValue != $frmLongId) ? ++$changes : $changes;
+if ($longIdentValue != $frmLongId) {
+	++$changes;
+}
+
+/* Create profile */
+if (!empty($frmProfile)) {
+	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
+	$proFileName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', $frmProfile) . '.json';
+	file_put_contents($profilesPath . $proFileName, $profile);
+	$newProfile = true;
+}
+
+/* Load profile */
+if (!empty($frmLoadProfile)) {
+	$selectedProfile = $profilesPath . $frmLoadProfile;
+	if (is_file($selectedProfile)) {
+		echo file_get_contents($selectedProfile);
+	}
+	exit(0);
+}
+
+/* Delete profile */
+if (!empty($frmDelProfile)) {
+	unlink($profilesPath . $frmDelProfile);
+ 	echo 'Profile "'. basename($frmDelProfile, '.json') .'" has been deleted';
+ 	exit(0);
+}
 
 // Compare current stored values vs new values from form
 if ($changes > 0) {
-
+	$msgOut = NULL;
 	// Stop SVXLink service before attempting anything
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
 	sleep(1);
 	file_put_contents($newFile, $newCfg);
 	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
-	echo 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
-
+	$msgOut .= 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
+	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
+	echo $msgOut;
 	// All done, start SVXLink service
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
 } else {

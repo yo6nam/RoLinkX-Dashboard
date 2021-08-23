@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.1b
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ window.addEventListener('DOMContentLoaded', event => {
 */
 
 $(document).ready(function() {
-	
+
 	// SA818 Programming
 	$("#programm").click(function() {
 		$('#sysmsg').iziModal('destroy');
@@ -111,7 +111,8 @@ $(document).ready(function() {
 		$.ajax({
 			type: 'POST',
 			url: "ajax/svx.php",
-			data: {	ref: $('#svx_ref').val(),
+			data: {	prn: $('#svx_prn').val(),
+					ref: $('#svx_ref').val(),
 					prt: $('#svx_prt').val(),
 					cal: $('#svx_cal').val(),
 					key: $('#svx_key').val(),
@@ -142,7 +143,74 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
+
+	// SVXLink delete profile
+	$("#delsvxprofile").click(function() {
+		$.ajax({
+			type: 'POST',
+			url: "ajax/svx.php",
+			data: {	prd: $('#svx_spn').val()
+			},
+			success: function(data) {
+					if (data) {
+						$('#sysmsg').iziModal('destroy');
+						$('#sysmsg').iziModal({ 
+							title: data,
+    						icon: "icon-check",
+    						headerColor: "#00af66",
+    						timeout: 3000,
+    						timeoutProgressbar: true,
+    						transitionIn: "fadeInUp",
+    						transitionOut: "fadeOutDown",
+    						bottom: 0,
+    						autoOpen: 50,
+    						zindex:1031,
+    						overlay: false
+						});
+      				}
+      				setTimeout(function(){
+      						location.reload(true);
+					}, 5000);
+			}
+		});
+	});
+
+	// Load selected SVX profile and populate fields
+    $('#svx_spn').on('change',function(event){
+    	var selection = $('#svx_spn').val();
+    	if (selection) {
+			$.ajax({
+				type: 'GET',
+				url: "ajax/svx.php",
+				data: {	lpn: selection },
+				success: function(data) {
+					if (data) {
+						var profile = jQuery.parseJSON(data);
+						$('#svx_ref').val(profile.reflector);
+						$('#svx_prt').val(profile.port);
+						$('#svx_cal').val(profile.callsign);
+						$('#svx_key').val(profile.key);
+						$('#svx_clb').val(profile.beacon);
+      				}
+      				$('#sysmsg').iziModal('destroy');
+      				$('#sysmsg').iziModal({ 
+							title: 'Profile loaded!<br/>Click <b>Save</b> button to apply',
+    						icon: "icon-check",
+    						headerColor: "#00af66",
+    						timeout: 3000,
+    						timeoutProgressbar: true,
+    						transitionIn: "fadeInUp",
+    						transitionOut: "fadeOutDown",
+    						bottom: 0,
+    						autoOpen: 50,
+    						zindex:1031,
+    						overlay: false
+					});
+				}
+			});
+		}
+    });
+
 	// WiFi config
 	$("#savewifi").click(function() {
 		$('#savewifi').prop('disabled', true);

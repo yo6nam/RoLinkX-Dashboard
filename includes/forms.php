@@ -212,6 +212,7 @@ function wifiForm() {
 
 /* SVXLink form */
 function svxForm() {
+	$profileOption = NULL;
 
 	/* Get current variables */
 	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
@@ -228,7 +229,28 @@ function svxForm() {
 	$authKeyValue		= (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
 	$beaconValue		= (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
 
+	/* Profiles section */
+	$profilesPath	= dirname(__FILE__) . '/../profiles/';
+	$proFiles		= array_slice(scandir($profilesPath), 2);
+	if (!empty($proFiles)) {
+		$profileOption	= '<hr />
+			<div class="input-group input-group-sm mb-3">
+			  <label class="input-group-text" for="svx_spn" style="width: 8rem;">Select profile</label>
+			  <select id="svx_spn" class="form-select">
+				<option value="" selected disabled>Select a profile</option>';
+		foreach ($proFiles as $profile) {
+			$profileOption .= '<option value="'. $profile .'">'. basename($profile, '.json') .'</option>';
+		}
+		$profileOption .= '</select>
+		<button id="delsvxprofile" class="btn btn-outline-danger" type="button">Delete</button>
+		</div>';
+	}
+
 	$svxForm = '<h2 class="mt-4 alert alert-warning fw-bold">Configurare SVXLink</h2>
+		<div class="input-group input-group-sm mb-3">
+		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Profile Name</span>
+		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
+		</div>
 		<div class="input-group input-group-sm mb-3">
 		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
 		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
@@ -270,10 +292,12 @@ function svxForm() {
 			<option value="30">30 minute</option>
 			<option value="60" selected>60 minute</option>
 		  </select>
-		</div>
+		</div>';
+		$svxForm .= $profileOption;
+		$svxForm .= '
 		<div class="d-flex justify-content-center mt-4">
-			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg">Salvează</button>
-		</div>
+			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Salvează</button>
+			</div>
 	</form>' . PHP_EOL;
 	return $svxForm;
 }
