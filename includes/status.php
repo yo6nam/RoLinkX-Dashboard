@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.1b
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@ function networking() {
 	$returnData = '';
 	exec('ip route|grep \'link src \'', $reply);
 	if (empty($reply)) return false;
-	preg_match_all('/(eth0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', implode("", $reply), $lanData);
-	preg_match_all('/(wlan0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', implode("", $reply), $wlanData);
+	preg_match_all('/(eth0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', implode("\n", $reply), $lanData);
+	preg_match_all('/(wlan0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', implode("\n", $reply), $wlanData);
 	$lanIp	= (isset($lanData[0][2]) && preg_match('/^169\.254/', $lanData[0][2]) === 0) ? $lanData[0][2] : '' ;
 	$wlanIp = (isset($wlanData[0][4])) ? $wlanData[0][4] : '' ;
 
@@ -178,15 +178,15 @@ function getReflector() {
 	if (!empty($logData) && getSVXLinkStatus(1) != 'Not running') {
 		$conStatus = $logData[0][array_key_last($logData[0])];
 		switch ($conStatus) {
-			  case "established":
+			case "established":
 				$stateColor = 'background:lightgreen;';
     			break;
-			  case "Disconnected":
-    			$stateColor = 'background:tomato;';
-    			break;
-			  case "ERROR":
-    			$stateColor = 'background:red;';
-    			break;
+			case "Disconnected":
+				$stateColor = 'background:tomato;';
+				break;
+			case "ERROR":
+				$stateColor = 'background:red;';
+				break;
 		}
 	}
 	return '<div class="input-group mb-2">
