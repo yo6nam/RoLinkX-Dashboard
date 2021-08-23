@@ -20,6 +20,8 @@ if [ ! $(command -v php-cgi) ]; then
 fi
 
 if [ -d "/var/www/html" ]; then
+    sudo lighttpd-enable-mod fastcgi-php
+    sudo service lighttpd force-reload
     printf "Copying files...\n"
     cp -r . /var/www/html/rolink
     printf "Setting up permissions\n"
