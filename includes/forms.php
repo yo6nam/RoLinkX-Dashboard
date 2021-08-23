@@ -164,7 +164,7 @@ function wifiForm() {
 	$pwdNet_2	= (empty($ssidList[1][1])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][1]);
 	$pwdNet_3	= (empty($ssidList[1][2])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][2]);
 
-	$wifiForm = '<h2 class="mt-4 alert alert-info fw-bold">Configurare interfață Wi-Fi</h2>';
+	$wifiForm = '<h2 class="mt-2 alert alert-info fw-bold">Configurare interfață Wi-Fi</h2>';
 	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Edit your networks</div>
@@ -246,7 +246,7 @@ function svxForm() {
 		</div>';
 	}
 
-	$svxForm = '<h2 class="mt-4 alert alert-warning fw-bold">Configurare SVXLink</h2>
+	$svxForm = '<h2 class="mt-2 alert alert-warning fw-bold">Configurare SVXLink</h2>
 		<div class="input-group input-group-sm mb-3">
 		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Profile Name</span>
 		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
@@ -315,7 +315,7 @@ function sa818Form() {
 		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
 		);
-	$sa818Form = '<h2 class="mt-4 alert alert-danger fw-bold">Configurare modul SA818</h2>
+	$sa818Form = '<h2 class="mt-2 alert alert-danger fw-bold">Configurare modul SA818</h2>
 		<div class="form-floating mb-1">
 			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
 				<option selected disabled>Selecteaza o valoare</option>';
