@@ -289,7 +289,7 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-3">
 		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
 		  <select id="svx_lid" class="form-select">
-		    <option value="0" selected>Disabled</option>' . PHP_EOL;
+		    <option value="0">Disabled</option>' . PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($lid=5; $lid<=300; $lid+=5) {
 			$sel = ($lid == $varLongIdent[2]) ? ' selected' : NULL;
