@@ -1,14 +1,13 @@
-![](https://i.imgur.com/ZjFVySi.jpg) 
+![](https://i.imgur.com/qJcJAua.jpg) 
 ## Web dashboard for OrangePi Zero & SVXLink (RoLink)
  
 Purpose : Make your life easier<br>
 Development : pre-beta<br>
 Features :
 - System overview
-- System control (Reboot / Wi-Fi)
-- Wi-Fi configuration editor
-- Wi-Fi scanner
-- SVXLink (RoLink) client configuration (with profiles) editor
+- System control (Reboot / Wi-Fi / SVXLink)
+- Wi-Fi network manager & scanner
+- SVXLink (RoLink) client configuration editor (with profiles)
 - SA818(S)V/U programming
 
 Requirements (hardware):<br>
