@@ -39,8 +39,8 @@ $frmPort		= (empty($_POST['prt'])) ? '1234' : filter_input(INPUT_POST, 'prt', FI
 $frmCallsign	= (empty($_POST['cal'])) ? 'YO1XYZ-P' : filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_STRING);
 $frmAuthKey		= (empty($_POST['key'])) ? 'password' : filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING);
 $frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_STRING);
-$frmShortId		= (empty($_POST['sid'])) ? '' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
-$frmLongId		= (empty($_POST['lid'])) ? '' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
+$frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
+$frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
 // Add file contents to buffer
