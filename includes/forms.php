@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.1b
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -223,6 +223,10 @@ function svxForm() {
 	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
 	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
 
+	/* Short / Long Intervals */
+	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
+	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
+
 	$reflectorValue		= (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
 	$portValue			= (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
 	$callSignValue		= (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
@@ -274,23 +278,24 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-3">
 		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
 		  <select id="svx_sid" class="form-select">
-		    <option value="0">Disabled</option>
-		    <option value="5">5 minute</option>
-		    <option value="10">10 minute</option>
-		    <option value="15" selected>15 minute</option>
-			<option value="30">30 minute</option>
-			<option value="60">60 minute</option>
-		  </select>
+		    <option value="0">Disabled</option>' . PHP_EOL;
+		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
+		for ($sid=5; $sid<=120; $sid+=5) {
+			$sel = ($sid == $varShortIdent[2]) ? ' selected' : NULL;
+			$svxForm .= '<option value="'. $sid .'"' . $sel .'>'. $sid .' minute</option>' . PHP_EOL;
+		}
+	$svxForm .= '</select>
 		</div>
 		<div class="input-group input-group-sm mb-3">
 		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
 		  <select id="svx_lid" class="form-select">
-		    <option value="0" selected>Disabled</option>
-		    <option value="5">5 minute</option>
-		    <option value="10">10 minute</option>
-		    <option value="15">15 minute</option>
-			<option value="30">30 minute</option>
-			<option value="60" selected>60 minute</option>
+		    <option value="0" selected>Disabled</option>' . PHP_EOL;
+		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
+		for ($lid=5; $lid<=300; $lid+=5) {
+			$sel = ($lid == $varLongIdent[2]) ? ' selected' : NULL;
+			$svxForm .= '<option value="'. $lid .'"' . $sel .'>'. $lid .' minute</option>' . PHP_EOL;
+		}
+	$svxForm .= '
 		  </select>
 		</div>';
 		$svxForm .= $profileOption;

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1b
+*   RoLinkX Dashboard v0.1c
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,10 @@
 $cfgFile		= '/opt/rolink/conf/rolink.conf';
 $newFile		= '/tmp/rolink.conf.tmp';
 $profilesPath	= dirname(__FILE__) . '/../profiles/';
+$newProfile		= false;
+$changes		= 0;
+$msgOut			= NULL;
 $oldVar = $newVar = $profiles = array();
-$newProfile = false;
-$changes = 0;
 
 // Retrieve GET vars
 $frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_STRING) : '';
@@ -144,7 +145,6 @@ if (!empty($frmDelProfile)) {
 
 // Compare current stored values vs new values from form
 if ($changes > 0) {
-	$msgOut = NULL;
 	// Stop SVXLink service before attempting anything
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
@@ -153,9 +153,12 @@ if ($changes > 0) {
 	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
 	$msgOut .= 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
 	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
-	echo $msgOut;
+
 	// All done, start SVXLink service
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
 } else {
-	echo 'No new data to process.<br/>Keeping original configuration.';
+	$msgOut .= 'No new data to process.<br/>Keeping original configuration.';
+	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
 }
+
+echo $msgOut;
