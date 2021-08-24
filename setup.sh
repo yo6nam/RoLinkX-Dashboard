@@ -2,7 +2,9 @@
 # RoLinkX Dashboard v0.1a
 # Setup script for minimum dashboard requirements
 
-# Modify Network
+wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
+
+# Check if we should modify network
 if systemctl is-enabled network-manager | grep enabled >/dev/null; then
 	printf 'Network Manager is enabled. We must disable it\n'
 	read -p "Do you want to proceed? (y/n)" -n 1 -r
@@ -26,6 +28,13 @@ if systemctl is-enabled network-manager | grep enabled >/dev/null; then
 	else
 		printf "Bye!\n"; exit 0;
 	fi
+fi
+
+# Setup wpa_supplicant
+if [ ! -f "$wlanCfgFile" ]; then
+	printf "wpa_supplicant.conf was not found so we'll create one with defaults\n";
+	printf 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\nupdate_config=1\nap_scan=1\nfast_reauth=1\ncountry=GB' | tee -a $wlanCfgFile > /dev/null
+	wpa_supplicant -B -c $wlanCfgFile -i wlan0 >/dev/null
 fi
 
 if netstat -tnlp | grep "lighttpd" >/dev/null; then
@@ -60,4 +69,4 @@ if [ -d "/var/www/html" ]; then
     	[ -f /var/www/html/rolink/profiles/.gitignore ] && rm -f /var/www/html/rolink/profiles/.gitignore
     fi
 fi
-printf "Done! You should access the dashboard using\nhttp://rolink/rolink or http://<IP>/rolink\n"
+printf "Done! You should access the dashboard using\nhttp://$(hostname)/rolink or http://<IP>/rolink\n"
