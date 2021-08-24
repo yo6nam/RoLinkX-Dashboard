@@ -48,11 +48,17 @@ git clone https://github.com/yo6nam/RoLinkX-Dashboard;cd RoLinkX-Dashboard/;sudo
  2. If Network Manager is found to be enabled and running upon executing *setup.sh*
  3. After saving your first pair of SSID/Key using the Wi-Fi page
 
- *Remember, this is a pre-beta release, don't expect it to work flawlessly.*
+# Notes
+If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
+```
+sudo chmod -R guo+rw /var/log/lighttpd
+```
+
+**Good luck!**
+
+*Remember, this is a pre-beta release, don't expect it to work flawlessly.*
  
- **Good luck!**
- 
- //Razvan YO6NAM @ xpander.ro
+//Razvan YO6NAM @ xpander.ro
  
  # Credits
 [RaspAp] (https://github.com/RaspAP/raspap-webgui)  
