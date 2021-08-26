@@ -28,12 +28,11 @@ if (isset($_GET['svxReflector'])) echo getReflector();
 /* Get IP(s) */
 function networking() {
 	$returnData = '';
-	exec('ip route|grep \'link src \'', $reply);
-	if (empty($reply)) return false;
-	preg_match_all('/(eth0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', implode("\n", $reply), $lanData);
-	preg_match_all('/(wlan0|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/', implode("\n", $reply), $wlanData);
-	$lanIp	= (isset($lanData[0][2]) && preg_match('/^169\.254/', $lanData[0][2]) === 0) ? $lanData[0][2] : '' ;
-	$wlanIp = (isset($wlanData[0][4])) ? $wlanData[0][4] : '' ;
+	exec('ip addr show dev eth0 | grep \'inet\' | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $lanData);
+	exec('ip addr show dev wlan0 | grep \'inet\' | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $wlanData);
+	if (empty($lanData) && empty($wlanData)) return false;
+	$lanIp	= (isset($lanData[0]) && preg_match('/^169\.254/', $lanData[0]) === 0) ? $lanData[0] : '' ;
+	$wlanIp =  $wlanData[0];
 
 	if (!empty($lanIp)) {
 		$returnData .= '<div class="input-group mb-2">
