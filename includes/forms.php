@@ -348,7 +348,7 @@ function sa818Form() {
 					/* Build CTCSS selects */
 					foreach ($ctcss_opts as $key => $val) {
 						$selected = ($key == 13) ? ' selected' : '';
-						$sa818Form .= '<option value="00' . $key . '"'. $selected .'>' . $val . '</option>' . PHP_EOL;
+						$sa818Form .= '<option value="' . sprintf("%04d", $key) . '"'. $selected .'>' . $val . '</option>' . PHP_EOL;
 					}
 			$sa818Form .= '</select>
 			<label for="sa_tpl">CTCSS (Hz)</label>
