@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.2
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 */
 
 $htmlOutput = null;
-$pages = array("wifi", "svx", "sa");
+$pages = array("wifi", "svx", "sa", "log");
 $page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
 // Detect mobiles
@@ -44,6 +44,9 @@ switch ($page) {
     break;
   case "sa":
     $htmlOutput = sa818Form();
+    break;
+  case "log":
+    $htmlOutput = logsForm();
     break;
   default:
 	$htmlOutput = '<h2 class="m-2 mt-2 alert alert-success fw-bold">Status</h2>
@@ -106,6 +109,7 @@ switch ($page) {
                     <a class="<?php echo ($page == 'wifi') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=wifi">WiFi</a>
                     <a class="<?php echo ($page == 'svx') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=svx">SVXLink</a>
                     <a class="<?php echo ($page == 'sa') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=sa">SA818</a>
+    				<a class="<?php echo ($page == 'log') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=log">Logs</a>
                 </div>
             </div>
             <div id="page-content-wrapper">
@@ -118,6 +122,7 @@ switch ($page) {
     							<li class="nav-item"><a class="<?php echo ($page == 'wifi') ? 'active p-2' : ''; ?> nav-link" href="./?p=wifi">WiFi</a></li>
     							<li class="nav-item"><a class="<?php echo ($page == 'svx') ? 'active p-2' : ''; ?> nav-link" href="./?p=svx">SVXLink</a></li>
                                 <li class="nav-item"><a class="<?php echo ($page == 'sa') ? 'active p-2' : ''; ?> nav-link" href="./?p=sa">SA818</a></li>
+    							<li class="nav-item"><a class="<?php echo ($page == 'log') ? 'active p-2' : ''; ?> nav-link" href="./?p=log">Logs</a></li>
                             </ul>
                         </div>
                     </div>
@@ -130,7 +135,7 @@ switch ($page) {
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
 			<div class="text-center p-2">
-v0.1 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+v0.2 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>
         <script src="js/jquery.js"></script>

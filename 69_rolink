@@ -1,6 +1,11 @@
 www-data ALL=(ALL) NOPASSWD:/sbin/ifup
 www-data ALL=(ALL) NOPASSWD:/sbin/reboot
 www-data ALL=(ALL) NOPASSWD:/sbin/ifdown
+www-data ALL=(ALL) NOPASSWD:/usr/bin/tail * /var/log/syslog
+www-data ALL=(ALL) NOPASSWD:/usr/bin/tail * /tmp/svxlink.log
+www-data ALL=(ALL) NOPASSWD:/usr/bin/wc
+www-data ALL=(ALL) NOPASSWD:/usr/bin/tr
+www-data ALL=(ALL) NOPASSWD:/usr/bin/cut
 www-data ALL=(ALL) NOPASSWD:/usr/bin/autohotspotN
 www-data ALL=(ALL) NOPASSWD:/usr/bin/chmod guo+rw /dev/ttyS[1-4]
 www-data ALL=(ALL) NOPASSWD:/usr/bin/chmod guo+rw /sys/class/gpio/gpio[0-99]/value

@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.1b
+*   RoLinkX Dashboard v0.2
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -416,4 +416,68 @@ $(document).ready(function() {
 			}
 		});
 	});
+	
+	// Display a log file in real time
+	if (window.location.search.match(/\=log/)) {
+		var selectedLogType = sessionStorage.getItem("logtype");
+		
+		if(selectedLogType != undefined || selectedLogType != null){
+    		$("select").first().find(":selected").removeAttr("selected");
+    		$("select").find("option").each(function () {
+				if ($(this).val() == selectedLogType) {
+					$(this).attr("selected", true);
+				}
+			});
+		}
+		
+		$("select").on("change", function () {
+			sessionStorage.setItem("logtype", $("select").first().val());
+			var url = "?p=log&t=" + $(this).val();
+    	      if (url) {
+    	          window.location = url;
+    	      }
+    	      return false;
+		});
+		
+ 		connectToServer(0, selectedLogType);
+
+		function connectToServer(linenum, selval) {
+ 			$.ajax({
+ 				dataType: "json",
+ 				url: "ajax/log.php",
+ 				data: {n:linenum, t:selval},
+ 				timeout: 119000,
+ 				success:function(data) {
+ 					if (data == null){
+ 						connectToServer(0,selval);
+ 						$("#log_data").html("<br />Error, reloading...");
+ 					} else {
+ 						$("#new_log_line").fadeIn("fast");
+ 						var items = [];
+ 						var count = parseInt(data.count);
+ 						if (count<0) {
+ 							connectToServer(linenum,selval);
+ 						}
+ 						var loglines = data.loglines;
+ 						loglines.reverse();
+ 						var l = 0;
+ 						$.each( loglines, function(key, val) {
+ 							l = l+1;
+ 							items.push("<br />"+val.toString());
+ 						});
+ 						var newlines = items.join( "" );
+ 						$("#log_data").prepend(newlines);
+ 						$("#new_log_line").fadeOut(375);
+ 						connectToServer(count,selval);
+ 					}
+ 				},
+ 				error: function(request, status, err) {
+ 					if(status == "timeout") {
+ 						connectToServer(0,selval);
+ 						$("#log_data").html("<br />Local timeout, reloading...");
+ 					}
+ 				}
+ 			});
+		}
+	}
 });

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1b
+*   RoLinkX Dashboard v0.2
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -394,4 +394,31 @@ function sa818Form() {
 		</div>
 	</form>' . PHP_EOL;
 	return $sa818Form;
+}
+
+/* Logs */
+function logsForm() {
+	$logData = '<h2 class="mt-2 alert alert-dark fw-bold">Logs</h2>';
+	$logData .= '<div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-12">
+          <div class="card bg-light shadow border-0">
+            <div class="card-header bg-white">
+    			<img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
+    			<div id="log_selector">
+					<select id="log">
+						<option value="" disabled>-Log file-</option>
+						<option value="1" selected>Syslog</option>
+						<option value="2">RoLink</option>
+					</select>
+				</div>
+            </div>
+            <div class="card-body px-lg-3 py-lg-2 scrolog">
+               <div class="small" id="log_data"></div>
+			</div>
+          </div>
+		</div>
+	</div>
+</div>';
+	return $logData;
 }
