@@ -9,6 +9,7 @@ Features :
 - Wi-Fi network manager & scanner
 - SVXLink (RoLink) client configuration editor (with profiles)
 - SA818(S)V/U programming
+- Display logs (Syslog or SVXLink) in real time
 
 Requirements (hardware):<br>
 - OrangePi Zero LTS 256/512MB
@@ -40,7 +41,7 @@ git clone https://github.com/yo6nam/RoLinkX-Dashboard;cd RoLinkX-Dashboard/;sudo
  
  You should be greeted with something like this
  
- ![](https://i.imgur.com/gZzvBKv.png) 
+ ![](https://i.imgur.com/yYVb9C8.png) 
  
  On a fresh OS (Armbian Buster) install, you will need to reboot about three times
  1. After installing the RoLink client (custom precompiled SVXLink) & if the sound card is not configured
