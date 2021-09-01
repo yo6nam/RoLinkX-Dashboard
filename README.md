@@ -41,7 +41,7 @@ git clone https://github.com/yo6nam/RoLinkX-Dashboard;cd RoLinkX-Dashboard/;sudo
  
  You should be greeted with something like this
  
- ![](https://i.imgur.com/yYVb9C8.png) 
+ ![](https://i.imgur.com/1kBJidR.png) 
  
  On a fresh OS (Armbian Buster) install, you will need to reboot about three times
  1. After installing the RoLink client (custom precompiled SVXLink) & if the sound card is not configured
