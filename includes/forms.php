@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.2
+*   RoLinkX Dashboard v0.3
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -227,11 +227,15 @@ function svxForm() {
 	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
 	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
 
+	/* Opus codec bitrate */
+	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
+
 	$reflectorValue		= (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
 	$portValue			= (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
 	$callSignValue		= (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
 	$authKeyValue		= (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
 	$beaconValue		= (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
+	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) . '/../profiles/';
@@ -294,6 +298,22 @@ function svxForm() {
 		for ($lid=5; $lid<=300; $lid+=5) {
 			$sel = ($lid == $varLongIdent[2]) ? ' selected' : NULL;
 			$svxForm .= '<option value="'. $lid .'"' . $sel .'>'. $lid .' minute</option>' . PHP_EOL;
+		}
+
+		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-3">
+		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
+		  <select id="svx_cbr" class="form-select">' . PHP_EOL;
+		if (isset($varCodecBitRate[2])) {
+			/* Generate codec bitrates */
+			for ($cbr=8000; $cbr<=32000; $cbr+=2000) {
+				$sel = ($cbr == $varCodecBitRate[2]) ? ' selected' : NULL;
+				$cbrSuffix = ($cbr == 20000) ? '(default)' : NULL;
+				$svxForm .= '<option value="'. $cbr .'"' . $sel .'>'. $cbr / 1000 .' kb/s '. $cbrSuffix .'</option>' . PHP_EOL;
+			}
+		} else {
+			$svxForm .= '<option value="" disabled selected>Unavailable</option>';
 		}
 	$svxForm .= '
 		  </select>

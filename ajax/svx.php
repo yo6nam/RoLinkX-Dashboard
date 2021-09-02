@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1c
+*   RoLinkX Dashboard v0.3
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@ $frmAuthKey		= (empty($_POST['key'])) ? 'password' : filter_input(INPUT_POST, 'k
 $frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_STRING);
 $frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
 $frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
+$frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
 // Add file contents to buffer
@@ -55,6 +56,7 @@ preg_match('/(AUTH_KEY=)"(\S+)"/', $oldCfg, $varAuthKey);
 preg_match('/(CALLSIGN=)(\w\S+)/', $oldCfg, $varBeacon);
 preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $oldCfg, $varShortIdent);
 preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $oldCfg, $varLongIdent);
+preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $oldCfg, $varCodecBitRate);
 
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
 $portValue			= (isset($varPort[2])) ? $varPort[2] : '';
@@ -63,6 +65,7 @@ $authKeyValue		= (isset($varAuthKey[2])) ?  $varAuthKey[2] : '';
 $beaconValue		= (isset($varBeacon[2])) ?  $varBeacon[2] : '';
 $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
+$codecBitrateValue	= (isset($varCodecBitRate[2])) ? $varCodecBitRate[2] : '';
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -70,6 +73,7 @@ $profiles['port']		= $portValue;
 $profiles['callsign']	= $callSignValue;
 $profiles['key']		= $authKeyValue;
 $profiles['beacon']		= $beaconValue;
+$profiles['bitrate']	= $codecBitrateValue;
 
 /* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
@@ -117,6 +121,13 @@ $oldVar[6]	= '/(LONG_IDENT_INTERVAL=)(\d+)/';
 $newVar[6]	= '${1}'. $frmLongId;
 if ($longIdentValue != $frmLongId) {
 	++$changes;
+}
+
+$oldVar[7]	= '/(OPUS_ENC_BITRATE=)(\d+)/';
+$newVar[7]	= '${1}'. $frmBitrate;
+if ($codecBitrateValue != $frmBitrate) {
+	++$changes;
+	$profiles['bitrate'] = $frmBitrate;
 }
 
 /* Create profile */
