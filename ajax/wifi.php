@@ -92,10 +92,7 @@ if (!empty($networkA)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkA) .'
         psk='. json_encode($authKeyA) .'
-        proto=RSN
         key_mgmt=WPA-PSK
-        pairwise=CCMP
-        group=CCMP
         scan_ssid=1
 }' . PHP_EOL;
 }
