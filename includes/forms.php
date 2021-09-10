@@ -347,9 +347,7 @@ function sa818Form() {
 					/* Generate frequency list (2m & 70cm, no APRS or repeater inputs/outputs) */
 					for ($f=144.000; $f<=145.5875; $f+=0.0125) {
 						if (sprintf("%0.4f", $f) == '144.800') continue;
-						$freqShow = str_replace('000', '00', sprintf("%0.4f", $f));
-						if (strlen($freqShow) > 7) $freqShow = (float)$freqShow;
-						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'.  .'</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. str_replace('000', '00', sprintf("%0.4f", $f)) .'</option>' . PHP_EOL;
 					}
 					for ($f=431.900; $f<=436.925; $f+=0.025) {
 						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>' . PHP_EOL;
