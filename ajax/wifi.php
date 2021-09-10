@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.2
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -82,7 +82,7 @@ if ($wnA == '-') $networkA = ''; $weHaveData = true;
 if ($wnB == '-') $networkB = '';
 if ($wnC == '-') $networkC = '';
 
-/* Update the file with new data (if provided) */
+/* Update the wpa_supplicant.conf file with new data */
 $wpaData = 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 ap_scan=1
@@ -101,10 +101,7 @@ if (!empty($networkB)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkB) .'
         psk='. json_encode($authKeyB) .'
-        proto=RSN
         key_mgmt=WPA-PSK
-        pairwise=CCMP
-        group=CCMP
         scan_ssid=1
 }' . PHP_EOL;
 }
@@ -113,15 +110,11 @@ if (!empty($networkC)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkC) .'
         psk='. json_encode($authKeyC) .'
-        proto=RSN
         key_mgmt=WPA-PSK
-        pairwise=CCMP
-        group=CCMP
         scan_ssid=1
 }' . PHP_EOL;
 }
 
-/* Final step */
 if ($weHaveData) {
 	file_put_contents($wpaTemp, $wpaData);
 	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");

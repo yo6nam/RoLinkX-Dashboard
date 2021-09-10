@@ -167,7 +167,7 @@ function wifiForm() {
 	$wifiForm = '<h2 class="mt-2 alert alert-info fw-bold">Configurare interfață Wi-Fi</h2>';
 	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
 	$wifiForm .= '<div class="card">
-		<div class="card-header">Edit your networks</div>
+		<div class="card-header">Add / Edit networks</div>
 		<div class="card-body">
 		<div class="input-group input-group-sm mb-3">
 		  <span class="input-group-text" style="width: 9rem;">[1] Name (SSID)</span>
@@ -329,7 +329,7 @@ function svxForm() {
 
 /* SA818 radio */
 function sa818Form() {
-	$ctcss_opts = array(
+	$ctcssVars = array(
 		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
 		"11" => "97.4", "12" => "100.0", "13" => "103.5", "14" => "107.2",
@@ -343,9 +343,10 @@ function sa818Form() {
 	$sa818Form = '<h2 class="mt-2 alert alert-danger fw-bold">Configurare modul SA818</h2>
 		<div class="form-floating mb-1">
 			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
-				<option selected disabled>Selecteaza o valoare</option>';
-					/* Generate frequency list (2m & 70cm, no repeater inputs/outputs) */
-					for ($f=145.200; $f<=145.600; $f+=0.0125) {
+				<option selected disabled>Selectează o valoare</option>';
+					/* Generate frequency list (2m & 70cm, no APRS or repeater inputs/outputs) */
+					for ($f=144.000; $f<=145.600; $f+=0.0125) {
+						if (sprintf("%0.4f",$f) == '144.800') continue;
 						$sa818Form .= '<option value="'. sprintf("%0.4f",$f) .'">'. str_replace('000', '00',sprintf("%0.4f",$f)) .'</option>' . PHP_EOL;
 					}
 					for ($f=431.900; $f<=436.925; $f+=0.025) {
@@ -356,7 +357,7 @@ function sa818Form() {
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_dev" class="form-select" aria-label="Deviaţie (kHz)">
-				<option selected disabled>Selecteaza o valoare</option>
+				<option selected disabled>Selectează o valoare</option>
 				<option value="0">12.5</option>
 				<option value="1" selected>25</option>
 			</select>
@@ -364,9 +365,9 @@ function sa818Form() {
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_tpl" class="form-select" aria-label="CTCSS (Hz)">
-				<option selected disabled>Selecteaza o valoare</option>';
+				<option selected disabled>Selectează o valoare</option>';
 					/* Build CTCSS selects */
-					foreach ($ctcss_opts as $key => $val) {
+					foreach ($ctcssVars as $key => $val) {
 						$selected = ($key == 13) ? ' selected' : '';
 						$sa818Form .= '<option value="' . sprintf("%04d", $key) . '"'. $selected .'>' . $val . '</option>' . PHP_EOL;
 					}
@@ -375,7 +376,7 @@ function sa818Form() {
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_sql" class="form-select" aria-label="Squelch">
-				<option selected disabled>Selecteaza o valoare</option>';
+				<option selected disabled>Selectează o valoare</option>';
 					/* Generate squelch values */
 					for ($sq=1; $sq<=8; $sq+=1) {
 						$selected = ($sq == 5) ? ' selected' : '';
