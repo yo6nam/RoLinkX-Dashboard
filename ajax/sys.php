@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.3
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -65,5 +65,14 @@ function sysReboot() {
 /* Switch Host Name */
 if ($switchHostName == 1) echo switchHostName();
 function switchHostName() {
-	return 'ToDo...';
+	$hostName = gethostname();
+	preg_match('/CALLSIGN=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $callSign);
+	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim($callSign[1]));
+	if ($newHostName != 'N0CALL' && $hostName != $newHostName) {
+		exec("/usr/bin/sudo /usr/bin/hostnamectl set-hostname $newHostName");
+		return 'Hostname has been changed from <br/><b>' . $hostName . '</b> to <b>' . $newHostName . '</b><br/>You need to reboot to apply changes.';
+	} else {
+		return 'Nothing changed.<br/>New and old hostnames are the same.';
+	}
+	return false;
 }

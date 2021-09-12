@@ -395,7 +395,7 @@ $(document).ready(function() {
 			url: "ajax/sys.php",
 			data: {	switchHostName: 1 },
 			success: function(data) {
-				if(data == 'ToDo...'){
+				if(data) {
 					$('#sysmsg').iziModal('destroy');
 					$('#sysmsg').iziModal({ 
 						title: data,
