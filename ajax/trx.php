@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1a
+*   RoLinkX Dashboard v0.3
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,36 @@ $tpl = (isset($_POST['tpl'])) ? filter_input(INPUT_POST, 'tpl', FILTER_SANITIZE_
 $sql = (isset($_POST['sql'])) ? filter_input(INPUT_POST, 'sql', FILTER_SANITIZE_STRING) : '';
 $vol = (isset($_POST['vol'])) ? filter_input(INPUT_POST, 'vol', FILTER_SANITIZE_STRING) : '';
 $flt = (isset($_POST['flt'])) ? filter_input(INPUT_POST, 'flt', FILTER_SANITIZE_STRING) : '';
+
+/* Update configuration info sent to reflector */
+$cfgRefFile = '/opt/rolink/conf/rolink.json';
+$tmpRefFile = '/tmp/rolink.json.tmp';
+$ctcssVars = array(
+		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
+		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
+		"11" => "97.4", "12" => "100.0", "13" => "103.5", "14" => "107.2",
+		"15" => "110.9", "16" => "114.8", "17" => "118.8", "18" => "123",
+		"19" => "127.3", "20" => "131.8", "21" => "136.5", "22" => "141.3",
+		"23" => "146.2", "24" => "151.4", "25" => "156.7", "26" => "162.2",
+		"27" => "167.9", "28" => "173.8", "29" => "179.9", "30" => "186.2",
+		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
+		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
+		);
+$nfoParam['k_id'] = 'n_a';
+$nfoParam['name'] = $nfoParam['nameA'] = $nfoParam['nodeLocation'] = '';
+$nfoParam['pl_in'] = $ctcssVars[floatval($tpl)];
+$nfoParam['pl_out']	= $ctcssVars[floatval($tpl)];
+$nfoParam['rx_frq'] = sprintf("%0.3f", $grp);
+$nfoParam['shift'] = '';
+$nfoParam['tip'] = 'nod portabil';
+$nfoParam['tx_frq'] = sprintf("%0.3f", $grp);
+$nfoParam['tg'] = 226;
+
+if (!empty($grp)) {
+	$nfoParams = json_encode($nfoParam, JSON_PRETTY_PRINT);
+	file_put_contents($tmpRefFile, $nfoParams);
+	shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
+}
 
 /* Include the serial class */
 include __DIR__ . "/../includes/php_serial.class.php";
@@ -67,7 +97,7 @@ function writeToSerial($command, $delay = 1) {
 	$serial->sendMessage("AT+DMOCONNECT\r\n", 1);
 	$cstatus = trim($serial->readPort());
 	if ($cstatus != "+DMOCONNECT:0") {
-		return false;
+		return 'Could not connect to serial device';
 	}
 	/* Process command */
 	$serial->sendMessage($command ."\r\n", $delay);

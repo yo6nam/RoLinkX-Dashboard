@@ -22,3 +22,4 @@ www-data ALL=(ALL) NOPASSWD:/sbin/ip link set wlan[0-9] up
 www-data ALL=(ALL) NOPASSWD:/sbin/ip link set wlan[0-9] down
 www-data ALL=(ALL) NOPASSWD:/usr/bin/cp /tmp/wpa_supplicant.tmp /etc/wpa_supplicant/wpa_supplicant.conf
 www-data ALL=(ALL) NOPASSWD:/usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf
+www-data ALL=(ALL) NOPASSWD:/usr/bin/cp /tmp/rolink.json.tmp /opt/rolink/conf/rolink.json
