@@ -418,6 +418,44 @@ $(document).ready(function() {
 		});
 	});
 	
+	// Configuration values
+	$("#cfgSave").click(function() {
+		$('#cfgSave').prop('disabled', true);
+		$('#cfgSave').fadeTo("fast", 0.15);
+			setTimeout(function() {
+				$('#cfgSave').prop('disabled', false);
+				$('#cfgSave').fadeTo("fast", 1);
+			}, 1000);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/sys.php",
+			data: { cfgPttPin: $('#cfgPttPin').val(),
+					cfgTty: $('#cfgTty').val(),
+			},
+			success: function(data) {
+				if(data) {
+					$('#sysmsg').iziModal('destroy');
+					$('#sysmsg').iziModal({ 
+						title: data,
+    					icon: "icon-check",
+    					headerColor: "#00af66",
+    					timeout: 3500,
+    					timeoutProgressbar: true,
+    					transitionIn: "fadeInUp",
+    					transitionOut: "fadeOutDown",
+    					bottom: 0,
+    					autoOpen: 50,
+    					zindex:1031,
+    					overlay: false
+					});
+      				setTimeout(function(){
+      					location.reload(true);
+      				}, 4000);
+      			}
+			}
+		});
+	});
+
 	// Display a log file in real time
 	if (window.location.search.match(/\=log/)) {
 		var selectedLogType = sessionStorage.getItem("logtype");

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.3
+*   RoLinkX Dashboard v0.5
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,14 +22,12 @@
 * System reporting / actions module
 */
 
-/* ToDo ...
-* - Change default hostname to callsign (baliza)
-*/
-
 $reboot				= (isset($_POST['reboot'])) ? filter_input(INPUT_POST, 'reboot', FILTER_SANITIZE_NUMBER_INT) : '';
 $rewifi				= (isset($_POST['rewifi'])) ? filter_input(INPUT_POST, 'rewifi', FILTER_SANITIZE_NUMBER_INT) : '';
 $resvx				= (isset($_POST['resvx'])) ? filter_input(INPUT_POST, 'resvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $endsvx				= (isset($_POST['endsvx'])) ? filter_input(INPUT_POST, 'endsvx', FILTER_SANITIZE_NUMBER_INT) : '';
+$cfgFormPttPin		= (isset($_POST['cfgPttPin'])) ? filter_input(INPUT_POST, 'cfgPttPin', FILTER_SANITIZE_NUMBER_INT) : '';
+$cfgFormTty			= (isset($_POST['cfgTty'])) ? filter_input(INPUT_POST, 'cfgTty', FILTER_SANITIZE_NUMBER_INT) : '';
 $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 'switchHostName', FILTER_SANITIZE_NUMBER_INT) : '';
 
 /* Stop SVXLink */
@@ -50,9 +48,12 @@ function restartSVXLink() {
 if ($rewifi == 1) echo wifiRestart();
 function wifiRestart() {
 	exec("/usr/bin/sudo /sbin/wpa_cli -i wlan0 reconfigure");
+	/* Reserved for future version
 	exec("/usr/bin/sudo /usr/bin/autohotspotN reload", $reply);
 	$result = (empty($reply)) ? 'Command failed' : json_encode($reply);
 	return $result;
+	*/
+	exit(0);
 }
 
 /* Reboot System */
@@ -75,4 +76,26 @@ function switchHostName() {
 		return 'Nothing changed.<br/>New and old hostnames are the same.';
 	}
 	return false;
+}
+
+/* Configuration change */
+if (!empty($cfgFormPttPin) || !empty($cfgFormTty)) echo saveCfg($cfgFormPttPin, $cfgFormTty);
+function saveCfg($newPin, $newTty) {
+	$cfgChanged = NULL;
+	$config		= include '../config.php';
+	$oldPin		= $config['cfgPttPin'];
+	$oldTty		= $config['cfgTty'];
+	if ($oldPin != $newPin) {
+		$config['cfgPttPin']= $newPin;
+		$cfgChanged = true;
+	}
+	if ($oldTty != $newTty) {
+		$config['cfgTty']= $newTty;
+		$cfgChanged = true;
+	}
+	if ($cfgChanged) {
+		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
+		return 'Configuration saved!';
+	}
+	return 'Nothing changed';
 }

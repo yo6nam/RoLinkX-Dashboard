@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.1b
+*   RoLinkX Dashboard v0.5
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ function networking() {
 	exec('ip addr show dev wlan0 | grep \'inet\' | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $wlanData);
 	if (empty($lanData) && empty($wlanData)) return false;
 	$lanIp	= (isset($lanData[0]) && preg_match('/^169\.254/', $lanData[0]) === 0) ? $lanData[0] : '' ;
-	$wlanIp =  $wlanData[0];
+	$wlanIp = (isset($wlanData[0]) && preg_match('/^169\.254/', $wlanData[0]) === 0) ? $wlanData[0] : '' ;
 
 	if (!empty($lanIp)) {
 		$returnData .= '<div class="input-group mb-2">
@@ -201,4 +201,9 @@ function getCallSign() {
   		<span class="input-group-text" style="width: 6.5rem;">Call Sign</span>
   		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
 	</div>';
+}
+
+/* Version check */
+function getRemoteVersion() {
+	return 'ToDo...';
 }

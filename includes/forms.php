@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.3
+*   RoLinkX Dashboard v0.5
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -322,13 +322,13 @@ function svxForm() {
 		$svxForm .= '
 		<div class="d-flex justify-content-center mt-4">
 			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Salvează</button>
-			</div>
-	</form>' . PHP_EOL;
+			</div>' . PHP_EOL;
 	return $svxForm;
 }
 
 /* SA818 radio */
 function sa818Form() {
+	$config = include 'config.php';
 	$ctcssVars = array(
 		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
@@ -414,8 +414,8 @@ function sa818Form() {
 		</div>
 		<div class="d-flex justify-content-center mt-4">
 			<button id="programm" type="button" class="btn btn-danger btn-lg">Programează!</button>
-		</div>
-	</form>' . PHP_EOL;
+		</div>' . PHP_EOL;
+	$sa818Form .= '<div class="mt-3 alert alert-info" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>' . PHP_EOL;
 	return $sa818Form;
 }
 
@@ -444,4 +444,34 @@ function logsForm() {
 	</div>
 </div>';
 	return $logData;
+}
+
+/* Config */
+function cfgForm() {
+	$config		= include 'config.php';
+	$txPin		= $config['cfgPttPin'];
+	$ttyPort	= $config['cfgTty'];
+	$pinsArray = array(2, 3, 7, 10, 18, 19);
+	$ttysArray = array(1, 2, 3);
+	$configData = '<h2 class="mt-2 alert alert-warning fw-bold">Configuration</h2>
+	<div class="form-floating mb-1">
+		<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
+	foreach ($pinsArray as $pin) {
+		$configData .= '<option value="'. $pin . '"' . ($pin == $txPin ? ' selected' : '') . '>'. $pin .'</option>' . PHP_EOL;
+	}
+	$configData .= '</select>
+	<label for="cfgPttPin">GPIO Pin (PTT)</label>
+	</div>' . PHP_EOL;
+	$configData .= '<div class="form-floating mb-1">
+			<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
+	foreach ($ttysArray as $tty) {
+		$configData .= '<option value="'. $tty . '"' . ($tty == $ttyPort ? ' selected' : '') . '>'. $tty .'</option>' . PHP_EOL;
+	}
+	$configData .= '</select>
+	<label for="cfgTty">Serial Port (ttyS)</label>
+	</div>
+	<div class="d-flex justify-content-center mt-4">
+		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Salvează</button>
+	</div>' . PHP_EOL;
+	return $configData;
 }

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.3
+*   RoLinkX Dashboard v0.5
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,9 @@
 * SA818(S)(V/U) radio programming module
 */
 
-$txPin		= 7; // Change this to fit your board
+$config		= include 'config.php';
+$txPin		= $config['cfgPttPin'];
+$tty		= $config['cfgTty'];
 $pinPath	= '/sys/class/gpio/gpio'. $txPin .'/value';
 
 /* Get POST vars */
@@ -76,21 +78,21 @@ shell_exec('/usr/bin/cat '. $pinPath .' | grep 1 && /usr/bin/echo 0 > '. $pinPat
 /* Build the AT commands */
 if (!empty($dev) &&  !empty($grp) && !empty($tpl) && !empty($sql)) { // Frequency, Deviation, CTCSS, SQL
 	$pgmGroup = 'AT+DMOSETGROUP='. $dev .','. $grp .','. $grp .','. $tpl .','. $sql .','. $tpl;
-	$groupCmd = writeToSerial($pgmGroup, 2);
+	$groupCmd = writeToSerial($pgmGroup, $tty, 2);
 }
 if (!empty($vol)) {
 	$pgmVolume = 'AT+DMOSETVOLUME='. $vol;
-	$volumeCmd = writeToSerial($pgmVolume, 1);
+	$volumeCmd = writeToSerial($pgmVolume, $tty, 1);
 }
 if (!empty($flt)) {
 	$pgmFilter = 'AT+SETFILTER='. $flt;
-	$filterCmd = writeToSerial($pgmFilter, 1);
+	$filterCmd = writeToSerial($pgmFilter, $tty, 1);
 }
-function writeToSerial($command, $delay = 1) {
+function writeToSerial($command, $tty = 1, $delay = 1) {
 	if (empty($command)) return 'Empty command. Exiting...';
-	shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /dev/ttyS1');
+	shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /dev/ttyS' . $tty);
 	$serial = new phpSerial;
-	$serial->deviceSet("/dev/ttyS1");
+	$serial->deviceSet("/dev/ttyS" . $tty);
 	$serial->deviceOpen('w+');
 	stream_set_timeout($serial->_dHandle, 10);
 	/* Connect to device */
