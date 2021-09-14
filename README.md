@@ -2,7 +2,7 @@
 ## Web dashboard for OrangePi Zero & SVXLink (RoLink)
  
 Purpose : Make your life easier<br>
-Development : pre-beta<br>
+Development : beta<br>
 Features :
 - System overview
 - System control (Reboot / Wi-Fi / SVXLink)
@@ -56,7 +56,7 @@ sudo chmod -R guo+rw /var/log/lighttpd
 
 **Good luck!**
 
-*Remember, this is a pre-beta release, don't expect it to work flawlessly.*
+*Remember, this is a beta release, don't expect it to work flawlessly.*
  
 //Razvan YO6NAM @ xpander.ro
  
