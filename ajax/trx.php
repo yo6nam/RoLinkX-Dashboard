@@ -22,7 +22,7 @@
 * SA818(S)(V/U) radio programming module
 */
 
-$config		= include 'config.php';
+$config		= include '../config.php';
 $txPin		= $config['cfgPttPin'];
 $tty		= $config['cfgTty'];
 $pinPath	= '/sys/class/gpio/gpio'. $txPin .'/value';
