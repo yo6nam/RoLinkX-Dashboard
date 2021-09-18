@@ -52,6 +52,7 @@ switch ($page) {
     $htmlOutput = cfgForm();
     break;
   default:
+	$svxAction = (getSVXLinkStatus(1) == 'Not running') ? 'Start' : 'Restart';
 	$htmlOutput = '<h2 class="m-2 mt-2 alert alert-success fw-bold">Status</h2>
 	<div class="card m-2">
 	<div class="card-body">';
@@ -67,7 +68,7 @@ switch ($page) {
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="reboot" class="btn btn-danger btn-lg">Reboot OS</button>
 	<button id="rewifi" class="btn btn-info btn-lg">Restart Wi-Fi</button>
-	<button id="resvx" class="btn btn-warning btn-lg">Restart RoLink</button>
+	<button id="resvx" class="btn btn-warning btn-lg">'. $svxAction .' RoLink</button>
 	<button id="endsvx" class="btn btn-dark btn-lg">Stop RoLink</button>
 	</div>
 	</div>
