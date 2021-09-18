@@ -30,6 +30,21 @@ if systemctl is-enabled network-manager | grep enabled >/dev/null; then
 	fi
 fi
 
+# Fix possible DNS issues
+if cat /etc/resolvconf/resolv.conf.d/head | grep '8.8.8.8' >/dev/null; then
+	printf 'DNS tweak is present, moving on...\n';
+else
+	printf 'Tweaking DNS\n';
+	/usr/bin/expect<<EOF
+spawn dpkg-reconfigure -f readline resolvconf
+expect "updates?" { send "Yes\r" }
+expect "dynamic files?" { send "Yes\r" }
+EOF
+	printf 'nameserver 8.8.8.8\nnameserver 8.8.4.4\n' | tee -a /etc/resolvconf/resolv.conf.d/head > /dev/null
+	resolvconf --enable-updates
+	resolvconf -u
+fi
+
 # Setup wpa_supplicant
 if [ ! -f "$wlanCfgFile" ]; then
 	printf "wpa_supplicant.conf was not found so we'll create one with defaults\n";
