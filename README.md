@@ -16,7 +16,7 @@ Requirements (hardware):<br>
 - SA818 radio module
 
 Requirements (software):<br>
-- Armbian Buster (mainline based kernel 5.10.y)
+- Armbian Buster / Bullseye (mainline based kernel 5.10.y)
 - lighttpd & php-cgi
 - SVXLink compiled as RoLink *(see below how to install it)*
 ```
