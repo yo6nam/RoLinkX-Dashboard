@@ -1,11 +1,20 @@
 #!/bin/bash
-# RoLinkX Dashboard v0.5
+# RoLinkX Dashboard v0.6
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
 
+# Buster defaults
+nmService=network-manager
+phpVersion=7.3
+
+if grep "bullseye" /etc/os-release >/dev/null;then
+	nmService=NetworkManager
+	phpVersion=7.4
+fi
+
 # Check if we should modify network
-if systemctl is-enabled network-manager | grep enabled >/dev/null; then
+if systemctl is-enabled $nmService | grep enabled >/dev/null; then
 	printf 'Network Manager is enabled. We must disable it\n'
 	read -p "Do you want to proceed? (y/n)" -n 1 -r
 	printf '\n'
@@ -23,15 +32,15 @@ if systemctl is-enabled network-manager | grep enabled >/dev/null; then
 			printf '\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
 		fi
 		# Now it's safe to disable NM
-		systemctl stop network-manager
-		systemctl disable network-manager
+		systemctl stop $nmService
+		systemctl disable $nmService
 	else
 		printf "Bye!\n"; exit 0;
 	fi
 fi
 
 # Fix possible DNS issues
-if cat /etc/resolvconf/resolv.conf.d/head | grep '8.8.8.8' >/dev/null; then
+if grep '8.8.8.8' /etc/resolvconf/resolv.conf.d/head >/dev/null; then
 	printf 'DNS tweak is present, moving on...\n';
 else
 	printf 'Tweaking DNS\n';
@@ -61,7 +70,7 @@ else
 	printf '\n'
 	if [[ $REPLY =~ ^[Yy]$ ]];then
 		apt-get update
-		apt-get install lighttpd php7.3-fpm php-cgi -y
+		apt-get install lighttpd php$phpVersion-fpm php-cgi -y
 		lighttpd-enable-mod fastcgi-php >/dev/null
 		service lighttpd force-reload
 	fi
