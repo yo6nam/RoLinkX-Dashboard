@@ -68,20 +68,20 @@ fi
 if [ ! $(command -v php-cgi) ]; then
 	printf 'Check : php-cgi not installed, installing...\n'
 	apt-get install php7.3-fpm php-cgi -y
-	lighttpd-enable-mod fastcgi-php >/dev/null
-	service lighttpd force-reload
 fi
 
 if [ -d "/var/www/html" ]; then
-    printf "Copying files...\n"
-    cp -r . /var/www/html/rolink
-    printf "Setting up permissions\n"
-    chown -R www-data /var/www/html/rolink
-    if [ -f /var/www/html/rolink/69_rolink ]; then
-    	printf "Giving access to certain commands\n"
-    	cp /var/www/html/rolink/69_rolink /etc/sudoers.d/69_rolink;
-    	rm -f /var/www/html/rolink/69_rolink /var/www/html/rolink/setup.sh /var/www/html/rolink/README.md
-    	[ -f /var/www/html/rolink/profiles/.gitignore ] && rm -f /var/www/html/rolink/profiles/.gitignore
-    fi
+	lighttpd-enable-mod fastcgi-php
+	service lighttpd force-reload
+	printf "Copying files...\n"
+	cp -r . /var/www/html/rolink
+	printf "Setting up permissions\n"
+	chown -R www-data /var/www/html/rolink
+	if [ -f /var/www/html/rolink/69_rolink ]; then
+		printf "Giving access to certain commands\n"
+		cp /var/www/html/rolink/69_rolink /etc/sudoers.d/69_rolink;
+		rm -f /var/www/html/rolink/69_rolink /var/www/html/rolink/setup.sh /var/www/html/rolink/README.md
+		[ -f /var/www/html/rolink/profiles/.gitignore ] && rm -f /var/www/html/rolink/profiles/.gitignore
+	fi
 fi
 printf "Done! You should access the dashboard using\nhttp://$(hostname)/rolink or http://$(hostname -I)/rolink\n"

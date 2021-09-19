@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.2
+*   RoLinkX Dashboard v0.5
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,18 @@
 /*
 * Log(s) page
 */
+
 header("Cache-Control: no-cache");
-$num		= (isset($_GET['n'])) ? filter_input(INPUT_GET, 'n', FILTER_SANITIZE_NUMBER_INT) : 0;
-$log_file	= (!empty($_GET['t'])) ? filter_input(INPUT_GET, 't', FILTER_SANITIZE_NUMBER_INT) : NULL;
-switch ($log_file) {
+$num 		= (isset($_GET['n'])) ? filter_input(INPUT_GET, 'n', FILTER_SANITIZE_NUMBER_INT) : 0;
+$logFile	= (!empty($_GET['t'])) ? filter_input(INPUT_GET, 't', FILTER_SANITIZE_NUMBER_INT) : NULL;
+$maxWait	= 115;
+$wc			= "/usr/bin/wc";
+$sudo		= "/usr/bin/sudo";
+$tail		= "/usr/bin/tail";
+$cut		= "/usr/bin/cut";
+$tr			= "/usr/bin/tr";
+
+switch ($logFile) {
 	case '1' :
 		$logfile = '/var/log/syslog';
 	break;
@@ -34,53 +42,47 @@ switch ($log_file) {
 	default :
 		$logfile = '/var/log/syslog';
 }
-$wc = "/usr/bin/wc";
-$sudo = "/usr/bin/sudo";
-$tail = "/usr/bin/tail";
-$cut = "/usr/bin/cut";
-$tr = "/usr/bin/tr";
 
 if (!$num) {
-	$file_len = shell_exec("$sudo $wc -l $logfile | $cut -d \" \" -f 1 | $tr -d '\n' 2>/dev/null");
-	$logfile_lines = shell_exec("$sudo $tail -30 $logfile");
-	$logfile_lines_arr = preg_split('/\n/', trim($logfile_lines));
-	$ret_arr = array('count'=>$file_len,'loglines'=>$logfile_lines_arr);
-	echo json_encode($ret_arr);
+	$fileLen	= shell_exec("$sudo $wc -l $logfile | $cut -d \" \" -f 1 | $tr -d '\n' 2>/dev/null");
+	$logLines	= shell_exec("$sudo $tail -30 $logfile");
+	$logLineArr	= preg_split('/\n/', trim($logLines));
+	$dataArr = array('count'=>$fileLen, 'loglines'=>$logLineArr);
+	echo json_encode($dataArr);
 } else {
 	$nextline	= $num+1;
-	$safety_max = 115;
 	sleep(2);
 	$curr_len = shell_exec("$sudo $wc -l $logfile | $cut -d \" \" -f 1 | $tr -d '\n' 2>/dev/null");
 
-	if ($curr_len==$num) {
-		clearstatcache();
-		$ft = filectime($logfile);
-		$cft = $ft;
-		$safety = 0;
-		while ($cft==$ft  && $safety < $safety_max) {
-			clearstatcache();
+	if ($curr_len == $num) {
+		clearstatcache($logfile);
+		$logTimeStamp		= filectime($logfile);
+		$newTimeStamp	= $logTimeStamp;
+		$timeout	= 0;
+		while ($newTimeStamp == $logTimeStamp && $timeout < $maxWait) {
+			clearstatcache($logfile);
 			sleep(1);
-			clearstatcache();
-			$cft = filectime($logfile);
-			$safety++;
+			clearstatcache($logfile);
+			$newTimeStamp = filectime($logfile);
+			$timeout++;
 	 	}
 
-		if ($safety >= $safety_max){
-			$ret_arr = array('count'=>-1);
-			echo json_encode($ret_arr);
+		if ($timeout >= $maxWait){
+			$dataArr = array('count'=>-1);
+			echo json_encode($dataArr);
 			exit;
 		}
-		get_last_log_lines_from_pos($nextline);
+		getLastLog($nextline);
 		exit;
 	}
-	get_last_log_lines_from_pos($nextline);
+	getLastLog($nextline);
 }
 
-function get_last_log_lines_from_pos($pos) {
+function getLastLog($pos) {
 	global $sudo, $tail, $logfile, $wc, $cut, $tr;
-	$logfile_lines = shell_exec("$sudo $tail -n +$pos $logfile");
-	$logfile_lines_arr = preg_split('/\n/', trim($logfile_lines));
+	$logLines = shell_exec("$sudo $tail -n +$pos $logfile");
+	$logLineArr = preg_split('/\n/', trim($logLines));
 	$curr_len = shell_exec("$sudo $wc -l $logfile | $cut -d \" \" -f 1 | $tr -d '\n' 2>/dev/null");
-	$ret_arr = array('count'=>$curr_len,'loglines'=>$logfile_lines_arr);
-	echo json_encode($ret_arr);
+	$dataArr = array('count'=>$curr_len,'loglines'=>$logLineArr);
+	echo json_encode($dataArr);
 }
