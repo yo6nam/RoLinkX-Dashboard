@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.5
+*   RoLinkX Dashboard v0.6
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ $mobile = (preg_match('/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|
 if (in_array($page, $pages)) {
 	include __DIR__ . '/includes/forms.php';
 } else {
+	$config = include 'config.php';
 	include __DIR__ . '/includes/status.php';
 }
 
@@ -56,15 +57,15 @@ switch ($page) {
 	$htmlOutput = '<h2 class="m-2 mt-2 alert alert-success fw-bold">Status</h2>
 	<div class="card m-2">
 	<div class="card-body">';
-	$htmlOutput .= hostName();
-	$htmlOutput .= getUpTime();
-	$htmlOutput .= getCpuStats();
-	$htmlOutput .= networking();
-	$htmlOutput .= getSSID();
-	$htmlOutput .= getPublicIP();
-	$htmlOutput .= getSVXLinkStatus();
+	$htmlOutput .= ($config['cfgHostname'] == 'true') ? hostName() : NULL;
+	$htmlOutput .= ($config['cfgUptime'] == 'true') ? getUpTime() : NULL;
+	$htmlOutput .= ($config['cfgCpuStats'] == 'true') ? getCpuStats() : NULL;
+	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : NULL;
+	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : NULL;
+	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : NULL;
+	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? getSVXLinkStatus() : NULL;
 	$htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
-	$htmlOutput .= getCallSign() . PHP_EOL;
+	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : NULL;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="reboot" class="btn btn-danger btn-lg">Reboot OS</button>
 	<button id="rewifi" class="btn btn-info btn-lg">Restart Wi-Fi</button>
@@ -141,12 +142,12 @@ switch ($page) {
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
 			<div class="text-center p-2">
-v0.5 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+v0.6 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20210914"></script>
+        <script src="js/scripts.js?cb=20210921"></script>
     </body>
 </html>

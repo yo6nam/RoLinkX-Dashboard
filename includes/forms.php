@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.5
+*   RoLinkX Dashboard v0.6
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -35,16 +35,16 @@ function getSSIDs() {
 	if (empty($resultSSID)) return false;
 	foreach ($resultSSID[1] as $key => $ap) {
 		if ($key <= 2) {
-  			$storedSSID[] = $ap;
-  		}
+			  $storedSSID[] = $ap;
+		  }
 	}
 
 	preg_match_all('/psk="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultPWDS);
 	if (empty($resultPWDS)) return false;
 	foreach ($resultPWDS[1] as $key => $pw) {
 		if ($key <= 2) {
-  			$storedPwds[] = $pw;
-  		}
+			  $storedPwds[] = $pw;
+		  }
 	}
 
 	return array($storedSSID, $storedPwds);
@@ -62,14 +62,14 @@ function scanWifi($ext = 0) {
 		if (!isset($arrNetwork[4])) continue;
 		$ssid = trim($arrNetwork[4]);
 		if (empty($ssid) || preg_match('[\x00-\x1f\x7f\'\`\´\"]', $ssid)) {
-            continue;
-        }
-        $networks[$ssid]['ssid'] = $ssid;
+				continue;
+		  }
+		  $networks[$ssid]['ssid'] = $ssid;
 		$networks[$ssid] = array(
 				'rssi' => $arrNetwork[2],
-                'protocol' => authType($arrNetwork[3]),
-                'channel' => freqToChan($arrNetwork[1])
-            );
+					 'protocol' => authType($arrNetwork[3]),
+					 'channel' => freqToChan($arrNetwork[1])
+				);
 	}
 
 	if (!empty($networks)) {
@@ -77,13 +77,13 @@ function scanWifi($ext = 0) {
 		if ($ext != 1) {
 			$apList = '<div class="accordion mb-3" id="wifiNetworks">
 	<div class="accordion-item">
-    <h2 class="accordion-header" id="heading">
+	 <h2 class="accordion-header" id="heading">
 		<button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks</button>
-    </h2>
-    <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
+	 </h2>
+	 <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
 		<div id="updateList" class="accordion-body">';
-    	}
-      	$apList .= '<table class="table"><thead><tr>
+		 }
+			$apList .= '<table class="table"><thead><tr>
 			<th scope="col">#</th>
 			<th scope="col">SSID</th>
 			<th scope="col">RSSI</th>
@@ -118,39 +118,39 @@ function scanWifi($ext = 0) {
 }
 
 function authType($type) {
-    $options = array();
-    preg_match_all('/\[([^\]]+)\]/s', $type, $matches);
+	 $options = array();
+	 preg_match_all('/\[([^\]]+)\]/s', $type, $matches);
 
-    foreach ($matches[1] as $match) {
-        if (preg_match('/^(WPA\d?)/', $match, $protocol_match)) {
-            $protocol = $protocol_match[1];
-            $matchArr = explode('-', $match);
-            $options[] = htmlspecialchars($protocol, ENT_QUOTES);
-        }
-    }
+	 foreach ($matches[1] as $match) {
+		  if (preg_match('/^(WPA\d?)/', $match, $protocol_match)) {
+				$protocol = $protocol_match[1];
+				$matchArr = explode('-', $match);
+				$options[] = htmlspecialchars($protocol, ENT_QUOTES);
+		  }
+	 }
 
-    if (count($options) === 0) {
-        return 'Open';
-    } else {
-        return implode(' / ', $options);
-    }
+	 if (count($options) === 0) {
+		  return 'Open';
+	 } else {
+		  return implode(' / ', $options);
+	 }
 }
 
 function freqToChan($freq) {
-    if ($freq >= 2412 && $freq <= 2484) {
-        $channel = ($freq - 2407)/5;
-    } elseif ($freq >= 4915 && $freq <= 4980) {
-        $channel = ($freq - 4910)/5 + 182;
-    } elseif ($freq >= 5035 && $freq <= 5865) {
-        $channel = ($freq - 5030)/5 + 6;
-    } else {
-        $channel = -1;
-    }
-    if ($channel >= 1 && $channel <= 196) {
-        return $channel;
-    } else {
-        return 'Invalid Channel';
-    }
+	 if ($freq >= 2412 && $freq <= 2484) {
+		  $channel = ($freq - 2407)/5;
+	 } elseif ($freq >= 4915 && $freq <= 4980) {
+		  $channel = ($freq - 4910)/5 + 182;
+	 } elseif ($freq >= 5035 && $freq <= 5865) {
+		  $channel = ($freq - 5030)/5 + 6;
+	 } else {
+		  $channel = -1;
+	 }
+	 if ($channel >= 1 && $channel <= 196) {
+		  return $channel;
+	 } else {
+		  return 'Invalid Channel';
+	 }
 }
 
 function wifiForm() {
@@ -282,7 +282,7 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-3">
 		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
 		  <select id="svx_sid" class="form-select">
-		    <option value="0">Disabled</option>' . PHP_EOL;
+			 <option value="0">Disabled</option>' . PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($sid=5; $sid<=120; $sid+=5) {
 			$sel = ($sid == $varShortIdent[2]) ? ' selected' : NULL;
@@ -293,7 +293,7 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-3">
 		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
 		  <select id="svx_lid" class="form-select">
-		    <option value="0">Disabled</option>' . PHP_EOL;
+			 <option value="0">Disabled</option>' . PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($lid=5; $lid<=300; $lid+=5) {
 			$sel = ($lid == $varLongIdent[2]) ? ' selected' : NULL;
@@ -423,23 +423,23 @@ function sa818Form() {
 function logsForm() {
 	$logData = '<h2 class="mt-2 alert alert-dark fw-bold">Logs</h2>';
 	$logData .= '<div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-12">
-          <div class="card bg-light shadow border-0">
-            <div class="card-header bg-white">
-    			<img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
-    			<div id="log_selector">
+		<div class="row justify-content-center">
+		  <div class="col-lg-12">
+			 <div class="card bg-light shadow border-0">
+				<div class="card-header bg-white">
+				 <img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
+				 <div id="log_selector">
 					<select id="log">
 						<option value="" disabled>-Log file-</option>
 						<option value="1" selected>Syslog</option>
 						<option value="2">RoLink</option>
 					</select>
 				</div>
-            </div>
-            <div class="card-body px-lg-3 py-lg-2 scrolog">
-               <div class="small" id="log_data"></div>
+				</div>
+				<div class="card-body px-lg-3 py-lg-2 scrolog">
+					<div class="small" id="log_data"></div>
 			</div>
-          </div>
+			 </div>
 		</div>
 	</div>
 </div>';
@@ -449,27 +449,45 @@ function logsForm() {
 /* Config */
 function cfgForm() {
 	$config		= include 'config.php';
-	$txPin		= $config['cfgPttPin'];
-	$ttyPort	= $config['cfgTty'];
 	$pinsArray = array(2, 3, 7, 10, 18, 19);
 	$ttysArray = array(1, 2, 3);
+	$statusPageItems = array(
+		'cfgHostname' => 'Hostname',
+		'cfgUptime' => 'Uptime',
+		'cfgCpuStats' => 'CPU Stats',
+		'cfgNetworking' => 'Networking',
+		'cfgSsid' => 'Wi-Fi Info',
+		'cfgPublicIp' => 'External IP',
+		'cfgSvxStatus' => 'SVXLink Status',
+		'cfgCallsign' => 'Callsign'
+	);
 	$configData = '<h2 class="mt-2 alert alert-warning fw-bold">Configuration</h2>
-	<div class="form-floating mb-1">
+	<div class="card m-1">
+	<h4 class="m-2">Serial & GPIO</h4>
+	<div class="form-floating m-2">
 		<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
 	foreach ($pinsArray as $pin) {
-		$configData .= '<option value="'. $pin . '"' . ($pin == $txPin ? ' selected' : '') . '>'. $pin .'</option>' . PHP_EOL;
+		$configData .= '<option value="'. $pin . '"' . ($pin == $config['cfgPttPin'] ? ' selected' : '') . '>'. $pin .'</option>' . PHP_EOL;
 	}
 	$configData .= '</select>
 	<label for="cfgPttPin">GPIO Pin (PTT)</label>
 	</div>' . PHP_EOL;
-	$configData .= '<div class="form-floating mb-1">
+	$configData .= '<div class="form-floating m-2">
 			<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
 	foreach ($ttysArray as $tty) {
-		$configData .= '<option value="'. $tty . '"' . ($tty == $ttyPort ? ' selected' : '') . '>'. $tty .'</option>' . PHP_EOL;
+		$configData .= '<option value="'. $tty . '"' . ($tty == $config['cfgTty'] ? ' selected' : '') . '>'. $tty .'</option>' . PHP_EOL;
 	}
 	$configData .= '</select>
 	<label for="cfgTty">Serial Port (ttyS)</label>
 	</div>
+	<h4 class="m-2">Status page content</h4>' . PHP_EOL;
+	foreach ($statusPageItems as $cfgName => $cfgTitle) {
+		$configData .= '<div class="form-check m-2">
+			<input class="form-check-input" type="checkbox" id="'. $cfgName .'"'. ($config[$cfgName] == 'true' ? ' checked' : '') .'>
+			<label class="form-check-label" for="'. $cfgName .'">'. $cfgTitle .'</label>
+		</div>' . PHP_EOL;
+	}
+	$configData .= '</div>
 	<div class="d-flex justify-content-center mt-4">
 		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Salvează</button>
 	</div>' . PHP_EOL;
