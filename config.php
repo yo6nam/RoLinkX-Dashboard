@@ -11,5 +11,6 @@ return array (
   'cfgSvxStatus' => 'true',
   'cfgRefNodes' => 'true',
   'cfgCallsign' => 'true',
-  'version' => '20210922'
+  'cfgDTMF' => 'true',
+  'version' => '20210923',
 );

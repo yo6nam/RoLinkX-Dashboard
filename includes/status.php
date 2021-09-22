@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.7
+*   RoLinkX Dashboard v0.8
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -163,10 +163,13 @@ function getSVXLinkStatus($update = 0) {
 	exec("pgrep svxlink", $reply);
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	if ($update) return $result;
+	$config = include 'config.php';
+	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button>' : NULL;
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">SVXLink</span>
-  		<input id="svxStatus" type="text" class="form-control" placeholder="'. $result .'" readonly>
-	</div>';
+  		<input id="svxStatus" type="text" class="form-control" placeholder="'. $result .'" readonly>'
+  		. $dtmfTrigger .
+	'</div>';
 }
 
 /* Get Reflector address */
@@ -189,7 +192,7 @@ function getReflector($ext = 0) {
 				break;
 		}
 	}
-	$showNodes = ($config['cfgRefNodes'] == 'true' && $conStatus == 'established') ? ' collapsed dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#refStations" aria-expanded="false" aria-controls="refStations"' : '"';
+	$showNodes = ($config['cfgRefNodes'] == 'true' && $conStatus == 'established') ? ' collapsed dropdown-toggle" role="button" data-bs-toggle="collapse" data-bs-target="#refStations" aria-expanded="false" aria-controls="refStations"' : '"';
 	return '<div class="input-group mb-2">
   		<span class="input-group-text'. $showNodes .' style="width: 6.5rem;'. $stateColor .'">Reflector</span>
   		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
@@ -232,4 +235,29 @@ function getCallSign() {
 /* Version check */
 function getRemoteVersion() {
 	return 'ToDo...';
+}
+
+/* DTMF commands sender */
+function dtmfSender() {
+	return '<div class="modal fade" id="dtmfModal" tabindex="-1" aria-labelledby="dtmfModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="dtmfModalLabel">DTMF Sender</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="input-group flex-nowrap">
+					<span class="input-group-text" id="addon-wrapping">Command:</span>
+					<input type="tel" id="dtmfCommand" class="form-control" aria-label="Command" aria-describedby="addon-wrapping">
+				</div>
+				<div class="alert alert-success m-1" id="dtmfConsole" role="alert" style="display:none;"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				<button id="sendDTMF" type="button" class="btn btn-primary">Send</button>
+			</div>
+		</div>
+	</div>
+</div>' . PHP_EOL;
 }

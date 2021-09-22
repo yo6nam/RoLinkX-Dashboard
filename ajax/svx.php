@@ -45,6 +45,22 @@ $frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FIL
 $frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
+
+/* Process DTMF commands */
+if (isset($_POST['dtmfCommand'])) {
+	$dtmfCommand = (!empty($_POST['dtmfCommand'])) ? filter_input(INPUT_POST, 'dtmfCommand', FILTER_SANITIZE_STRING) : NULL;
+	if (!is_link('/tmp/dtmf')) {
+		echo "RoLink is not running!";
+		return false;
+	}
+	if (!empty($dtmfCommand)) {
+		shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /tmp/dtmf');
+		exec("/usr/bin/echo $dtmfCommand >/tmp/dtmf", $reply);
+		echo "<b>$dtmfCommand</b> executed!";
+	}
+	exit(0);
+}
+
 // Add file contents to buffer
 $oldCfg = file_get_contents($cfgFile);
 

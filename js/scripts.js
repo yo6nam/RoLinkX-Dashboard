@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.7
+*   RoLinkX Dashboard v0.8
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -439,7 +439,8 @@ $(document).ready(function() {
 					cfgNetworking: $('#cfgNetworking').prop('checked'),
 					cfgSvxStatus: $('#cfgSvxStatus').prop('checked'),
 					cfgRefNodes: $('#cfgRefNodes').prop('checked'),
-					cfgCallsign: $('#cfgCallsign').prop('checked')
+					cfgCallsign: $('#cfgCallsign').prop('checked'),
+					cfgDTMF: $('#cfgDTMF').prop('checked')
 			},
 			success: function(data) {
 				if(data) {
@@ -460,6 +461,26 @@ $(document).ready(function() {
       				setTimeout(function(){
       					location.reload(true);
       				}, 4000);
+      			}
+			}
+		});
+	});
+
+	// DTMF Sender
+	$("#sendDTMF").click(function() {
+		$('#sendDTMF').prop('disabled', true);
+		$('#sendDTMF').fadeTo("fast", 0.15);
+			setTimeout(function() {
+				$('#sendDTMF').prop('disabled', false);
+				$('#sendDTMF').fadeTo("fast", 1);
+			}, 500);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/svx.php",
+			data: {	dtmfCommand: $('#dtmfCommand').val() },
+			success: function(data) {
+				if(data) {
+					$("#dtmfConsole").fadeIn("fast").append(data + "<br/>");
       			}
 			}
 		});

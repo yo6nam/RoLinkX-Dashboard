@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.7
+*   RoLinkX Dashboard v0.8
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -75,6 +75,7 @@ switch ($page) {
 	</div>
 	</div>
 	</div>';
+	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : NULL;
 }
 ?>
 <!DOCTYPE html>
@@ -102,7 +103,7 @@ switch ($page) {
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
-        <link href="css/styles.css?cb=20210922" rel="stylesheet" />
+        <link href="css/styles.css?cb=20210923" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
@@ -143,12 +144,12 @@ switch ($page) {
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
 			<div class="text-center p-2">
-v0.7 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+v0.8 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20210921"></script>
+        <script src="js/scripts.js?cb=20210923"></script>
     </body>
 </html>

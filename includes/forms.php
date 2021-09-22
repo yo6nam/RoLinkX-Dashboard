@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.7
+*   RoLinkX Dashboard v0.8
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -460,7 +460,8 @@ function cfgForm() {
 		'cfgPublicIp' => 'External IP',
 		'cfgSvxStatus' => 'SVXLink Status',
 		'cfgRefNodes' => 'Connected nodes',
-		'cfgCallsign' => 'Callsign'
+		'cfgCallsign' => 'Callsign',
+		'cfgDTMF' => 'DTMF Sender'
 	);
 	$configData = '<h2 class="mt-2 alert alert-warning fw-bold">Configuration</h2>
 	<div class="card m-1">

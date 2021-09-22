@@ -24,3 +24,4 @@ www-data ALL=(ALL) NOPASSWD:/usr/bin/cp /tmp/wpa_supplicant.tmp /etc/wpa_supplic
 www-data ALL=(ALL) NOPASSWD:/usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf
 www-data ALL=(ALL) NOPASSWD:/usr/bin/cp /tmp/rolink.json.tmp /opt/rolink/conf/rolink.json
 www-data ALL=(ALL) NOPASSWD:/usr/bin/hostnamectl
+www-data ALL=(ALL) NOPASSWD:/usr/bin/chmod guo+rw /tmp/dtmf
