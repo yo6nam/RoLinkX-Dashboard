@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.6
+*   RoLinkX Dashboard v0.7
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -459,6 +459,7 @@ function cfgForm() {
 		'cfgSsid' => 'Wi-Fi Info',
 		'cfgPublicIp' => 'External IP',
 		'cfgSvxStatus' => 'SVXLink Status',
+		'cfgRefNodes' => 'Connected nodes',
 		'cfgCallsign' => 'Callsign'
 	);
 	$configData = '<h2 class="mt-2 alert alert-warning fw-bold">Configuration</h2>

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.5
+*   RoLinkX Dashboard v0.7
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -171,6 +171,8 @@ function getSVXLinkStatus($update = 0) {
 
 /* Get Reflector address */
 function getReflector() {
+	$config = include 'config.php';
+	$showNodes = ($config['cfgRefNodes'] == 'true') ? ' collapsed dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#refStations" aria-expanded="false" aria-controls="refStations"' : '"';
 	$conStatus = $stateColor = '';
 	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $reply);
 	preg_match_all('/(ERROR|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
@@ -189,9 +191,30 @@ function getReflector() {
 		}
 	}
 	return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;'. $stateColor .'">Reflector</span>
+  		<span class="input-group-text'. $showNodes .' style="width: 6.5rem;'. $stateColor .'">Reflector</span>
   		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
 	</div>';
+}
+
+/* Get Reflector connected nodes */
+function getRefNodes() {
+	if (getSVXLinkStatus(1) == 'Not running') return false;
+	$station = '<div id="refStations" class="accordion-collapse collapse">
+		<div class="accordion-body">';
+	preg_match('/Connected nodes:\s(.*)/', file_get_contents('/tmp/svxlink.log'), $reply);
+	if (empty($reply)) return false;
+	$nodes = explode(', ', $reply[1]);
+	if (is_array($nodes)) {
+		natsort($nodes);
+		foreach ($nodes as $node) {
+			$typeBackground = 'danger';
+			if (strpos($node, '-P') !== false) $typeBackground = 'primary';
+			if (strpos($node, '-M') !== false) $typeBackground = 'warning';
+			$station .= '<span class="badge badge-'. $typeBackground .' m-1" style="font-weight: 400;">'. $node .'</span>' . PHP_EOL;
+		}
+	}
+	$station .= '</div></div>';
+	return $station;
 }
 
 /* Get SVX Callsign	*/

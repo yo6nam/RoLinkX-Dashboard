@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.6
+*   RoLinkX Dashboard v0.7
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : NULL;
 	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? getSVXLinkStatus() : NULL;
 	$htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
+	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : NULL;
 	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : NULL;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="reboot" class="btn btn-danger btn-lg">Reboot OS</button>
@@ -101,14 +102,14 @@ switch ($page) {
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
-        <link href="css/styles.css" rel="stylesheet" />
+        <link href="css/styles.css?cb=20210922" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
 	<body>
 		<div class="d-flex" id="wrapper">
             <div class="border-end bg-white" id="sidebar-wrapper">
-                <div class="sidebar-heading border-bottom bg-light fw-bold">RoLinkX Dashboard</div>
+                <div class="sidebar-heading border-bottom bg-light fw-bold"><i class="icon-dashboard" style="font-size:26px;color:purple;vertical-align: middle;padding: 0 4px 4px 0;"></i>RoLinkX Dashboard</div>
                 <div class="list-group list-group-flush">
 					<a class="<?php echo ($page == '') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./">Status</a>
 					<a class="<?php echo ($page == 'wifi') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=wifi">WiFi</a>
@@ -142,7 +143,7 @@ switch ($page) {
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
 			<div class="text-center p-2">
-v0.6 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+v0.7 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>
         <script src="js/jquery.js"></script>

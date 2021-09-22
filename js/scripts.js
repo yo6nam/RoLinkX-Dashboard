@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.6
+*   RoLinkX Dashboard v0.7
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -438,6 +438,7 @@ $(document).ready(function() {
 					cfgSsid: $('#cfgSsid').prop('checked'),
 					cfgNetworking: $('#cfgNetworking').prop('checked'),
 					cfgSvxStatus: $('#cfgSvxStatus').prop('checked'),
+					cfgRefNodes: $('#cfgRefNodes').prop('checked'),
 					cfgCallsign: $('#cfgCallsign').prop('checked')
 			},
 			success: function(data) {

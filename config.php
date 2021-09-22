@@ -9,6 +9,7 @@ return array (
   'cfgSsid' => 'true',
   'cfgNetworking' => 'true',
   'cfgSvxStatus' => 'true',
+  'cfgRefNodes' => 'true',
   'cfgCallsign' => 'true',
-  'version' => '20210921',
+  'version' => '20210922'
 );
