@@ -4,11 +4,13 @@
 Purpose : Make your life easier<br>
 Development : beta<br>
 Features :
-- System overview
+- System overview (Uptime / CPU Stats / Networking)
 - System control (Reboot / Wi-Fi / SVXLink)
 - Wi-Fi network manager & scanner
 - SVXLink (RoLink) client configuration editor (with profiles)
+- DTMF Sender (commands to control SVXLink status/TGs/etc.)
 - SA818(S)V/U programming
+- Display stations connected to current reflector
 - Display logs (Syslog or SVXLink) in real time
 
 Requirements (hardware):<br>
@@ -19,6 +21,8 @@ Requirements (software):<br>
 - Armbian Buster / Bullseye (mainline based kernel 5.10.y)
 - lighttpd & php-cgi
 - SVXLink compiled as RoLink *(see below how to install it)*
+
+## How to install RoLink
 ```
 bash <(curl -s https://svx.439100.ro/install.sh)
 ```
@@ -32,7 +36,17 @@ Or, single line :
 ```
 git clone https://github.com/yo6nam/RoLinkX-Dashboard;cd RoLinkX-Dashboard/;sudo ./setup.sh
 ```
- 
+
+Or, using RoLink init script:
+```
+/opt/rolink/scripts/init dash
+```
+## How to update
+Execute the installation steps again, or if you kept the cloned folder, navigate to it and use
+```
+git pull;sudo ./setup.sh
+```
+
  Some basic checks and automagic mods are applied by the setup script but please note that<br>
  "Network Manager **WILL BE** disabled"  
  
