@@ -482,14 +482,16 @@ function cfgForm() {
 	$configData .= '</select>
 	<label for="cfgTty">Serial Port (ttyS)</label>
 	</div>
-	<h4 class="m-2">Status page content</h4>' . PHP_EOL;
+	<h4 class="m-2">Status page content</h4>
+	<div class="row form-floating m-2">' . PHP_EOL;
 	foreach ($statusPageItems as $cfgName => $cfgTitle) {
-		$configData .= '<div class="form-check m-2">
+		$configData .= '<div class="form-check col col-lg-2 m-3">
 			<input class="form-check-input" type="checkbox" id="'. $cfgName .'"'. ($config[$cfgName] == 'true' ? ' checked' : '') .'>
 			<label class="form-check-label" for="'. $cfgName .'">'. $cfgTitle .'</label>
 		</div>' . PHP_EOL;
 	}
 	$configData .= '</div>
+	</div>
 	<div class="d-flex justify-content-center mt-4">
 		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Salvează</button>
 	</div>' . PHP_EOL;
