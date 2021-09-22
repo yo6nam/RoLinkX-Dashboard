@@ -23,7 +23,7 @@
 */
 
 if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(1);
-if (isset($_GET['svxReflector'])) echo getReflector();
+if (isset($_GET['svxReflector'])) echo getReflector(1);
 
 /* Get IP(s) */
 function networking() {
@@ -170,9 +170,8 @@ function getSVXLinkStatus($update = 0) {
 }
 
 /* Get Reflector address */
-function getReflector() {
-	$config = include 'config.php';
-	$showNodes = ($config['cfgRefNodes'] == 'true') ? ' collapsed dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#refStations" aria-expanded="false" aria-controls="refStations"' : '"';
+function getReflector($ext = 0) {
+	$config = ($ext == 0) ? include 'config.php' : include '../config.php';
 	$conStatus = $stateColor = '';
 	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $reply);
 	preg_match_all('/(ERROR|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
@@ -190,6 +189,7 @@ function getReflector() {
 				break;
 		}
 	}
+	$showNodes = ($config['cfgRefNodes'] == 'true' && $conStatus == 'established') ? ' collapsed dropdown-toggle" data-bs-toggle="collapse" data-bs-target="#refStations" aria-expanded="false" aria-controls="refStations"' : '"';
 	return '<div class="input-group mb-2">
   		<span class="input-group-text'. $showNodes .' style="width: 6.5rem;'. $stateColor .'">Reflector</span>
   		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
