@@ -200,7 +200,8 @@ function getReflector($ext = 0) {
 function getRefNodes() {
 	if (getSVXLinkStatus(1) == 'Not running') return false;
 	$station = '<div id="refStations" class="accordion-collapse collapse">
-		<div class="accordion-body">';
+		<div class="accordion-body">
+			<div class="row">'. PHP_EOL;
 	preg_match('/Connected nodes:\s(.*)/', file_get_contents('/tmp/svxlink.log'), $reply);
 	if (empty($reply)) return false;
 	$nodes = explode(', ', $reply[1]);
@@ -210,10 +211,12 @@ function getRefNodes() {
 			$typeBackground = 'danger';
 			if (strpos($node, '-P') !== false) $typeBackground = 'primary';
 			if (strpos($node, '-M') !== false) $typeBackground = 'warning';
-			$station .= '<span class="badge badge-'. $typeBackground .' m-1" style="font-weight: 400;">'. $node .'</span>' . PHP_EOL;
+			$station .= '<div class="col col-lg-2 badge badge-'. $typeBackground .' m-1" style="font-weight: 400;">'. $node .'</div>' . PHP_EOL;
 		}
 	}
-	$station .= '</div></div>';
+	$station .= '</div>
+	</div>
+	</div>'. PHP_EOL;
 	return $station;
 }
 
