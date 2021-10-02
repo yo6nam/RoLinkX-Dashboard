@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.8a
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ function restartSVXLink() {
 }
 
 /* Restart Wi-Fi */
-if ($rewifi == 1) echo wifiRestart();
+if ($rewifi == 1) wifiRestart();
 function wifiRestart() {
 	exec("/usr/bin/sudo /sbin/wpa_cli -i wlan0 reconfigure");
 	/* Reserved for future version
@@ -79,7 +79,10 @@ function wifiRestart() {
 /* Power Off System */
 if ($halt == 1) sysHalt();
 function sysHalt() {
-	exec("/usr/bin/sudo /usr/sbin/halt -p");
+	/* If stuck in TX, force exit */
+	$config = include '../config.php';
+	$pinPath = '/sys/class/gpio/gpio'. $config['cfgPttPin'] .'/value';
+	shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw '. $pinPath .'; /usr/bin/echo 0 > '. $pinPath .';/usr/bin/sudo /usr/sbin/halt -p');
 	exit(0);
 }
 
