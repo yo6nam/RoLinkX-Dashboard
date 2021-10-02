@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.6
+*   RoLinkX Dashboard v0.8
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 * System reporting / actions module
 */
 
+$halt				= (isset($_POST['halt'])) ? filter_input(INPUT_POST, 'halt', FILTER_SANITIZE_NUMBER_INT) : '';
 $reboot				= (isset($_POST['reboot'])) ? filter_input(INPUT_POST, 'reboot', FILTER_SANITIZE_NUMBER_INT) : '';
 $rewifi				= (isset($_POST['rewifi'])) ? filter_input(INPUT_POST, 'rewifi', FILTER_SANITIZE_NUMBER_INT) : '';
 $resvx				= (isset($_POST['resvx'])) ? filter_input(INPUT_POST, 'resvx', FILTER_SANITIZE_NUMBER_INT) : '';
@@ -72,6 +73,13 @@ function wifiRestart() {
 	$result = (empty($reply)) ? 'Command failed' : json_encode($reply);
 	return $result;
 	*/
+	exit(0);
+}
+
+/* Power Off System */
+if ($halt == 1) sysHalt();
+function sysHalt() {
+	exec("/usr/bin/sudo /usr/sbin/halt -p");
 	exit(0);
 }
 

@@ -68,7 +68,8 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : NULL;
 	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : NULL;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
-	<button id="reboot" class="btn btn-danger btn-lg">Reboot OS</button>
+	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
+	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
 	<button id="rewifi" class="btn btn-info btn-lg">Restart Wi-Fi</button>
 	<button id="resvx" class="btn btn-warning btn-lg">'. $svxAction .' RoLink</button>
 	<button id="endsvx" class="btn btn-dark btn-lg">Stop RoLink</button>
@@ -103,7 +104,7 @@ switch ($page) {
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
-        <link href="css/styles.css?cb=20210923" rel="stylesheet" />
+        <link href="css/styles.css?cb=20211002" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
@@ -150,6 +151,6 @@ v0.8 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Ra
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20210923"></script>
+        <script src="js/scripts.js?cb=20211002"></script>
     </body>
 </html>

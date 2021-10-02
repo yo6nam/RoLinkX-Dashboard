@@ -1,5 +1,5 @@
 #!/bin/bash
-# RoLinkX Dashboard v0.6
+# RoLinkX Dashboard v0.8
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"

@@ -1,5 +1,6 @@
 www-data ALL=(ALL) NOPASSWD:/sbin/ifup
 www-data ALL=(ALL) NOPASSWD:/sbin/reboot
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/halt
 www-data ALL=(ALL) NOPASSWD:/sbin/ifdown
 www-data ALL=(ALL) NOPASSWD:/usr/bin/tail * /var/log/syslog
 www-data ALL=(ALL) NOPASSWD:/usr/bin/tail * /tmp/svxlink.log

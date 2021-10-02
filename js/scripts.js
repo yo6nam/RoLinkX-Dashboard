@@ -256,6 +256,17 @@ $(document).ready(function() {
 
 	/* System functions*/
 	
+	// Power Off OS
+	$("#halt").click(function() {
+		$('#halt').prop('disabled', true);
+		$('#halt').fadeTo("fast", 0.15);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/sys.php",
+			data: {	halt: 1 }
+		});
+	});
+	
 	// Reboot OS
 	$("#reboot").click(function() {
 		$('#reboot').prop('disabled', true);
