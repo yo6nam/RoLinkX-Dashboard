@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -57,16 +57,16 @@ switch ($page) {
 	$htmlOutput = '<h2 class="m-2 mt-2 alert alert-success fw-bold">Status</h2>
 	<div class="card m-2">
 	<div class="card-body">';
-	$htmlOutput .= ($config['cfgHostname'] == 'true') ? hostName() : NULL;
-	$htmlOutput .= ($config['cfgUptime'] == 'true') ? getUpTime() : NULL;
-	$htmlOutput .= ($config['cfgCpuStats'] == 'true') ? getCpuStats() : NULL;
-	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : NULL;
-	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : NULL;
-	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : NULL;
-	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? getSVXLinkStatus() : NULL;
+	$htmlOutput .= ($config['cfgHostname'] == 'true') ? hostName() : null;
+	$htmlOutput .= ($config['cfgUptime'] == 'true') ? getUpTime() : null;
+	$htmlOutput .= ($config['cfgCpuStats'] == 'true') ? getCpuStats() : null;
+	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
+	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
+	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
+	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? getSVXLinkStatus() : null;
 	$htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
-	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : NULL;
-	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : NULL;
+	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
+	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : null;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
 	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
@@ -76,7 +76,7 @@ switch ($page) {
 	</div>
 	</div>
 	</div>';
-	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : NULL;
+	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
 }
 ?>
 <!DOCTYPE html>
@@ -145,7 +145,7 @@ switch ($page) {
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
 			<div class="text-center p-2">
-v0.8 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+v0.9 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>
         <script src="js/jquery.js"></script>

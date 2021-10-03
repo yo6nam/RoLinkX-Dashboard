@@ -27,7 +27,7 @@ $newFile		= '/tmp/rolink.conf.tmp';
 $profilesPath	= dirname(__FILE__) . '/../profiles/';
 $newProfile		= false;
 $changes		= 0;
-$msgOut			= NULL;
+$msgOut			= null;
 $oldVar = $newVar = $profiles = array();
 
 // Retrieve GET vars
@@ -45,10 +45,9 @@ $frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FIL
 $frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
-
 /* Process DTMF commands */
 if (isset($_POST['dtmfCommand'])) {
-	$dtmfCommand = (!empty($_POST['dtmfCommand'])) ? filter_input(INPUT_POST, 'dtmfCommand', FILTER_SANITIZE_STRING) : NULL;
+	$dtmfCommand = (!empty($_POST['dtmfCommand'])) ? filter_input(INPUT_POST, 'dtmfCommand', FILTER_SANITIZE_STRING) : null;
 	if (!is_link('/tmp/dtmf')) {
 		echo "RoLink is not running!";
 		return false;

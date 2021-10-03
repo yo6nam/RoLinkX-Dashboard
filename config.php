@@ -12,5 +12,5 @@ return array (
   'cfgRefNodes' => 'true',
   'cfgCallsign' => 'true',
   'cfgDTMF' => 'true',
-  'version' => '20210923',
+  'version' => '20211003',
 );

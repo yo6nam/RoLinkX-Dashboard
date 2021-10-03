@@ -51,7 +51,7 @@ function getSSIDs() {
 }
 
 function scanWifi($ext = 0) {
-	$apList = NULL;
+	$apList = null;
 	exec('sudo wpa_cli -i wlan0 scan');
 	exec('sudo wpa_cli -i wlan0 scan_results', $reply);
 	if (empty($reply)) return;
@@ -212,7 +212,7 @@ function wifiForm() {
 
 /* SVXLink form */
 function svxForm() {
-	$profileOption = NULL;
+	$profileOption = null;
 
 	/* Get current variables */
 	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
@@ -285,7 +285,7 @@ function svxForm() {
 			 <option value="0">Disabled</option>' . PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($sid=5; $sid<=120; $sid+=5) {
-			$sel = ($sid == $varShortIdent[2]) ? ' selected' : NULL;
+			$sel = ($sid == $varShortIdent[2]) ? ' selected' : null;
 			$svxForm .= '<option value="'. $sid .'"' . $sel .'>'. $sid .' minute</option>' . PHP_EOL;
 		}
 	$svxForm .= '</select>
@@ -296,7 +296,7 @@ function svxForm() {
 			 <option value="0">Disabled</option>' . PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($lid=5; $lid<=300; $lid+=5) {
-			$sel = ($lid == $varLongIdent[2]) ? ' selected' : NULL;
+			$sel = ($lid == $varLongIdent[2]) ? ' selected' : null;
 			$svxForm .= '<option value="'. $lid .'"' . $sel .'>'. $lid .' minute</option>' . PHP_EOL;
 		}
 
@@ -308,8 +308,8 @@ function svxForm() {
 		if (isset($varCodecBitRate[2])) {
 			/* Generate codec bitrates */
 			for ($cbr=8000; $cbr<=32000; $cbr+=2000) {
-				$sel = ($cbr == $varCodecBitRate[2]) ? ' selected' : NULL;
-				$cbrSuffix = ($cbr == 20000) ? '(default)' : NULL;
+				$sel = ($cbr == $varCodecBitRate[2]) ? ' selected' : null;
+				$cbrSuffix = ($cbr == 20000) ? '(default)' : null;
 				$svxForm .= '<option value="'. $cbr .'"' . $sel .'>'. $cbr / 1000 .' kb/s '. $cbrSuffix .'</option>' . PHP_EOL;
 			}
 		} else {

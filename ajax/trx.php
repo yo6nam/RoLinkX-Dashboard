@@ -71,7 +71,7 @@ include __DIR__ . "/../includes/php_serial.class.php";
 /* Stop SVXLink service before attempting anything */
 shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
 
-/* If stuck in TX, exit */
+/* If stuck in TX, force exit */
 shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw '. $pinPath);
 shell_exec('/usr/bin/cat '. $pinPath .' | grep 1 && /usr/bin/echo 0 > '. $pinPath);
 

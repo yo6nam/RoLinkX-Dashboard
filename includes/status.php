@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -205,9 +205,10 @@ function getRefNodes() {
 	$station = '<div id="refStations" class="accordion-collapse collapse">
 		<div class="accordion-body">
 			<div class="row">'. PHP_EOL;
-	preg_match('/Connected nodes:\s(.*)/', file_get_contents('/tmp/svxlink.log'), $reply);
-	if (empty($reply)) return false;
-	$nodes = explode(', ', $reply[1]);
+	preg_match_all('/Connected nodes:\s(.*)/', file_get_contents('/tmp/svxlink.log'), $connectedNodes, PREG_SET_ORDER);
+	$lastMatch = end($connectedNodes)[1];
+	if (empty($connectedNodes)) return false;
+	$nodes = explode(', ', $lastMatch);
 	if (is_array($nodes)) {
 		natsort($nodes);
 		foreach ($nodes as $node) {
@@ -254,8 +255,12 @@ function dtmfSender() {
 				<div class="alert alert-success m-1" id="dtmfConsole" role="alert" style="display:none;"></div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				<button id="sendDTMF" type="button" class="btn btn-primary">Send</button>
+				<div class="col">
+					<button id="sendDTMF_EnableLink" type="button" class="btn btn-info mb-1" value="551#">Enable &#128279;</button>
+					<button id="sendDTMF_DisableLink" type="button" class="btn btn-info mb-1" value="55#">Disable &#128279;</button>
+					<button id="sendDTMF_TG226" type="button" class="btn btn-info mb-1" value="551226#">TG#226</button>
+				</div>
+				<button id="sendDTMF" type="button" class="btn btn-danger btn-lg">Send</button>
 			</div>
 		</div>
 	</div>

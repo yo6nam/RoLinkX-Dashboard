@@ -24,7 +24,7 @@
 
 header("Cache-Control: no-cache");
 $num 		= (isset($_GET['n'])) ? filter_input(INPUT_GET, 'n', FILTER_SANITIZE_NUMBER_INT) : 0;
-$logFile	= (!empty($_GET['t'])) ? filter_input(INPUT_GET, 't', FILTER_SANITIZE_NUMBER_INT) : NULL;
+$logFile	= (!empty($_GET['t'])) ? filter_input(INPUT_GET, 't', FILTER_SANITIZE_NUMBER_INT) : null;
 $maxWait	= 115;
 $wc			= "/usr/bin/wc";
 $sudo		= "/usr/bin/sudo";

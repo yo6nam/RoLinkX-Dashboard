@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -478,17 +478,25 @@ $(document).ready(function() {
 	});
 
 	// DTMF Sender
-	$("#sendDTMF").click(function() {
-		$('#sendDTMF').prop('disabled', true);
-		$('#sendDTMF').fadeTo("fast", 0.15);
+	 $('button[id^="sendDTMF"]').click(function() {
+	 	var bcID	= $(this).attr("id");
+	 	var bcIDVal	= $(this).attr("value");
+		$('#' + bcID).prop('disabled', true);
+		$('#' + bcID).fadeTo("fast", 0.15);
 			setTimeout(function() {
-				$('#sendDTMF').prop('disabled', false);
-				$('#sendDTMF').fadeTo("fast", 1);
+				$('#' + bcID).prop('disabled', false);
+				$('#' + bcID).fadeTo("fast", 1);
 			}, 500);
+		if (bcIDVal != undefined) {
+			var dtmfData = bcIDVal;
+		} else {
+			var dtmfData = $('#dtmfCommand').val();
+		}
+		if (!dtmfData) return;
 		$.ajax({
 			type: 'POST',
 			url: "ajax/svx.php",
-			data: {	dtmfCommand: $('#dtmfCommand').val() },
+			data: {	dtmfCommand: dtmfData },
 			success: function(data) {
 				if(data) {
 					$("#dtmfConsole").fadeIn("fast").append(data + "<br/>");
