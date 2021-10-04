@@ -144,7 +144,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center p-2">
+			<div class="text-center small p-2">
 v0.9 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>

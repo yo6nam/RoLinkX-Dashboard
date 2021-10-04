@@ -65,7 +65,7 @@ function restartSVXLink() {
 }
 
 /* Restart Wi-Fi */
-if ($rewifi == 1) wifiRestart();
+if ($rewifi == 1) echo wifiRestart();
 function wifiRestart() {
 	exec("/usr/bin/sudo /sbin/wpa_cli -i wlan0 reconfigure");
 	/* Reserved for future version
@@ -73,7 +73,7 @@ function wifiRestart() {
 	$result = (empty($reply)) ? 'Command failed' : json_encode($reply);
 	return $result;
 	*/
-	exit(0);
+	return true;
 }
 
 /* Power Off System */
