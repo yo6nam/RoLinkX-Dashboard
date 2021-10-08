@@ -42,9 +42,9 @@ Or, using RoLink init script:
 /opt/rolink/scripts/init dash
 ```
 ## How to update
-Execute the installation steps again, or if you kept the cloned folder, navigate to it and use
+Execute the installation steps again, or if you kept the cloned folder, navigate to it (usually it's in %home% directory) and use
 ```
-git pull;sudo ./setup.sh
+cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 ```
 
  Some basic checks and automagic mods are applied by the setup script but please note that<br>
