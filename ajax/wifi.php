@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -118,7 +118,7 @@ if (!empty($networkC)) {
 if ($weHaveData) {
 	file_put_contents($wpaTemp, $wpaData);
 	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");
-	echo 'New data stored. Restart Wi-Fi now.';
+	echo 'New data stored.<br/>Reboot the system to apply changes!';
 } else {
 	echo 'No new data, so nothing changed';
 }
