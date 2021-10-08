@@ -19,7 +19,7 @@
 */
 
 /*
-* Wi-Fi controll module
+* Wi-Fi management module
 */
 
 $wpaFile = '/etc/wpa_supplicant/wpa_supplicant.conf';
@@ -65,7 +65,7 @@ $authKeyA	= (empty($ssidList[1][0])) ? '' : $ssidList[1][0];
 $authKeyB	= (empty($ssidList[1][1])) ? '' : $ssidList[1][1];
 $authKeyC	= (empty($ssidList[1][2])) ? '' : $ssidList[1][2];
 
-/* Check for data */
+/* Check for user input data */
 if ($wnA || $wnB || $wnC || $wkA || $wkB || $wkC) $weHaveData = true;
 
 /* Networks */
@@ -78,7 +78,7 @@ if ($wkB && $wkB != $authKeyB) $authKeyB = $wkB;
 if ($wkC && $wkC != $authKeyC) $authKeyC = $wkC;
 
 /* Delete networks if supplied with '-' character */
-if ($wnA == '-') $networkA = ''; $weHaveData = true;
+if ($wnA == '-') $networkA = '';
 if ($wnB == '-') $networkB = '';
 if ($wnC == '-') $networkC = '';
 
