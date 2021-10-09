@@ -8,7 +8,7 @@ Features :
 - System control (Reboot / Wi-Fi / SVXLink)
 - Wi-Fi network manager & scanner
 - SVXLink (RoLink) client configuration editor (with profiles)
-- DTMF Sender (commands to control SVXLink status/TGs/etc.)
+- DTMF Sender (commands to control SVXLink status / TGs / etc.)
 - SA818(S)V/U programming
 - Display stations connected to current reflector
 - Display logs (Syslog or SVXLink) in real time
@@ -55,7 +55,13 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
  
  You should be greeted with something like this
  
- ![](https://i.imgur.com/1kBJidR.png) 
+ Desktop             |  Mobile
+:-------------------------:|:-------------------------:
+ ![](https://i.imgur.com/bO3lCaV.png) | ![](https://i.imgur.com/p5vm9OB.png)
+ 
+ Page previews
+ :---:
+ ![](https://i.imgur.com/en9bU1D.gif)
  
  On a fresh OS (Armbian Buster) install, you will need to reboot about three times
  1. After installing the RoLink client (custom precompiled SVXLink) & if the sound card is not configured
