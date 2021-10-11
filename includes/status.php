@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9
+*   RoLinkX Dashboard v0.9a
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,8 @@ function getCpuStats() {
 	$avgLoad = (is_null($cpuLoad)) ? 'N/A' : number_format($cpuLoad, 2) . "%";
 	exec("cat /etc/armbianmonitor/datasources/soctemp", $reply);
 	if ($reply != 0) {
-    	$cpuTempVal = substr($reply[0], 0, -3);
+		$tempOffset = 28;
+    	$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
     	$cpuTemp = $cpuTempVal . '&deg;C';
     	$tempWarning = ($cpuTempVal > 50) ? 'bg-warning text-dark' : '';
     	return '<div class="input-group mb-2">
