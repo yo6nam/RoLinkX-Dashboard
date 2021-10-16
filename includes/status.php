@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9a
+*   RoLinkX Dashboard v0.9b
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -176,11 +176,13 @@ function getSVXLinkStatus($update = 0) {
 /* Get Reflector address */
 function getReflector($ext = 0) {
 	$config = ($ext == 0) ? include 'config.php' : include '../config.php';
-	$conStatus = $stateColor = '';
+	$conStatus = $stateColor = $prevStatus = '';
 	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $reply);
-	preg_match_all('/(ERROR|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
+	$refHost = (!empty($reply)) ? $reply[1] : 'Not available';
+	preg_match_all('/(Could not open GPIO|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
 	if (!empty($logData) && getSVXLinkStatus(1) != 'Not running') {
-		$conStatus = $logData[0][array_key_last($logData[0])];
+		$prevStatus = (count($logData) > 1) ? $logData[0][array_key_last($logData[0]) - 1] : null;
+		$conStatus	= ($prevStatus == 'Could not open GPIO') ? 'GPIO' : $logData[0][array_key_last($logData[0])];
 		switch ($conStatus) {
 			case "established":
 				$stateColor = 'background:lightgreen;';
@@ -188,15 +190,16 @@ function getReflector($ext = 0) {
 			case "Disconnected":
 				$stateColor = 'background:tomato;';
 				break;
-			case "ERROR":
+			case "GPIO":
 				$stateColor = 'background:red;';
+				$refHost 	= 'Check your GPIO!';
 				break;
 		}
 	}
 	$showNodes = ($config['cfgRefNodes'] == 'true' && $conStatus == 'established') ? ' collapsed dropdown-toggle" role="button" data-bs-toggle="collapse" data-bs-target="#refStations" aria-expanded="false" aria-controls="refStations"' : '"';
 	return '<div class="input-group mb-2">
   		<span class="input-group-text'. $showNodes .' style="width: 6.5rem;'. $stateColor .'">Reflector</span>
-  		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
+  		<input type="text" class="form-control" placeholder="'. $refHost .'" readonly>
 	</div>';
 }
 
