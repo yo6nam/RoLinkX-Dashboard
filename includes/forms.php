@@ -23,6 +23,7 @@
 * Note : Some code borrowed from https://github.com/RaspAP/raspap-webgui
 */
 
+/* ToDo : Add GPIO selection for SVXLink configuration */
 
 if (isset($_GET['scan'])) echo scanWifi(1);
 
@@ -449,8 +450,8 @@ function logsForm() {
 /* Config */
 function cfgForm() {
 	$config		= include 'config.php';
-	$pinsArray = array(2, 3, 7, 10, 18, 19);
-	$ttysArray = array(1, 2, 3);
+	$pinsArray	= array(2, 3, 6, 7, 10, 18, 19);
+	$ttysArray	= array(1, 2, 3);
 	$statusPageItems = array(
 		'cfgHostname' => 'Hostname',
 		'cfgUptime' => 'Uptime',
