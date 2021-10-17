@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9c
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,12 @@ $nfoParam['shift'] = '';
 $nfoParam['tip'] = 'nod portabil';
 $nfoParam['tx_frq'] = sprintf("%0.3f", $grp);
 $nfoParam['tg'] = 226;
+
+if (empty($grp) && empty($vol) && empty($flt)) {
+	sleep(2);
+	echo 'Not enough data to write!<br/>Check your parameters';
+	return;
+}
 
 if (!empty($grp)) {
 	$nfoParams = json_encode($nfoParam, JSON_PRETTY_PRINT);

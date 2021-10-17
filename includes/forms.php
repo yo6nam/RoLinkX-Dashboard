@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9c
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,10 @@
 * Note : Some code borrowed from https://github.com/RaspAP/raspap-webgui
 */
 
-/* ToDo : Add GPIO selection for SVXLink configuration */
+/* ToDo :
+- Add GPIO selection for SVXLink configuration
+- Remember last SA818 programming parameters
+*/
 
 if (isset($_GET['scan'])) echo scanWifi(1);
 
@@ -382,7 +385,7 @@ function sa818Form() {
 				<option selected disabled>Selectează o valoare</option>';
 					/* Generate squelch values */
 					for ($sq=1; $sq<=8; $sq+=1) {
-						$selected = ($sq == 5) ? ' selected' : '';
+						$selected = ($sq == 4) ? ' selected' : '';
 						$sa818Form .= '<option value="'. $sq . '"'. $selected .'>'. $sq .'</option>' . PHP_EOL;
 					}
 	$sa818Form .= '</select>
@@ -390,19 +393,18 @@ function sa818Form() {
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_vol" class="form-select" aria-label="Volum">
-				<option value="">Default</option>';
+				<option value="" selected>No change</option>';
 					/* Generate volume values */
 					for ($vol=1; $vol<=8; $vol+=1) {
-						$selected = ($vol == 2) ? ' selected' : '';
-						$sa818Form .= '<option value="'. $vol . '"'. $selected .'>'. $vol .'</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. $vol . '">'. $vol .'</option>' . PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_vol">Volum</label>
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_flt" class="form-select" aria-label="Filtre">
-				<option value="">Default</option>
-				<option value="0,0,0" selected>Bypass All</option>
+				<option value="" selected>No change</option>
+				<option value="0,0,0">Bypass All</option>
 				<option value="1,0,0">Enable Pre/De-Emphasis</option>
 				<option value="0,1,0">Enable High Pass</option>
 				<option value="0,0,1">Enable Low Pass</option>
