@@ -83,7 +83,7 @@ class phpSerial
                     $device = "/dev/ttyS" . ($matches[1] - 1);
                 }
 
-                if ($this->_exec("stty -F " . $device . " cs8 9600 ignbrk -brkint -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts") === 0) {
+                if ($this->_exec("stty -F " . $device . " 9600 -icrnl -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke") === 0) {
                     $this->_device = $device;
                     $this->_dState = SERIAL_DEVICE_SET;
 

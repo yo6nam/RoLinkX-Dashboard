@@ -100,11 +100,12 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 	$serial = new phpSerial;
 	$serial->deviceSet("/dev/ttyS" . $tty);
 	$serial->deviceOpen('w+');
-	stream_set_timeout($serial->_dHandle, 10);
+	stream_set_timeout($serial->_dHandle, 6);
 	/* Connect to device */
 	$serial->sendMessage("AT+DMOCONNECT\r\n", 1);
 	$cstatus = trim($serial->readPort());
 	if ($cstatus != "+DMOCONNECT:0") {
+		$serial->deviceClose();
 		return 'Could not connect to serial device';
 	}
 	/* Process command */
