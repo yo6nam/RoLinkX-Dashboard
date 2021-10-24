@@ -69,7 +69,10 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
  3. After saving your first pair of SSID/Key using the Wi-Fi page
 
 # Notes
-If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
+1. On SA818_V5.x FW version (check with AT+VERSION command) the serial port will only work on a cold boot
+and stop responding after a reboot. A cause/fix remains to be determined.  
+
+2. If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
 ```
 sudo chmod -R guo+rw /var/log/lighttpd
 ```
