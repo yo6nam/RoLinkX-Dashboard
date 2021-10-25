@@ -98,9 +98,10 @@ if ($switchHostName == 1) echo switchHostName();
 function switchHostName() {
 	$hostName = gethostname();
 	preg_match('/CALLSIGN=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $callSign);
-	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim($callSign[1]));
+	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim(strtolower($callSign[1])));
 	if ($newHostName != 'N0CALL' && $hostName != $newHostName) {
 		exec("/usr/bin/sudo /usr/bin/hostnamectl set-hostname $newHostName");
+		exec("/usr/bin/sudo /usr/bin/sed -i 's/$hostName/$newHostName/' /etc/hosts");
 		return 'Hostname has been changed from <br/><b>' . $hostName . '</b> to <b>' . $newHostName . '</b><br/>You need to reboot to apply changes.';
 	} else {
 		return 'Nothing changed.<br/>New and old hostnames are the same.';
