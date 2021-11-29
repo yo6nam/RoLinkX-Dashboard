@@ -73,8 +73,12 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 and stop responding after a reboot. A cause/fix remains to be determined.  
 
 2. If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
+Make your card RW using the rw command, paste the lines below followed by a CR then reboot
 ```
-sudo chmod -R guo+rw /var/log/lighttpd
+tee -a /usr/lib/tmpfiles.d/lighttpd.tmpfile.conf << EOF
+f /var/log/lighttpd/error.log 0644 www-data www-data -
+f /var/log/lighttpd/access.log 0644 www-data www-data -
+EOF
 ```
 
 **Good luck!**
