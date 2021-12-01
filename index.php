@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9
+*   RoLinkX Dashboard v0.9d
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,7 @@ switch ($page) {
 	$htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
 	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
 	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : null;
+	$htmlOutput .= getFileSystem() . PHP_EOL;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
 	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
@@ -151,6 +152,6 @@ v0.9 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Ra
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20211002"></script>
+        <script src="js/scripts.js?cb=20211201"></script>
     </body>
 </html>

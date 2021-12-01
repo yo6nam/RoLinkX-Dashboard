@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9
+*   RoLinkX Dashboard v0.9d
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,6 @@ window.addEventListener('DOMContentLoaded', event => {
 */
 
 $(document).ready(function() {
-
 	// SA818 Programming
 	$("#programm").click(function() {
 		$('#sysmsg').iziModal('destroy');
@@ -139,7 +138,7 @@ $(document).ready(function() {
 						});
       					setTimeout(function(){
       						location.reload(true);
-      					}, 7000);
+      					}, 4000);
       				}
 			}
 		});
@@ -171,7 +170,7 @@ $(document).ready(function() {
       				}
       				setTimeout(function(){
       						location.reload(true);
-					}, 5000);
+					}, 4000);
 			}
 		});
 	});
@@ -231,30 +230,30 @@ $(document).ready(function() {
 					wk3: $('#wlan_authkey_3').val()
 			},
 			success: function(data) {
-					if (data) {
-						$('#sysmsg').iziModal('destroy');
-						$('#sysmsg').iziModal({ 
-							title: data,
-    						icon: "icon-check",
-    						headerColor: "#00af66",
-    						timeout: 5000,
-    						timeoutProgressbar: true,
-    						transitionIn: "fadeInUp",
-    						transitionOut: "fadeOutDown",
-    						bottom: 0,
-    						autoOpen: 50,
-    						zindex:1031,
-    						overlay: false
-						});
-      					setTimeout(function(){
-      						location.reload(true);
-      					}, 7000);
-      				}
+				if (data) {
+					$('#sysmsg').iziModal('destroy');
+					$('#sysmsg').iziModal({ 
+						title: data,
+    					icon: "icon-check",
+    					headerColor: "#00af66",
+    					timeout: 5000,
+    					timeoutProgressbar: true,
+    					transitionIn: "fadeInUp",
+    					transitionOut: "fadeOutDown",
+    					bottom: 0,
+    					autoOpen: 50,
+    					zindex:1031,
+    					overlay: false
+					});
+      				setTimeout(function(){
+      					location.reload(true);
+      				}, 4000);
+      			}
 			}
 		});
 	});
 
-	/* System functions*/
+	/*********** System functions ***********/
 	
 	// Power Off OS
 	$("#halt").click(function() {
@@ -346,7 +345,7 @@ $(document).ready(function() {
 								$("#refContainer").load('includes/status.php?svxReflector');
 							}
       					});
-      				}, 3500);
+      				}, 4000);
       			}
 			}
 		});
@@ -387,7 +386,7 @@ $(document).ready(function() {
 								$("#refContainer").load('includes/status.php?svxReflector');
 							}
       					});
-      				}, 3500);
+      				}, 4000);
       			}
 			}
 		});
@@ -423,7 +422,43 @@ $(document).ready(function() {
 					});
       				setTimeout(function(){
       					location.reload();
-      				}, 6000);
+      				}, 4000);
+      			}
+			}
+		});
+	});
+	
+	// Switch file system state (RW <-> RO)
+	$("#changeFS").click(function() {
+		$('#changeFS').prop('disabled', true);
+		$('#changeFS').fadeTo("fast", 0.15);
+			setTimeout(function() {
+				$('#changeFS').prop('disabled', false);
+				$('#changeFS').fadeTo("fast", 1);
+			}, 1000);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/sys.php",
+			data: {	changeFS : $('#changeFS').val() },
+			success: function(data) {
+				if(data) {
+					$('#sysmsg').iziModal('destroy');
+					$('#sysmsg').iziModal({ 
+						title: data,
+    					icon: "icon-check",
+    					headerColor: "#00af66",
+    					timeout: 2500,
+    					timeoutProgressbar: true,
+    					transitionIn: "fadeInUp",
+    					transitionOut: "fadeOutDown",
+    					bottom: 0,
+    					autoOpen: 50,
+    					zindex:1031,
+    					overlay: false
+					});
+      				setTimeout(function(){
+      					location.reload();
+      				}, 3000);
       			}
 			}
 		});
@@ -503,6 +538,35 @@ $(document).ready(function() {
       			}
 			}
 		});
+	});
+
+	// Mixer control
+	$(function() {
+	    var prevValue = 0;
+	    $(document).on('input change', 'input[id^="vac_"]', function() {
+	    	var volumeSlider = $(this).attr("id");
+	    	$('#'+ volumeSlider + 'cv').html('(' + $(this).val() + '%)');
+	    });
+	    // mouse down to check for previous value
+	    $('input[id^="vac_"]').on('mousedown touchstart', function(e) {
+	        var volumeSlider = $(this).attr("id");
+	        var prevValue = $(this).val();
+	    });
+	    // mouse up when the mouse up from the slider with end value
+	    $('input[id^="vac_"]').on('mouseup touchend', function() {
+	        var volumeSlider = $(this).attr("id");
+	        var newValue = $(this).val();
+	        if (newValue !== prevValue) {
+	            console.log(volumeSlider + ' / ' + newValue);
+	            $('#'+ volumeSlider + 'cv').html('(' + $(this).val() + '%)');
+				$.ajax({
+					type: 'POST',
+					url: "ajax/sys.php",
+					data: {	mctrl:volumeSlider, mval:newValue },
+					success: function(data) {}
+				});
+	        }
+	    });
 	});
 
 	// Display a log file in real time

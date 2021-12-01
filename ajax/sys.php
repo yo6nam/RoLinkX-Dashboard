@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8a
+*   RoLinkX Dashboard v0.9d
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -28,6 +28,11 @@ $rewifi				= (isset($_POST['rewifi'])) ? filter_input(INPUT_POST, 'rewifi', FILT
 $resvx				= (isset($_POST['resvx'])) ? filter_input(INPUT_POST, 'resvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $endsvx				= (isset($_POST['endsvx'])) ? filter_input(INPUT_POST, 'endsvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 'switchHostName', FILTER_SANITIZE_NUMBER_INT) : '';
+$changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_STRING) : null;
+
+// Mixer control
+$mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
+$mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER_SANITIZE_NUMBER_INT) : '';
 
 /* Configuration */
 if (isset($_POST)) {
@@ -46,6 +51,20 @@ if (isset($_POST)) {
 	if ($changed) {
 		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
 		echo 'Configuration saved!';
+		exit(0);
+	}
+
+	/* Mixer control action */
+	if (!empty($mixerControl)) {
+		$mixerControls = array
+		(
+			'vac_out' => 'Line Out',
+			'vac_dac' => 'DAC',
+			'vac_mb' => 'Mic1 Boost',
+			'vac_adc' => 'ADC Gain'
+		);
+		exec("/usr/bin/sudo /usr/bin/amixer set '$mixerControls[$mixerControl]' $mixerValue%");
+		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
 		exit(0);
 	}
 }
@@ -107,4 +126,13 @@ function switchHostName() {
 		return 'Nothing changed.<br/>New and old hostnames are the same.';
 	}
 	return false;
+}
+
+
+/* Switch file system state */
+if (!empty($changeFS)) echo switchFSState($changeFS);
+function switchFSState($changeFS) {
+	$askedFSS = ($changeFS == 'ro') ? 'rw' : 'ro';
+	exec("/usr/bin/sudo /usr/bin/mount -o remount,$askedFSS /", $reply);
+	echo 'File system status changed to '. strtoupper($askedFSS) .'</br>Please check the status';
 }

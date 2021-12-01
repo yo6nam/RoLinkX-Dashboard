@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9b
+*   RoLinkX Dashboard v0.9d
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -234,6 +234,17 @@ function getCallSign() {
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Call Sign</span>
   		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
+	</div>';
+}
+
+/* File System status */
+function getFileSystem() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	$stateFS		= ($fileSystemStatus[0] == 'rw') ? 'Read/Write' : 'Read-only';
+	$stateFSColor	= ($fileSystemStatus[0] == 'rw') ? 'background:red;color: white;' : 'background:lightgreen;';
+    return '<div class="input-group mb-2">
+    	<button class="btn" style="'. $stateFSColor .'width: 6.5rem;" value="'. $fileSystemStatus[0] .'" type="button" id="changeFS">File system</button>
+  		<input type="text" class="form-control" placeholder="'. $stateFS .'" readonly>
 	</div>';
 }
 

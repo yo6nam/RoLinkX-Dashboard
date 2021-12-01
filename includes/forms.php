@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9c
+*   RoLinkX Dashboard v0.9d
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -466,6 +466,13 @@ function cfgForm() {
 		'cfgCallsign' => 'Callsign',
 		'cfgDTMF' => 'DTMF Sender'
 	);
+
+	// Get mixer's current values
+	exec('/usr/bin/sudo /usr/bin/amixer get \'Line Out\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetLineOut);
+	exec('/usr/bin/sudo /usr/bin/amixer get \'DAC\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetDAC);
+	exec('/usr/bin/sudo /usr/bin/amixer get \'Mic1 Boost\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetMic1Boost);
+	exec('/usr/bin/sudo /usr/bin/amixer get \'ADC Gain\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetADCGain);
+
 	$configData = '<h2 class="mt-2 alert alert-warning fw-bold">Configuration</h2>
 	<div class="card m-1">
 	<h4 class="m-2">Serial & GPIO</h4>
@@ -494,7 +501,39 @@ function cfgForm() {
 		</div>' . PHP_EOL;
 	}
 	$configData .= '</div>
+<h4 class="m-2">Audio control</h4>
+<div class="row m-3">
+	<p class="lead">Output</p>
+	<div class="col-sm-3">
+		<div class="d-flex flex-column">
+			<label for="vac_out">Volume Out<span class="mx-2" id="vac_outcv">('. $mixerGetLineOut[0] .'%)</span></label>
+			<input type="range" min="6" max="100" step="3" class="form-control-range" id="vac_out" value="'. $mixerGetLineOut[0] .'">
+		</div>
 	</div>
+	<div class="col-sm-3">
+    	<div class="d-flex flex-column">
+			<label for="vac_dac">DAC<span class="mx-2" id="vac_daccv">('. $mixerGetDAC[0] .'%)</span></label>
+			<input type="range" min="0" max="100" step="2" class="form-control-range" id="vac_dac" value="'. $mixerGetDAC[0] .'">
+		</div>
+	</div>
+</div>
+<div class="row m-3">
+	<p class="lead">Input</p>
+	<div class="col-sm-3">
+    	<div class="d-flex flex-column">
+    		<label for="vac_mb">Mic1 Boost<span class="mx-2" id="vac_mbcv">('. $mixerGetMic1Boost[0] .'%)</span></label>
+    		<input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_mb" value="'. $mixerGetMic1Boost[0] .'">
+    	</div>
+	</div>
+  	<div class="col-sm-3">
+    	<div class="d-flex flex-column">
+    		<label for="vac_adc">ADC Gain<span class="mx-2" id="vac_adccv">('. $mixerGetADCGain[0] .'%)</span></label>
+    		<input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_adc" value="'. $mixerGetADCGain[0] .'">
+    	</div>
+	</div>
+</div>
+		<div class="m-3 alert alert-info" role="alert">Note : Adjusting the sliders has immediate effect!</div>
+</div>
 	<div class="d-flex justify-content-center mt-4">
 		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Salvează</button>
 	</div>' . PHP_EOL;
