@@ -72,7 +72,14 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 1. On SA818_V5.x FW version (check with AT+VERSION command) the serial port will only work on a cold boot
 and stop responding after a reboot. A cause/fix remains to be determined.  
 
-2. If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
+2. Converting the OS to read-only state (in development) can be achieved using the following script
+```
+wget https://svx.439100.ro/data/xro && chmod +x ./xro && ./xro
+```
+Remember that in RO state, you will not be able to save WiFi data, SVXLink details/profiles (for now)
+To switch between read-only and read-write, use the aliases rw and ro on your terminal.  
+
+3. If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
 Make your card RW using the rw command, paste the lines below followed by a CR then reboot
 ```
 tee -a /usr/lib/tmpfiles.d/lighttpd.tmpfile.conf << EOF
