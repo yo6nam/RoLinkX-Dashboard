@@ -2,7 +2,7 @@
 ## Web dashboard for OrangePi Zero & SVXLink (RoLink)
  
 Purpose : Make your life easier<br>
-Development : beta<br>
+Development : Release candidate<br>
 Features :
 - System overview (Uptime / CPU Stats / Networking)
 - System control (Reboot / Wi-Fi / SVXLink)
@@ -10,6 +10,8 @@ Features :
 - SVXLink (RoLink) client configuration editor (with profiles)
 - DTMF Sender (commands to control SVXLink status / TGs / etc.)
 - SA818(S)V/U programming
+- Audio (alsamixer) controls
+- File System switch (Read/Write <-> Read-only) <sup>See note 2</sup>
 - Display stations connected to current reflector
 - Display logs (Syslog or SVXLink) in real time
 
@@ -72,12 +74,12 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 1. On SA818_V5.x FW version (check with AT+VERSION command) the serial port will only work on a cold boot
 and stop responding after a reboot. A cause/fix remains to be determined.  
 
-2. Converting the OS to read-only state (in development) can be achieved using the following script
+2. Converting the OS to read-only state (in development, will be added to the install script) can be achieved using the following script
 ```
 wget https://svx.439100.ro/data/xro && chmod +x ./xro && ./xro
 ```
 Remember that in RO state, you will not be able to save WiFi data, SVXLink details/profiles (for now)
-To switch between read-only and read-write, use the aliases rw and ro on your terminal.  
+To switch between read-only and read-write use the "File System" button from the Status page or use the aliases rw and ro on your terminal.  
 
 3. If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
 Make your card RW using the rw command, paste the lines below followed by a CR then reboot
@@ -89,8 +91,6 @@ EOF
 ```
 
 **Good luck!**
-
-*Remember, this is a beta release, don't expect it to work flawlessly.*
  
 //Razvan YO6NAM @ xpander.ro
  
