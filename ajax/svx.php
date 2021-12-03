@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.8
+*   RoLinkX Dashboard v0.9e
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,9 @@ $changes		= 0;
 $msgOut			= null;
 $oldVar = $newVar = $profiles = array();
 
+// Get File system status
+exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+
 // Retrieve GET vars
 $frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_STRING) : '';
 
@@ -40,6 +43,7 @@ $frmPort		= (empty($_POST['prt'])) ? '1234' : filter_input(INPUT_POST, 'prt', FI
 $frmCallsign	= (empty($_POST['cal'])) ? 'YO1XYZ-P' : filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_STRING);
 $frmAuthKey		= (empty($_POST['key'])) ? 'password' : filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING);
 $frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_STRING);
+$frmVoice		= (empty($_POST['vop'])) ? 'en_US' : filter_input(INPUT_POST, 'vop', FILTER_SANITIZE_STRING);
 $frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
 $frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
 $frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
@@ -60,6 +64,15 @@ if (isset($_POST['dtmfCommand'])) {
 	exit(0);
 }
 
+// Switch back to Read-Only FS
+function toggleFS() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	if ($fileSystemStatus[0] == 'rw') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
+		sleep(2);
+	}
+}
+
 // Add file contents to buffer
 $oldCfg = file_get_contents($cfgFile);
 
@@ -69,6 +82,7 @@ preg_match('/(HOST=)(\S+)/', $oldCfg, $varReflector);
 preg_match('/(PORT=)(\d+)/', $oldCfg, $varPort);
 preg_match('/(AUTH_KEY=)"(\S+)"/', $oldCfg, $varAuthKey);
 preg_match('/(CALLSIGN=)(\w\S+)/', $oldCfg, $varBeacon);
+preg_match('/(DEFAULT_LANG=)(\S+)/', $oldCfg, $varVoicePack);
 preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $oldCfg, $varShortIdent);
 preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $oldCfg, $varLongIdent);
 preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $oldCfg, $varCodecBitRate);
@@ -78,6 +92,7 @@ $portValue			= (isset($varPort[2])) ? $varPort[2] : '';
 $callSignValue		= (isset($varCallSign[2])) ? $varCallSign[2] : '';
 $authKeyValue		= (isset($varAuthKey[2])) ?  $varAuthKey[2] : '';
 $beaconValue		= (isset($varBeacon[2])) ?  $varBeacon[2] : '';
+$voicePackValue		= (isset($varVoicePack[2])) ?  $varVoicePack[2] : '';
 $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
 $codecBitrateValue	= (isset($varCodecBitRate[2])) ? $varCodecBitRate[2] : '';
@@ -145,10 +160,21 @@ if ($codecBitrateValue != $frmBitrate) {
 	$profiles['bitrate'] = $frmBitrate;
 }
 
+$oldVar[8]	= '/(DEFAULT_LANG=)(\S+)/';
+$newVar[8]	= '${1}'. $frmVoice;
+if ($voicePackValue != $frmVoice) {
+	++$changes;
+}
+
 /* Create profile */
 if (!empty($frmProfile)) {
 	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
 	$proFileName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', $frmProfile) . '.json';
+	// Change FS State
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	file_put_contents($profilesPath . $proFileName, $profile);
 	$newProfile = true;
 }
@@ -164,8 +190,13 @@ if (!empty($frmLoadProfile)) {
 
 /* Delete profile */
 if (!empty($frmDelProfile)) {
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	unlink($profilesPath . $frmDelProfile);
  	echo 'Profile "'. basename($frmDelProfile, '.json') .'" has been deleted';
+ 	toggleFS();
  	exit(0);
 }
 
@@ -174,7 +205,10 @@ if ($changes > 0) {
 	// Stop SVXLink service before attempting anything
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
-	sleep(1);
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	file_put_contents($newFile, $newCfg);
 	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
 	$msgOut .= 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
@@ -186,5 +220,5 @@ if ($changes > 0) {
 	$msgOut .= 'No new data to process.<br/>Keeping original configuration.';
 	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
 }
-
+toggleFS();
 echo $msgOut;

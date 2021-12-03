@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9d
+*   RoLinkX Dashboard v0.9e
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -217,7 +217,7 @@ function wifiForm() {
 /* SVXLink form */
 function svxForm() {
 	$profileOption = null;
-
+	$voicesPath = '/opt/rolink/share/sounds';
 	/* Get current variables */
 	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
 
@@ -226,6 +226,9 @@ function svxForm() {
 	preg_match('/(CALLSIGN=")(\S+)"/', $cfgFileData, $varCallSign);
 	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
 	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
+
+	/* Voice Language */
+	preg_match('/(DEFAULT_LANG=)(\S+)/', $cfgFileData, $varVoicePack);
 
 	/* Short / Long Intervals */
 	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
@@ -238,6 +241,7 @@ function svxForm() {
 	$portValue			= (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
 	$callSignValue		= (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
 	$authKeyValue		= (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
+	$voicePackValue		= (isset($varVoicePack[2])) ? 'value=' . $varVoicePack[2] : '';
 	$beaconValue		= (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
 	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
 
@@ -282,7 +286,24 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-3">
 		  <span class="input-group-text" style="width: 8rem;">Callsign (baliză)</span>
 		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $beaconValue .'>
-		</div>
+		</div>';
+		/* Voice language detection/selection */
+		$svxForm .= '<div class="input-group input-group-sm mb-3">
+		<span class="input-group-text" style="width: 8rem;">Voice pack</span>' . PHP_EOL;
+		if (is_dir($voicesPath)) {
+			$svxForm .= '<select id="svx_vop" class="form-select">' . PHP_EOL;
+			foreach(glob($voicesPath . '/*' , GLOB_ONLYDIR) as $voiceDir) {
+    			$availableVoicePacks = str_replace($voicesPath . '/', '', $voiceDir);
+    			$vsel = ($availableVoicePacks == $varVoicePack[2]) ? ' selected' : null;
+    			$svxForm .= '<option value="'. $availableVoicePacks .'"' . $vsel .'>'. $availableVoicePacks .'</option>' . PHP_EOL;
+			}
+		} else {
+			$svxForm .= '<select disabled id="svx_vop" class="form-select">
+			<option value="" disabled selected>Unavailable</option>' . PHP_EOL;
+		}
+		$svxForm .= '</select>
+		</div>' . PHP_EOL;
+		$svxForm .= '
 		<div class="input-group input-group-sm mb-3">
 		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
 		  <select id="svx_sid" class="form-select">

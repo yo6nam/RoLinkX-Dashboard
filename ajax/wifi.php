@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9
+*   RoLinkX Dashboard v0.9e
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,18 @@ $wnB = (isset($_POST['wn2'])) ? filter_input(INPUT_POST, 'wn2', FILTER_SANITIZE_
 $wkB = (isset($_POST['wk2'])) ? filter_input(INPUT_POST, 'wk2', FILTER_SANITIZE_STRING) : '';
 $wnC = (isset($_POST['wn3'])) ? filter_input(INPUT_POST, 'wn3', FILTER_SANITIZE_STRING) : '';
 $wkC = (isset($_POST['wk3'])) ? filter_input(INPUT_POST, 'wk3', FILTER_SANITIZE_STRING) : '';
+
+// Get File system status
+exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+
+// Switch back to Read-Only FS
+function toggleFS() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	if ($fileSystemStatus[0] == 'rw') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
+		sleep(2);
+	}
+}
 
 function getSSIDs() {
 	global $wpaFile;
@@ -116,9 +128,15 @@ if (!empty($networkC)) {
 }
 
 if ($weHaveData) {
+	// Change FS State
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	file_put_contents($wpaTemp, $wpaData);
 	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");
 	echo 'New data stored.<br/>Reboot the system to apply changes!';
+	toggleFS();
 } else {
 	echo 'No new data, so nothing changed';
 }

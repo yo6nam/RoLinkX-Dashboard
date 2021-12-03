@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9d
+*   RoLinkX Dashboard v0.9e
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -116,6 +116,7 @@ $(document).ready(function() {
 					cal: $('#svx_cal').val(),
 					key: $('#svx_key').val(),
 					clb: $('#svx_clb').val(),
+					vop: $('#svx_vop').val(),
 					sid: $('#svx_sid').val(),
 					lid: $('#svx_lid').val(),
 					cbr: $('#svx_cbr').val()

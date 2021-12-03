@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9d
+*   RoLinkX Dashboard v0.9e
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,8 @@ $mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER
 
 /* Configuration */
 if (isset($_POST)) {
+	// Get File system status
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	$changed = false;
 	$config = include '../config.php';
 	foreach ($config as $cfgItem => $cfgItemValue) {
@@ -49,8 +51,14 @@ if (isset($_POST)) {
 		}
 	}
 	if ($changed) {
+		// Change FS State
+		if ($fileSystemStatus[0] == 'ro') {
+			exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+			sleep(2);
+		}
 		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
 		echo 'Configuration saved!';
+		toggleFS();
 		exit(0);
 	}
 
@@ -66,6 +74,15 @@ if (isset($_POST)) {
 		exec("/usr/bin/sudo /usr/bin/amixer set '$mixerControls[$mixerControl]' $mixerValue%");
 		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
 		exit(0);
+	}
+}
+
+// Switch back to Read-Only FS
+function toggleFS() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	if ($fileSystemStatus[0] == 'rw') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
+		sleep(2);
 	}
 }
 
