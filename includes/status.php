@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9d
+*   RoLinkX Dashboard v0.9f
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -153,8 +153,9 @@ function getPublicIP() {
 	<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
 	<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
 	</svg>' : '';
+	$elWidth = (empty($reply)) ? 8 : 6.5;
     return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;">External IP'. $noIp .'</span>
+  		<span class="input-group-text" style="width: '. $elWidth .'rem;">External IP'. $noIp .'</span>
   		<input type="text" class="form-control" placeholder="'. $result .'" readonly>
 	</div>';
 }
@@ -250,7 +251,26 @@ function getFileSystem() {
 
 /* Version check */
 function getRemoteVersion() {
-	return 'ToDo...';
+	if (getPublicIP() == 'Not available') return;
+	$remoteData = file_get_contents('https://svx.439100.ro/data/version');
+	$localData =  file_get_contents('/opt/rolink/version');
+	if ($remoteData) {
+		$remoteVersion = explode('|', $remoteData);
+		$localVersion = explode('|', $localData);
+		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
+		$updateIcon	= ((int)$remoteVersion[0] > (int)$localVersion[0]) ? '&nbsp;&nbsp;
+	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+	<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+	<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+	</svg>' : '';
+	} else {
+		$updateIcon	= null;
+		$result = 'Unavailable';
+	}
+	return '<div class="input-group mb-2">
+ 		<span class="input-group-text" style="width: 6.5rem;">Version'. $updateIcon .'</span>
+  		<input type="text" class="form-control" placeholder="'. $result . '" readonly>
+	</div>';
 }
 
 /* DTMF commands sender */
