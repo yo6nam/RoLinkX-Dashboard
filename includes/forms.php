@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9e
+*   RoLinkX Dashboard v0.9f
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -173,29 +173,29 @@ function wifiForm() {
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Add / Edit networks</div>
 		<div class="card-body">
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 9rem;">[1] Name (SSID)</span>
 		  <input id="wlan_network_1" type="text" class="form-control" placeholder="'. $ssidNet_1 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 9rem;">[1] Key (Password)</span>
 		  <input id="wlan_authkey_1" type="text" class="form-control" placeholder="'. $pwdNet_1 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
 		</div>
 	<hr/>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 9rem;">[2] Name (SSID)</span>
 		  <input id="wlan_network_2" type="text" class="form-control" placeholder="'. $ssidNet_2 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 9rem;">[2] Key (Password)</span>
 		  <input id="wlan_authkey_2" type="text" class="form-control" placeholder="'. $pwdNet_2 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
 		</div>
 	<hr/>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 9rem;">[3] Name (SSID)</span>
 		  <input id="wlan_network_3" type="text" class="form-control" placeholder="'. $ssidNet_3 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 9rem;">[3] Key (Password)</span>
 		  <input id="wlan_authkey_3" type="text" class="form-control" placeholder="'. $pwdNet_3 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
 		</div>
@@ -250,7 +250,7 @@ function svxForm() {
 	$proFiles		= array_slice(scandir($profilesPath), 2);
 	if (!empty($proFiles)) {
 		$profileOption	= '<hr />
-			<div class="input-group input-group-sm mb-3">
+			<div class="input-group input-group-sm mb-1">
 			  <label class="input-group-text" for="svx_spn" style="width: 8rem;">Select profile</label>
 			  <select id="svx_spn" class="form-select">
 				<option value="" selected disabled>Select a profile</option>';
@@ -263,32 +263,32 @@ function svxForm() {
 	}
 
 	$svxForm = '<h2 class="mt-2 alert alert-warning fw-bold">Configurare SVXLink</h2>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Profile Name</span>
 		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
 		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Port</span>
 		  <input id="svx_prt" type="text" class="form-control" placeholder="5301" aria-label="Port" aria-describedby="inputGroup-sizing-sm" '. $portValue .'>
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Callsign</span>
 		  <input id="svx_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $callSignValue .'>
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Auth Key</span>
 		  <input id="svx_key" type="text" class="form-control" placeholder="nod_portabil" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $authKeyValue .'>
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Callsign (baliză)</span>
 		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $beaconValue .'>
 		</div>';
 		/* Voice language detection/selection */
-		$svxForm .= '<div class="input-group input-group-sm mb-3">
+		$svxForm .= '<div class="input-group input-group-sm mb-1">
 		<span class="input-group-text" style="width: 8rem;">Voice pack</span>' . PHP_EOL;
 		if (is_dir($voicesPath)) {
 			$svxForm .= '<select id="svx_vop" class="form-select">' . PHP_EOL;
@@ -304,7 +304,7 @@ function svxForm() {
 		$svxForm .= '</select>
 		</div>' . PHP_EOL;
 		$svxForm .= '
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
 		  <select id="svx_sid" class="form-select">
 			 <option value="0">Disabled</option>' . PHP_EOL;
@@ -315,7 +315,7 @@ function svxForm() {
 		}
 	$svxForm .= '</select>
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
 		  <select id="svx_lid" class="form-select">
 			 <option value="0">Disabled</option>' . PHP_EOL;
@@ -327,7 +327,7 @@ function svxForm() {
 
 		$svxForm .= '</select>
 		</div>
-		<div class="input-group input-group-sm mb-3">
+		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
 		  <select id="svx_cbr" class="form-select">' . PHP_EOL;
 		if (isset($varCodecBitRate[2])) {
@@ -338,7 +338,7 @@ function svxForm() {
 				$svxForm .= '<option value="'. $cbr .'"' . $sel .'>'. $cbr / 1000 .' kb/s '. $cbrSuffix .'</option>' . PHP_EOL;
 			}
 		} else {
-			$svxForm .= '<option value="" disabled selected>Unavailable</option>';
+			$svxForm .= '<option value="" disabled selected>Unavailable</option>' . PHP_EOL;
 		}
 	$svxForm .= '
 		  </select>

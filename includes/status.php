@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9f
+*   RoLinkX Dashboard v0.9g
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,13 @@
 
 if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(1);
 if (isset($_GET['svxReflector'])) echo getReflector(1);
+
+// Reusable icon
+$eIcon = '&nbsp;&nbsp;
+	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+	<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+	<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+	</svg>';
 
 /* Get IP(s) */
 function networking() {
@@ -146,13 +153,10 @@ function getSSID() {
 
 /* Get Public IP */
 function getPublicIP() {
+	global $eIcon;
 	exec("dig @resolver4.opendns.com myip.opendns.com +short", $reply);
 	$result = (empty($reply)) ? 'Not available' : $reply[0];
-	$noIp	= (empty($reply)) ? '&nbsp;&nbsp;
-	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
-	<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-	<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-	</svg>' : '';
+	$noIp	= (empty($reply)) ? $eIcon : '';
 	$elWidth = (empty($reply)) ? 8 : 6.5;
     return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: '. $elWidth .'rem;">External IP'. $noIp .'</span>
@@ -182,7 +186,8 @@ function getReflector($ext = 0) {
 	$refHost = (!empty($reply)) ? $reply[1] : 'Not available';
 	preg_match_all('/(Could not open GPIO|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
 	if (!empty($logData) && getSVXLinkStatus(1) != 'Not running') {
-		$prevStatus = (count($logData) > 1) ? $logData[0][array_key_last($logData[0]) - 1] : null;
+		$statusData = (isset($logData[0][array_key_last($logData[0]) - 1])) ? $logData[0][array_key_last($logData[0]) - 1] : null;
+		$prevStatus = (count($logData) > 1) ? $statusData : null;
 		$conStatus	= ($prevStatus == 'Could not open GPIO') ? 'GPIO' : $logData[0][array_key_last($logData[0])];
 		switch ($conStatus) {
 			case "established":
@@ -240,6 +245,7 @@ function getCallSign() {
 
 /* File System status */
 function getFileSystem() {
+	if (!is_link('/var/lib/dhcp/dhclient.eth0.leases')) return;
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	$stateFS		= ($fileSystemStatus[0] == 'rw') ? 'Read/Write' : 'Read-only';
 	$stateFSColor	= ($fileSystemStatus[0] == 'rw') ? 'background:red;color: white;' : 'background:lightgreen;';
@@ -252,19 +258,23 @@ function getFileSystem() {
 /* Version check */
 function getRemoteVersion() {
 	if (getPublicIP() == 'Not available') return;
-	$remoteData = file_get_contents('https://svx.439100.ro/data/version');
-	$localData =  file_get_contents('/opt/rolink/version');
-	if ($remoteData) {
-		$remoteVersion = explode('|', $remoteData);
-		$localVersion = explode('|', $localData);
-		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
-		$updateIcon	= ((int)$remoteVersion[0] > (int)$localVersion[0]) ? '&nbsp;&nbsp;
-	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
-	<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-	<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-	</svg>' : '';
+	if (!is_file('/opt/rolink/version')) return;
+	$updateIcon		= null;
+	$remoteData		= false;
+	$localData		= file_get_contents('/opt/rolink/version');
+	$localVersion	= explode('|', $localData);
+	if (isset($_COOKIE["remote_checked"])) {
+		$result = $localVersion[1] . ' (' . $localVersion[0] . ')';
 	} else {
-		$updateIcon	= null;
+		$remoteData = file_get_contents('https://svx.439100.ro/data/version');
+	}
+	if ($remoteData) {
+		global $eIcon;
+		$remoteVersion = explode('|', $remoteData);
+		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
+		$updateIcon	= ((int)$remoteVersion[0] > (int)$localVersion[0]) ? $eIcon : '';
+		setcookie("remote_checked", "yes", time()+3600*24);
+	} elseif (!isset($result)) {
 		$result = 'Unavailable';
 	}
 	return '<div class="input-group mb-2">
