@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9g
+*   RoLinkX Dashboard v0.9h
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -154,13 +154,29 @@ function getSSID() {
 /* Get Public IP */
 function getPublicIP() {
 	global $eIcon;
-	exec("dig @resolver4.opendns.com myip.opendns.com +short", $reply);
-	$result = (empty($reply)) ? 'Not available' : $reply[0];
-	$noIp	= (empty($reply)) ? $eIcon : '';
-	$elWidth = (empty($reply)) ? 8 : 6.5;
+	$ip		= 'Not available';
+	$width	= 8;
+	$gotIP	= false;
+	// Method 1
+	exec("dig @resolver4.opendns.com myip.opendns.com +short", $getIP);
+	if (filter_var($getIP[0], FILTER_VALIDATE_IP) !== false) {
+		$ip		= $getIP[0];
+		$eIcon	= null;
+		$width	= 6.5;
+		$gotIP	= true;
+	}
+	// Method 2
+	if (!$gotIP) {
+		$getIP = file_get_contents('http://ipecho.net/plain');
+		if (filter_var($getIP, FILTER_VALIDATE_IP) !== false) {
+			$ip		= $getIP;
+			$eIcon	= null;
+			$width	= 6.5;
+		}
+	}
     return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: '. $elWidth .'rem;">External IP'. $noIp .'</span>
-  		<input type="text" class="form-control" placeholder="'. $result .'" readonly>
+  		<span class="input-group-text" style="width: '. $width .'rem;">External IP'. $eIcon .'</span>
+  		<input type="text" class="form-control" placeholder="'. $ip .'" readonly>
 	</div>';
 }
 
