@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9e
+*   RoLinkX Dashboard v0.9g
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,12 @@ $frmVoice		= (empty($_POST['vop'])) ? 'en_US' : filter_input(INPUT_POST, 'vop', 
 $frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
 $frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
 $frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
+$frmRogerBeep	= (empty($_POST['rgr'])) ? '0' : filter_input(INPUT_POST, 'rgr', FILTER_SANITIZE_NUMBER_INT);
+$frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp', FILTER_SANITIZE_STRING);
+$frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_STRING);
+$frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_STRING);
+$frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
+
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
 /* Process DTMF commands */
@@ -69,7 +75,7 @@ function toggleFS() {
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	if ($fileSystemStatus[0] == 'rw') {
 		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
-		sleep(2);
+		sleep(1);
 	}
 }
 
@@ -86,6 +92,11 @@ preg_match('/(DEFAULT_LANG=)(\S+)/', $oldCfg, $varVoicePack);
 preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $oldCfg, $varShortIdent);
 preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $oldCfg, $varLongIdent);
 preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $oldCfg, $varCodecBitRate);
+preg_match('/(RGR_SOUND_ALWAYS=)(\d+)/', $oldCfg, $varRogerBeep);
+preg_match('/(GPIO_SQL_PIN=)(\S+)/', $oldCfg, $varRxGPIO);
+preg_match('/(PTT_PIN=)(\S+)/', $oldCfg, $varTxGPIO);
+preg_match('/(MONITOR_TGS=)(\S+)/', $oldCfg, $varMonitorTgs);
+preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $oldCfg, $varTgSelTimeOut);
 
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
 $portValue			= (isset($varPort[2])) ? $varPort[2] : '';
@@ -96,6 +107,12 @@ $voicePackValue		= (isset($varVoicePack[2])) ?  $varVoicePack[2] : '';
 $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
 $codecBitrateValue	= (isset($varCodecBitRate[2])) ? $varCodecBitRate[2] : '';
+
+$rogerBeepValue		= (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+$rxGPIOValue		= (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
+$txGPIOValue		= (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';
+$monitorTgsValue	= (isset($varMonitorTgs[2])) ? $varMonitorTgs[2] : '';
+$tgSelectTOValue	= (isset($varTgSelTimeOut[2])) ? $varTgSelTimeOut[2] : '';
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -166,6 +183,32 @@ if ($voicePackValue != $frmVoice) {
 	++$changes;
 }
 
+$oldVar[9]	= '/(RGR_SOUND_ALWAYS=)(\d+)/';
+$newVar[9]	= '${1}'. $frmRogerBeep;
+if ($rogerBeepValue != $frmRogerBeep) {
+	++$changes;
+}
+$oldVar[10]	= '/(GPIO_SQL_PIN=)(\S+)/';
+$newVar[10]	= '${1}'. $frmRxGPIO;
+if ($rxGPIOValue != $frmRxGPIO) {
+	++$changes;
+}
+$oldVar[11]	= '/(PTT_PIN=)(\S+)/';
+$newVar[11]	= '${1}'. $frmTxGPIO;
+if ($txGPIOValue != $frmTxGPIO) {
+	++$changes;
+}
+$oldVar[12]	= '/(MONITOR_TGS=)(\S+)/';
+$newVar[12]	= '${1}'. $frmMonitorTgs;
+if ($monitorTgsValue != $frmMonitorTgs) {
+	++$changes;
+}
+$oldVar[13]	= '/(TG_SELECT_TIMEOUT=)(\d+)/';
+$newVar[13]	= '${1}'. $frmTgTimeOut;
+if ($tgSelectTOValue != $frmTgTimeOut) {
+	++$changes;
+}
+
 /* Create profile */
 if (!empty($frmProfile)) {
 	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
@@ -173,7 +216,7 @@ if (!empty($frmProfile)) {
 	// Change FS State
 	if ($fileSystemStatus[0] == 'ro') {
 		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(2);
+		sleep(1);
 	}
 	file_put_contents($profilesPath . $proFileName, $profile);
 	$newProfile = true;
@@ -192,7 +235,7 @@ if (!empty($frmLoadProfile)) {
 if (!empty($frmDelProfile)) {
 	if ($fileSystemStatus[0] == 'ro') {
 		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(2);
+		sleep(1);
 	}
 	unlink($profilesPath . $frmDelProfile);
  	echo 'Profile "'. basename($frmDelProfile, '.json') .'" has been deleted';
@@ -207,7 +250,7 @@ if ($changes > 0) {
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
 	if ($fileSystemStatus[0] == 'ro') {
 		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(2);
+		sleep(1);
 	}
 	file_put_contents($newFile, $newCfg);
 	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");

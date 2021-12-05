@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9f
+*   RoLinkX Dashboard v0.9g
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,8 @@
 */
 
 if (isset($_GET['scan'])) echo scanWifi(1);
+
+$pinsArray = array(2, 3, 6, 7, 10, 18, 19);
 
 /* Wi-Fi form */
 function getSSIDs() {
@@ -216,34 +218,59 @@ function wifiForm() {
 
 /* SVXLink form */
 function svxForm() {
+	global $pinsArray;
+	$svxPinsArray = array();
+
+	/* Convert pins to both states (normal/inverted) */
+	foreach ($pinsArray as $pin) {
+		$svxPinsArray[] = 'gpio' . $pin;
+		$svxPinsArray[] = '!gpio' . $pin;
+	}
+
 	$profileOption = null;
 	$voicesPath = '/opt/rolink/share/sounds';
+
 	/* Get current variables */
 	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
 
+	/* Host / Reflector */
 	preg_match('/(HOST=)(\S+)/', $cfgFileData, $varReflector);
+	$reflectorValue = (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
+	/* Port */
 	preg_match('/(PORT=)(\d+)/', $cfgFileData, $varPort);
+	$portValue = (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
+	/* Callsign for authentification */
 	preg_match('/(CALLSIGN=")(\S+)"/', $cfgFileData, $varCallSign);
+	$callSignValue = (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
+	/* Key for authentification */
 	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
+	$authKeyValue = (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
+	/* Callsign for beacons */
 	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
-
+	$beaconValue = (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
+	/* RX GPIO */
+	preg_match('/(GPIO_SQL_PIN=)(\S+)/', $cfgFileData, $varRxGPIO);
+	$rxGPIOValue = (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
+	/* TX GPIO */
+	preg_match('/(PTT_PIN=)(\S+)/', $cfgFileData, $varTxGPIO);
+	$txGPIOValue = (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';
+	/* Roger beep */
+	preg_match('/(RGR_SOUND_ALWAYS=)(\d+)/', $cfgFileData, $varRogerBeep);
+	$rogerBeepValue = (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+	/* Monitor TGs*/
+	preg_match('/(MONITOR_TGS=)(\S+)/', $cfgFileData, $varMonitorTgs);
+	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value=' . $varMonitorTgs[2] : '';
+	/* TG Select Timeout */
+	preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $cfgFileData, $varTgSelTimeOut);
+	$tgSelTimeOutValue	= (isset($varTgSelTimeOut[2])) ? 'value=' . $varTgSelTimeOut[2] : '';
+	/* Opus codec bitrate */
+	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
+	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
 	/* Voice Language */
 	preg_match('/(DEFAULT_LANG=)(\S+)/', $cfgFileData, $varVoicePack);
-
 	/* Short / Long Intervals */
 	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
 	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
-
-	/* Opus codec bitrate */
-	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
-
-	$reflectorValue		= (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
-	$portValue			= (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
-	$callSignValue		= (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
-	$authKeyValue		= (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
-	$voicePackValue		= (isset($varVoicePack[2])) ? 'value=' . $varVoicePack[2] : '';
-	$beaconValue		= (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
-	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) . '/../profiles/';
@@ -284,8 +311,15 @@ function svxForm() {
 		  <input id="svx_key" type="text" class="form-control" placeholder="nod_portabil" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $authKeyValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Callsign (baliză)</span>
+		  <span class="input-group-text" style="width: 8rem;">Callsign (beacon)</span>
 		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $beaconValue .'>
+		</div>';
+	$svxForm .= '<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Roger Beep</span>
+		  <select id="svx_rgr" class="form-select">
+			<option value="0"'. (($rogerBeepValue == 0) ? ' selected' : '') .'>No</option>
+			<option value="1"'. (($rogerBeepValue == 1) ? ' selected' : '') .'>Yes</option>
+		  </select>
 		</div>';
 		/* Voice language detection/selection */
 		$svxForm .= '<div class="input-group input-group-sm mb-1">
@@ -324,8 +358,36 @@ function svxForm() {
 			$sel = ($lid == $varLongIdent[2]) ? ' selected' : null;
 			$svxForm .= '<option value="'. $lid .'"' . $sel .'>'. $lid .' minute</option>' . PHP_EOL;
 		}
-
 		$svxForm .= '</select>
+		</div>
+		<div class="separator">Advanced</div>';
+		$svxForm .= '<div class="input-group input-group-sm mb-1">
+			<label class="input-group-text" for="svx_rxp" style="width: 8rem;">RX GPIO pin</label>
+			<select id="svx_rxp" class="form-select">' . PHP_EOL;
+		foreach ($svxPinsArray as $rxpin) {
+			$inverted = (strpos($rxpin, '!') !== false) ? ' (inverted)' : null;
+			$defaultRxPin = ($rxpin == 'gpio10') ? ' (default)' : null;
+			$svxForm .= '<option value="'. $rxpin . '"' . ($rxpin == $rxGPIOValue ? ' selected' : '') . '>'. (int) filter_var($rxpin, FILTER_SANITIZE_NUMBER_INT) . $defaultRxPin . $inverted .'</option>' . PHP_EOL;
+		}
+		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<label class="input-group-text" for="svx_txp" style="width: 8rem;">TX GPIO pin</label>
+			<select id="svx_txp" class="form-select">' . PHP_EOL;
+		foreach ($svxPinsArray as $txpin) {
+			$inverted = (strpos($txpin, '!') !== false) ? ' (inverted)' : null;
+			$defaultTxPin = ($txpin == 'gpio7') ? ' (default)' : null;
+			$svxForm .= '<option value="'. $txpin . '"' . ($txpin == $txGPIOValue ? ' selected' : '') . '>'. (int) filter_var($txpin, FILTER_SANITIZE_NUMBER_INT) . $defaultTxPin . $inverted .'</option>' . PHP_EOL;
+		}
+		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Monitor TGs</span>
+		  <input id="svx_mtg" type="text" class="form-control" placeholder="226++" aria-label="Monitor TGs" aria-describedby="inputGroup-sizing-sm" '. $monitorTgsValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
+		  <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" '. $tgSelTimeOutValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
@@ -425,7 +487,7 @@ function sa818Form() {
 		<div class="form-floating mb-1">
 			<select id="sa_flt" class="form-select" aria-label="Filtre">
 				<option value="" selected>No change</option>
-				<option value="0,0,0">Bypass All</option>
+				<option value="0,0,0">Disable All</option>
 				<option value="1,0,0">Enable Pre/De-Emphasis</option>
 				<option value="0,1,0">Enable High Pass</option>
 				<option value="0,0,1">Enable Low Pass</option>
@@ -462,7 +524,7 @@ function logsForm() {
 				</div>
 				<div class="card-body px-lg-3 py-lg-2 scrolog">
 					<div class="small" id="log_data"></div>
-			</div>
+				</div>
 			 </div>
 		</div>
 	</div>
@@ -472,8 +534,8 @@ function logsForm() {
 
 /* Config */
 function cfgForm() {
+	global $pinsArray;
 	$config		= include 'config.php';
-	$pinsArray	= array(2, 3, 6, 7, 10, 18, 19);
 	$ttysArray	= array(1, 2, 3);
 	$statusPageItems = array(
 		'cfgHostname' => 'Hostname',

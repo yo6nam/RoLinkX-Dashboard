@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9e
+*   RoLinkX Dashboard v0.9f
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -106,7 +106,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#savesvxcfg').prop('disabled', false);
 				$('#savesvxcfg').fadeTo("fast", 1);
-			}, 1000);
+			}, 2000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/svx.php",
@@ -119,7 +119,12 @@ $(document).ready(function() {
 					vop: $('#svx_vop').val(),
 					sid: $('#svx_sid').val(),
 					lid: $('#svx_lid').val(),
-					cbr: $('#svx_cbr').val()
+					cbr: $('#svx_cbr').val(),
+					rgr: $('#svx_rgr').val(),
+					rxp: $('#svx_rxp').val(),
+					txp: $('#svx_txp').val(),
+					mtg: $('#svx_mtg').val(),
+					tgt: $('#svx_tgt').val()
 			},
 			success: function(data) {
 					if (data) {
@@ -128,7 +133,7 @@ $(document).ready(function() {
 							title: data,
     						icon: "icon-check",
     						headerColor: "#00af66",
-    						timeout: 5000,
+    						timeout: 3000,
     						timeoutProgressbar: true,
     						transitionIn: "fadeInUp",
     						transitionOut: "fadeOutDown",
@@ -139,7 +144,7 @@ $(document).ready(function() {
 						});
       					setTimeout(function(){
       						location.reload(true);
-      					}, 4000);
+      					}, 3200);
       				}
 			}
 		});
@@ -171,7 +176,7 @@ $(document).ready(function() {
       				}
       				setTimeout(function(){
       						location.reload(true);
-					}, 4000);
+					}, 3200);
 			}
 		});
 	});
@@ -237,7 +242,7 @@ $(document).ready(function() {
 						title: data,
     					icon: "icon-check",
     					headerColor: "#00af66",
-    					timeout: 5000,
+    					timeout: 3000,
     					timeoutProgressbar: true,
     					transitionIn: "fadeInUp",
     					transitionOut: "fadeOutDown",
@@ -248,7 +253,7 @@ $(document).ready(function() {
 					});
       				setTimeout(function(){
       					location.reload(true);
-      				}, 4000);
+      				}, 3200);
       			}
 			}
 		});
@@ -330,7 +335,7 @@ $(document).ready(function() {
 						title: 'RoLink service has been (re)started',
     					icon: "icon-check",
     					headerColor: "#00af66",
-    					timeout: 5000,
+    					timeout: 3000,
     					timeoutProgressbar: true,
     					transitionIn: "fadeInUp",
     					transitionOut: "fadeOutDown",
@@ -346,7 +351,7 @@ $(document).ready(function() {
 								$("#refContainer").load('includes/status.php?svxReflector');
 							}
       					});
-      				}, 4000);
+      				}, 3200);
       			}
 			}
 		});
@@ -371,7 +376,7 @@ $(document).ready(function() {
 						title: 'RoLink service has been stopped',
     					icon: "icon-check",
     					headerColor: "#00af66",
-    					timeout: 5000,
+    					timeout: 3000,
     					timeoutProgressbar: true,
     					transitionIn: "fadeInUp",
     					transitionOut: "fadeOutDown",
@@ -387,7 +392,7 @@ $(document).ready(function() {
 								$("#refContainer").load('includes/status.php?svxReflector');
 							}
       					});
-      				}, 4000);
+      				}, 3200);
       			}
 			}
 		});
@@ -412,7 +417,7 @@ $(document).ready(function() {
 						title: data,
     					icon: "icon-check",
     					headerColor: "#00af66",
-    					timeout: 5000,
+    					timeout: 3000,
     					timeoutProgressbar: true,
     					transitionIn: "fadeInUp",
     					transitionOut: "fadeOutDown",
@@ -423,7 +428,7 @@ $(document).ready(function() {
 					});
       				setTimeout(function(){
       					location.reload();
-      				}, 4000);
+      				}, 3200);
       			}
 			}
 		});
@@ -448,7 +453,7 @@ $(document).ready(function() {
 						title: data,
     					icon: "icon-check",
     					headerColor: "#00af66",
-    					timeout: 2500,
+    					timeout: 3000,
     					timeoutProgressbar: true,
     					transitionIn: "fadeInUp",
     					transitionOut: "fadeOutDown",
@@ -459,7 +464,7 @@ $(document).ready(function() {
 					});
       				setTimeout(function(){
       					location.reload();
-      				}, 3000);
+      				}, 3200);
       			}
 			}
 		});
@@ -496,7 +501,7 @@ $(document).ready(function() {
 						title: data,
     					icon: "icon-check",
     					headerColor: "#00af66",
-    					timeout: 3500,
+    					timeout: 3000,
     					timeoutProgressbar: true,
     					transitionIn: "fadeInUp",
     					transitionOut: "fadeOutDown",
@@ -507,7 +512,7 @@ $(document).ready(function() {
 					});
       				setTimeout(function(){
       					location.reload(true);
-      				}, 4000);
+      				}, 3200);
       			}
 			}
 		});
