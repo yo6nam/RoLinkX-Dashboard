@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9g
+*   RoLinkX Dashboard v0.9j
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,6 @@
 */
 
 /* ToDo :
-- Add GPIO selection for SVXLink configuration
 - Remember last SA818 programming parameters
 */
 
@@ -618,7 +617,13 @@ function cfgForm() {
 		<div class="m-3 alert alert-info" role="alert">Note : Adjusting the sliders has immediate effect!</div>
 </div>
 	<div class="d-flex justify-content-center mt-4">
-		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Salvează</button>
-	</div>' . PHP_EOL;
+		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Save</button>';
+		$localData		= file_get_contents('/opt/rolink/version');
+		$localVersion	= explode('|', $localData);
+		if ($localVersion[0] > '20211204') {
+			$configData .= '<button id="updateDash" type="button" class="btn btn-primary btn-lg mx-2">Dashboard update</button>';
+			$configData .= '<button id="updateRoLink" type="button" class="btn btn-warning btn-lg mx-2">RoLink update</button>';
+		}
+	$configData .= '</div>' . PHP_EOL;
 	return $configData;
 }

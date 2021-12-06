@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9f
+*   RoLinkX Dashboard v0.9j
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -466,6 +466,87 @@ $(document).ready(function() {
       					location.reload();
       				}, 3200);
       			}
+			}
+		});
+	});
+
+	// Update Dashboard
+	$("#updateDash").click(function() {
+		$('#updateDash').prop('disabled', true);
+		$('#updateDash').fadeTo("fast", 0.15);
+			setTimeout(function() {
+				$('#updateDash').prop('disabled', false);
+				$('#updateDash').fadeTo("fast", 1);
+			}, 3500);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/sys.php",
+			data: {	updateDash : 1 },
+			success: function(data) {
+				if(data) {
+					$('#sysmsg').iziModal('destroy');
+					$('#sysmsg').iziModal({ 
+						title: data,
+    					icon: "icon-check",
+    					headerColor: "#00af66",
+    					timeout: 3000,
+    					timeoutProgressbar: true,
+    					transitionIn: "fadeInUp",
+    					transitionOut: "fadeOutDown",
+    					bottom: 0,
+    					autoOpen: 50,
+    					zindex:1031,
+    					overlay: false
+					});
+      				setTimeout(function(){
+      					location.reload();
+      				}, 3500);
+      			}
+			}
+		});
+	});
+	
+	// RoLink updating
+	$("#updateRoLink").click(function() {
+		$('#sysmsg').iziModal('destroy');
+		$('#sysmsg').iziModal({
+				title: 'Updating, please wait...',
+				width: "40vh",
+				icon: "icon-warning",
+				headerColor: "#941919",
+				autoOpen: 5,
+				timeout: 30000,
+				timeoutProgressbar: true,
+				closeOnEscape: false,
+				closeButton: false,
+				overlay: true
+		});
+		$('#updateRoLink').prop('disabled', true);
+		$('#updateRoLink').fadeTo("fast", 0.15);
+			setTimeout(function() {
+				$('#updateRoLink').prop('disabled', false);
+				$('#updateRoLink').fadeTo("fast", 1);
+			}, 12000);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/sys.php",
+			data: {	updateRoLink : 1 },
+			success: function(data) {
+				if (data) {
+					$('#sysmsg').iziModal('destroy');
+					$('#sysmsg').iziModal({ 
+						title: data,
+						icon: "icon-check",
+						headerColor: "#00af66",
+						timeout: 8000,
+						timeoutProgressbar: true,
+						transitionIn: "fadeInUp",
+						transitionOut: "fadeOutDown",
+						bottom: 0,
+						zindex:1031,
+						autoOpen: 50
+					});
+				}
 			}
 		});
 	});

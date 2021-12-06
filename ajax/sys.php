@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9e
+*   RoLinkX Dashboard v0.9j
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,8 @@ $resvx				= (isset($_POST['resvx'])) ? filter_input(INPUT_POST, 'resvx', FILTER_
 $endsvx				= (isset($_POST['endsvx'])) ? filter_input(INPUT_POST, 'endsvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 'switchHostName', FILTER_SANITIZE_NUMBER_INT) : '';
 $changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_STRING) : null;
+$updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
+$updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
 
 // Mixer control
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
@@ -150,6 +152,21 @@ function switchHostName() {
 if (!empty($changeFS)) echo switchFSState($changeFS);
 function switchFSState($changeFS) {
 	$askedFSS = ($changeFS == 'ro') ? 'rw' : 'ro';
-	exec("/usr/bin/sudo /usr/bin/mount -o remount,$askedFSS /", $reply);
-	echo 'File system status changed to '. strtoupper($askedFSS) .'</br>Please check the status';
+	exec("/usr/bin/sudo /usr/bin/mount -o remount,$askedFSS /");
+	echo 'File system status changed to '. strtoupper($askedFSS);
+}
+
+/* Update dashboard */
+if ($updateDash == 1) echo updateDashboard();
+function updateDashboard() {
+	exec("/usr/bin/sudo /opt/rolink/scripts/init update_dash", $reply);
+	$result = ($reply[0] == 'Finished!') ? 'Update succeeded!' : 'Update failed!';
+	return $result;
+}
+
+/* Update RoLink (svxlink) */
+if ($updateRoLink == 1) echo updateRoLink();
+function updateRoLink() {
+	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
+	return $reply[0];
 }

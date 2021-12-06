@@ -1,3 +1,4 @@
+www-data ALL=(ALL) NOPASSWD:/opt/rolink/scripts/init
 www-data ALL=(ALL) NOPASSWD:/usr/bin/mount
 www-data ALL=(ALL) NOPASSWD:/sbin/ifup
 www-data ALL=(ALL) NOPASSWD:/sbin/reboot
