@@ -279,8 +279,8 @@ function getRemoteVersion() {
 	$remoteData		= false;
 	$localData		= file_get_contents('/opt/rolink/version');
 	$localVersion	= explode('|', $localData);
-	if (isset($_COOKIE["remote_checked"])) {
-		$result = $localVersion[1] . ' (' . $localVersion[0] . ')';
+	if (isset($_COOKIE["remote_version"])) {
+		$result = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
 	} else {
 		$remoteData = file_get_contents('https://svx.439100.ro/data/version');
 	}
@@ -289,7 +289,7 @@ function getRemoteVersion() {
 		$remoteVersion = explode('|', $remoteData);
 		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
 		$updateIcon	= ((int)$remoteVersion[0] > (int)$localVersion[0]) ? $eIcon : '';
-		setcookie("remote_checked", "yes", time()+3600*24);
+		setcookie("remote_version", $remoteVersion[0], time()+60*60*24); // Expiry in 24 hours (no need to check more often)
 	} elseif (!isset($result)) {
 		$result = 'Unavailable';
 	}
