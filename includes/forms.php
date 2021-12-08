@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9j
+*   RoLinkX Dashboard v0.9k
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -256,6 +256,9 @@ function svxForm() {
 	/* Roger beep */
 	preg_match('/(RGR_SOUND_ALWAYS=)(\d+)/', $cfgFileData, $varRogerBeep);
 	$rogerBeepValue = (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+	/* Squelch delay */
+	preg_match('/(SQL_DELAY=)(\d+)/', $cfgFileData, $varSquelchDelay);
+	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value=' . $varSquelchDelay[2] : '';
 	/* Monitor TGs*/
 	preg_match('/(MONITOR_TGS=)(\S+)/', $cfgFileData, $varMonitorTgs);
 	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value=' . $varMonitorTgs[2] : '';
@@ -379,6 +382,10 @@ function svxForm() {
 			$svxForm .= '<option value="'. $txpin . '"' . ($txpin == $txGPIOValue ? ' selected' : '') . '>'. (int) filter_var($txpin, FILTER_SANITIZE_NUMBER_INT) . $defaultTxPin . $inverted .'</option>' . PHP_EOL;
 		}
 		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
+		  <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch delay" aria-describedby="inputGroup-sizing-sm" '. $sqlDelayValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Monitor TGs</span>
@@ -623,6 +630,10 @@ function cfgForm() {
 		if ($localVersion[0] > '20211204') {
 			$configData .= '<button id="updateDash" type="button" class="btn btn-primary btn-lg mx-2">Dashboard update</button>';
 			$configData .= '<button id="updateRoLink" type="button" class="btn btn-warning btn-lg mx-2">RoLink update</button>';
+		}
+		// Show "Make Read-only" button
+		if (!is_link('/var/lib/dhcp/dhclient.eth0.leases')) {
+			$configData .= '</div><div class="d-flex justify-content-center m-2"><button id="makeRO" type="button" class="btn btn-dark btn-lg">Make FS Read-Only</button>';
 		}
 	$configData .= '</div>' . PHP_EOL;
 	return $configData;

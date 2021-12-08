@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9j
+*   RoLinkX Dashboard v0.9k
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,7 @@ $(document).ready(function() {
 				timeoutProgressbar: true,
 				closeOnEscape: false,
 				closeButton: false,
+				overlayClose: false,
 				overlay: true
 		});
 		$('#programm').prop('disabled', true);
@@ -124,7 +125,8 @@ $(document).ready(function() {
 					rxp: $('#svx_rxp').val(),
 					txp: $('#svx_txp').val(),
 					mtg: $('#svx_mtg').val(),
-					tgt: $('#svx_tgt').val()
+					tgt: $('#svx_tgt').val(),
+					sqd: $('#svx_sqd').val()
 			},
 			success: function(data) {
 					if (data) {
@@ -506,7 +508,7 @@ $(document).ready(function() {
 		});
 	});
 	
-	// RoLink updating
+	// RoLink update
 	$("#updateRoLink").click(function() {
 		$('#sysmsg').iziModal('destroy');
 		$('#sysmsg').iziModal({
@@ -519,6 +521,7 @@ $(document).ready(function() {
 				timeoutProgressbar: true,
 				closeOnEscape: false,
 				closeButton: false,
+				overlayClose: false,
 				overlay: true
 		});
 		$('#updateRoLink').prop('disabled', true);
@@ -539,6 +542,52 @@ $(document).ready(function() {
 						icon: "icon-check",
 						headerColor: "#00af66",
 						timeout: 8000,
+						timeoutProgressbar: true,
+						transitionIn: "fadeInUp",
+						transitionOut: "fadeOutDown",
+						bottom: 0,
+						zindex:1031,
+						autoOpen: 50
+					});
+				}
+			}
+		});
+	});
+
+	// Make Read-only
+	$("#makeRO").click(function() {
+		$('#sysmsg').iziModal('destroy');
+		$('#sysmsg').iziModal({
+				title: 'Working, please wait...',
+				width: "40vh",
+				icon: "icon-warning",
+				headerColor: "#941919",
+				autoOpen: 5,
+				timeout: 20000,
+				timeoutProgressbar: true,
+				closeOnEscape: false,
+				closeButton: false,
+				overlayClose: false,
+				overlay: true
+		});
+		$('#makeRO').prop('disabled', true);
+		$('#makeRO').fadeTo("fast", 0.15);
+			setTimeout(function() {
+				$('#updateRoLink').prop('disabled', false);
+				$('#updateRoLink').fadeTo("fast", 1);
+			}, 12000);
+		$.ajax({
+			type: 'POST',
+			url: "ajax/sys.php",
+			data: {	makeRO : 1 },
+			success: function(data) {
+				if (data) {
+					$('#sysmsg').iziModal('destroy');
+					$('#sysmsg').iziModal({ 
+						title: data,
+						icon: "icon-check",
+						headerColor: "#00af66",
+						timeout: 3000,
 						timeoutProgressbar: true,
 						transitionIn: "fadeInUp",
 						transitionOut: "fadeOutDown",

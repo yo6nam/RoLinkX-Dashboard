@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9g
+*   RoLinkX Dashboard v0.9k
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ $frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp'
 $frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_STRING);
 $frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_STRING);
 $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
+$frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
@@ -97,6 +98,7 @@ preg_match('/(GPIO_SQL_PIN=)(\S+)/', $oldCfg, $varRxGPIO);
 preg_match('/(PTT_PIN=)(\S+)/', $oldCfg, $varTxGPIO);
 preg_match('/(MONITOR_TGS=)(\S+)/', $oldCfg, $varMonitorTgs);
 preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $oldCfg, $varTgSelTimeOut);
+preg_match('/(SQL_DELAY=)(\d+)/', $oldCfg, $varSqlDelay);
 
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
 $portValue			= (isset($varPort[2])) ? $varPort[2] : '';
@@ -107,12 +109,13 @@ $voicePackValue		= (isset($varVoicePack[2])) ?  $varVoicePack[2] : '';
 $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
 $codecBitrateValue	= (isset($varCodecBitRate[2])) ? $varCodecBitRate[2] : '';
-
 $rogerBeepValue		= (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+// Advanced category values
 $rxGPIOValue		= (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
 $txGPIOValue		= (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';
 $monitorTgsValue	= (isset($varMonitorTgs[2])) ? $varMonitorTgs[2] : '';
 $tgSelectTOValue	= (isset($varTgSelTimeOut[2])) ? $varTgSelTimeOut[2] : '';
+$sqlDelayValue		= (isset($varSqlDelay[2])) ? $varSqlDelay[2] : '';
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -206,6 +209,12 @@ if ($monitorTgsValue != $frmMonitorTgs) {
 $oldVar[13]	= '/(TG_SELECT_TIMEOUT=)(\d+)/';
 $newVar[13]	= '${1}'. $frmTgTimeOut;
 if ($tgSelectTOValue != $frmTgTimeOut) {
+	++$changes;
+}
+
+$oldVar[14]	= '/(SQL_DELAY=)(\d+)/';
+$newVar[14]	= '${1}'. $frmSqlDelay;
+if ($sqlDelayValue != $frmSqlDelay) {
 	++$changes;
 }
 

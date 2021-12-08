@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9j
+*   RoLinkX Dashboard v0.9k
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 
 $changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_STRING) : null;
 $updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
 $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
+$makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILTER_SANITIZE_NUMBER_INT) : null;
 
 // Mixer control
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
@@ -169,4 +170,13 @@ if ($updateRoLink == 1) echo updateRoLink();
 function updateRoLink() {
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
 	return $reply[0];
+}
+
+/* Make FS Read-only */
+if ($makeRO == 1) echo makeRO();
+function makeRO() {
+	exec("/usr/bin/sudo /opt/rolink/scripts/init ro s", $reply);
+	sleep(3);
+	$result = ($reply[0] == 'Finished!') ? 'Operation succeeded!</br><b>Please reboot</b>' : 'Operation failed!';
+	return $result;
 }
