@@ -14,6 +14,7 @@ Features :
 - File System switch (Read/Write <-> Read-only) <sup>See note 2</sup>
 - Display stations connected to current reflector
 - Display logs (Syslog or SVXLink) in real time
+- Updates with a click of a button
 
 Requirements (hardware):<br>
 - OrangePi Zero LTS 256/512MB
@@ -44,7 +45,8 @@ Or, using RoLink init script:
 /opt/rolink/scripts/init dash
 ```
 ## How to update
-Execute the installation steps again, or if you kept the cloned folder, navigate to it (usually it's in %home% directory) and use
+Use the "Update Dashboard" button from the Config page (most convenient) or execute the installation steps again.  
+If you've kept the cloned folder, navigate to it (usually it's in %home% directory) and use
 ```
 cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 ```
@@ -74,16 +76,8 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 1. On SA818_V5.x FW version (check with AT+VERSION command) the serial port will only work on a cold boot
 and stop responding after a reboot. A cause/fix remains to be determined.  
 
-2. Converting the File System to read-only state can be achieved using the same script used for installation (Option #5)
+2. Converting the File System to read-only state can be achieved using the "Make FS read-only" button from the Config page or by using the script used for RoLink installation (Option #5)
 
-3. If you're on YO7GQZ's image, you need to fix something before attempting to install the dashboard  
-Make your card RW using the rw command, paste the lines below followed by a CR then reboot
-```
-tee -a /usr/lib/tmpfiles.d/lighttpd.tmpfile.conf << EOF
-f /var/log/lighttpd/error.log 0644 www-data www-data -
-f /var/log/lighttpd/access.log 0644 www-data www-data -
-EOF
-```
 
 **Good luck!**
  
