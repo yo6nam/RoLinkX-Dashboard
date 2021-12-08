@@ -563,7 +563,7 @@ $(document).ready(function() {
 				icon: "icon-warning",
 				headerColor: "#941919",
 				autoOpen: 5,
-				timeout: 20000,
+				timeout: 60000,
 				timeoutProgressbar: true,
 				closeOnEscape: false,
 				closeButton: false,

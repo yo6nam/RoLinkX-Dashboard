@@ -177,6 +177,6 @@ if ($makeRO == 1) echo makeRO();
 function makeRO() {
 	exec("/usr/bin/sudo /opt/rolink/scripts/init ro s", $reply);
 	sleep(3);
-	$result = ($reply[0] == 'Finished!') ? 'Operation succeeded!</br><b>Please reboot</b>' : 'Operation failed!';
+	$result = ($reply[0] == 'Finished!') ? 'Operation succeeded!</br><b>Please reboot</b>' : '<b>Please reboot</b> to apply changes';
 	return $result;
 }
