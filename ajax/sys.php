@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9l
+*   RoLinkX Dashboard v0.9m
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -148,7 +148,6 @@ function switchHostName() {
 	return false;
 }
 
-
 /* Switch file system state */
 if (!empty($changeFS)) echo switchFSState($changeFS);
 function switchFSState($changeFS) {
@@ -176,7 +175,7 @@ function updateRoLink() {
 if ($makeRO == 1) echo makeRO();
 function makeRO() {
 	exec("/usr/bin/sudo /opt/rolink/scripts/init ro s", $reply);
-	sleep(3);
-	$result = ($reply[0] == '0') ? 'Operation succeeded!</br><b>Please reboot</b>' : 'Operation succeeded (no watchdog)</br><b>Please reboot</b>';
+	sleep(1);
+	$result = (is_numeric($reply[0])) ? '<b>Success! Please reboot</b>' : $reply[0];
 	return $result;
 }

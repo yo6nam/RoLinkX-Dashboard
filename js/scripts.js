@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9k
+*   RoLinkX Dashboard v0.9m
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -563,19 +563,13 @@ $(document).ready(function() {
 				icon: "icon-warning",
 				headerColor: "#941919",
 				autoOpen: 5,
-				timeout: 60000,
+				timeout: 75000,
 				timeoutProgressbar: true,
 				closeOnEscape: false,
 				closeButton: false,
 				overlayClose: false,
 				overlay: true
 		});
-		$('#makeRO').prop('disabled', true);
-		$('#makeRO').fadeTo("fast", 0.15);
-			setTimeout(function() {
-				$('#updateRoLink').prop('disabled', false);
-				$('#updateRoLink').fadeTo("fast", 1);
-			}, 12000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/sys.php",
@@ -594,6 +588,14 @@ $(document).ready(function() {
 						bottom: 0,
 						zindex:1031,
 						autoOpen: 50
+					});
+					$("#makeRO").unbind().prop('innerText', 'Click me to reboot!').prop('id', 'reboot');
+					var rebootNow = setInterval(blinkMyButton, 1000);
+					function blinkMyButton() { $('#reboot').fadeOut().fadeIn(); }
+					$("#reboot").click(function() {
+						$("#reboot").hide();
+						clearInterval(rebootNow);
+						$.ajax({ type: 'POST', url: "ajax/sys.php", data: {	reboot: 1 } });
 					});
 				}
 			}
