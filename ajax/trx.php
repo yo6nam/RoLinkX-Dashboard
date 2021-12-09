@@ -27,6 +27,9 @@ $txPin		= $config['cfgPttPin'];
 $tty		= $config['cfgTty'];
 $pinPath	= '/sys/class/gpio/gpio'. $txPin .'/value';
 
+// Get File system status
+exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+
 /* Get POST vars */
 $grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_STRING) : '';
 $dev = (isset($_POST['dev'])) ? filter_input(INPUT_POST, 'dev', FILTER_SANITIZE_STRING) : '';
@@ -66,6 +69,11 @@ if (empty($grp) && empty($vol) && empty($flt)) {
 }
 
 if (!empty($grp)) {
+	// Change FS State
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(1);
+	}
 	$nfoParams = json_encode($nfoParam, JSON_PRETTY_PRINT);
 	file_put_contents($tmpRefFile, $nfoParams);
 	shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
@@ -124,4 +132,14 @@ echo $moduleReply;
 
 /* All done, start SVXLink service */
 sleep(2);
+toggleFS();
 shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
+
+// Switch back to Read-Only FS
+function toggleFS() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	if ($fileSystemStatus[0] == 'rw') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
+		sleep(1);
+	}
+}
