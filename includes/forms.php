@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9k
+*   RoLinkX Dashboard v0.9m
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -624,7 +624,7 @@ function cfgForm() {
 		<div class="m-3 alert alert-info" role="alert">Note : Adjusting the sliders has immediate effect!</div>
 </div>
 	<div class="d-flex justify-content-center mt-4">
-		<button id="cfgSave" type="button" class="btn btn-danger btn-lg">Save</button>';
+		<button id="cfgSave" type="button" class="btn btn-danger btn-lg mx-2">Save</button>';
 		$localData		= file_get_contents('/opt/rolink/version');
 		$localVersion	= explode('|', $localData);
 		if ($localVersion[0] > '20211204') {

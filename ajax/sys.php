@@ -148,6 +148,7 @@ function switchHostName() {
 	return false;
 }
 
+
 /* Switch file system state */
 if (!empty($changeFS)) echo switchFSState($changeFS);
 function switchFSState($changeFS) {
@@ -176,6 +177,10 @@ if ($makeRO == 1) echo makeRO();
 function makeRO() {
 	exec("/usr/bin/sudo /opt/rolink/scripts/init ro s", $reply);
 	sleep(1);
-	$result = (is_numeric($reply[0])) ? '<b>Success! Please reboot</b>' : $reply[0];
+	if (is_numeric($reply[0])) {
+		$result = ($reply[0] == '0') ? '<b>Success! Please reboot</b>' : '<b>Completed with warnings (no watchdog)!</br>Please reboot</b>';
+	} elseif (!empty($reply[0])) {
+		$result = $reply[0];
+	}
 	return $result;
 }

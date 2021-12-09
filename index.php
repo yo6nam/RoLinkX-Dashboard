@@ -147,12 +147,12 @@ switch ($page) {
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
 			<div class="text-center small p-2">
-v0.9k © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
+v0.9n © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a>
 			</div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20211208"></script>
+        <script src="js/scripts.js?cb=20211210"></script>
     </body>
 </html>
