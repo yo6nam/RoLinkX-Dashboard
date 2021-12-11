@@ -2,7 +2,7 @@
 ## Web dashboard for OrangePi Zero & SVXLink (RoLink)
  
 Purpose : Make your life easier<br>
-Development : Release candidate<br>
+Development : v1.0<br>
 Features :
 - System overview (Uptime / CPU Stats / Networking)
 - System control (Reboot / Wi-Fi / SVXLink)
