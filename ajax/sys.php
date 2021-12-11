@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9m
+*   RoLinkX Dashboard v1.0
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -37,10 +37,11 @@ $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILT
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
 $mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER_SANITIZE_NUMBER_INT) : '';
 
+// Get File system status
+exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+
 /* Configuration */
 if (isset($_POST)) {
-	// Get File system status
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	$changed = false;
 	$config = include '../config.php';
 	foreach ($config as $cfgItem => $cfgItemValue) {
@@ -133,14 +134,20 @@ function sysReboot() {
 }
 
 /* Switch Host Name */
-if ($switchHostName == 1) echo switchHostName();
-function switchHostName() {
+if ($switchHostName == 1) echo switchHostName($fileSystemStatus);
+function switchHostName($fileSystemStatus) {
 	$hostName = gethostname();
 	preg_match('/CALLSIGN=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $callSign);
 	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim(strtolower($callSign[1])));
 	if ($newHostName != 'N0CALL' && $hostName != $newHostName) {
+		// Change FS State
+		if ($fileSystemStatus[0] == 'ro') {
+			exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+			sleep(2);
+		}
 		exec("/usr/bin/sudo /usr/bin/hostnamectl set-hostname $newHostName");
 		exec("/usr/bin/sudo /usr/bin/sed -i 's/$hostName/$newHostName/' /etc/hosts");
+		toggleFS();
 		return 'Hostname has been changed from <br/><b>' . $hostName . '</b> to <b>' . $newHostName . '</b><br/>You need to reboot to apply changes.';
 	} else {
 		return 'Nothing changed.<br/>New and old hostnames are the same.';

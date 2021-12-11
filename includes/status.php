@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v0.9i
+*   RoLinkX Dashboard v1.0
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -319,7 +319,7 @@ function dtmfSender() {
 				<div class="col">
 					<button id="sendDTMF_EnableLink" type="button" class="btn btn-info mb-1" value="551#">Enable &#128279;</button>
 					<button id="sendDTMF_DisableLink" type="button" class="btn btn-info mb-1" value="55#">Disable &#128279;</button>
-					<button id="sendDTMF_TG226" type="button" class="btn btn-info mb-1" value="5519#">TG#9</button>
+					<button id="sendDTMF_TG9" type="button" class="btn btn-info mb-1" value="5519#">TG#9</button>
 					<button id="sendDTMF_TG226" type="button" class="btn btn-info mb-1" value="551226#">TG#226</button>
 				</div>
 				<button id="sendDTMF" type="button" class="btn btn-danger btn-lg">Send</button>

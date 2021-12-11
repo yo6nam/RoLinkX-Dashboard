@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', event => {
 });
 
 /*
-*   RoLinkX Dashboard v0.9m
+*   RoLinkX Dashboard v1.0
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#savesvxcfg').prop('disabled', false);
 				$('#savesvxcfg').fadeTo("fast", 1);
-			}, 2000);
+			}, 5000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/svx.php",
@@ -226,7 +226,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#savewifi').prop('disabled', false);
 				$('#savewifi').fadeTo("fast", 1);
-			}, 1000);
+			}, 5000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/wifi.php",
@@ -407,7 +407,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#switchHostName').prop('disabled', false);
 				$('#switchHostName').fadeTo("fast", 1);
-			}, 1000);
+			}, 6000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/sys.php",
@@ -443,7 +443,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#changeFS').prop('disabled', false);
 				$('#changeFS').fadeTo("fast", 1);
-			}, 1000);
+			}, 2000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/sys.php",
@@ -479,7 +479,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#updateDash').prop('disabled', false);
 				$('#updateDash').fadeTo("fast", 1);
-			}, 3500);
+			}, 9000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/sys.php",
@@ -529,7 +529,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#updateRoLink').prop('disabled', false);
 				$('#updateRoLink').fadeTo("fast", 1);
-			}, 12000);
+			}, 15000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/sys.php",
@@ -609,7 +609,7 @@ $(document).ready(function() {
 			setTimeout(function() {
 				$('#cfgSave').prop('disabled', false);
 				$('#cfgSave').fadeTo("fast", 1);
-			}, 1000);
+			}, 5000);
 		$.ajax({
 			type: 'POST',
 			url: "ajax/sys.php",
