@@ -1,5 +1,5 @@
 #!/bin/bash
-# RoLinkX Dashboard v0.8
+# RoLinkX Dashboard v1.0
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -16,27 +16,21 @@ fi
 # Check if we should modify network
 if systemctl is-enabled $nmService | grep enabled >/dev/null; then
 	printf 'Network Manager is enabled. We must disable it\n'
-	read -p "Do you want to proceed? (y/n)" -n 1 -r
-	printf '\n'
-	if [[ $REPLY =~ ^[Yy]$ ]];then
-		# Setup eth0
-		if cat /etc/network/interfaces | grep 'auto eth0' >/dev/null;then
-			printf 'LAN interface already configured\n';
-		else
-			printf '\nauto eth0\nallow-hotplug eth0\niface eth0 inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
-		fi
-		# Setup wlan0
-		if cat /etc/network/interfaces | grep 'auto wlan0' >/dev/null;then
-			printf 'WLAN interface already configured\n';
-		else
-			printf '\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
-		fi
-		# Now it's safe to disable NM
-		systemctl stop $nmService
-		systemctl disable $nmService
+	# Setup eth0
+	if cat /etc/network/interfaces | grep 'auto eth0' >/dev/null;then
+		printf 'LAN interface already configured\n';
 	else
-		printf "Bye!\n"; exit 0;
+		printf '\nauto eth0\nallow-hotplug eth0\niface eth0 inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
 	fi
+	# Setup wlan0
+	if cat /etc/network/interfaces | grep 'auto wlan0' >/dev/null;then
+		printf 'WLAN interface already configured\n';
+	else
+		printf '\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
+	fi
+	# Now it's safe to disable NM
+	systemctl stop $nmService
+	systemctl disable $nmService
 fi
 
 # Fix possible DNS issues
@@ -65,15 +59,11 @@ fi
 if netstat -tnlp | grep "lighttpd" >/dev/null; then
 	printf 'lighttpd is present, moving on...\n'
 else
-	printf 'lighttpd is NOT installed\n'
-	read -p "Do you want to proceed with installation? (y/n)" -n 1 -r
-	printf '\n'
-	if [[ $REPLY =~ ^[Yy]$ ]];then
-		apt-get update
-		apt-get install lighttpd php$phpVersion-fpm php-cgi -y
-		lighttpd-enable-mod fastcgi-php >/dev/null
-		service lighttpd force-reload
-	fi
+	printf 'lighttpd is NOT present, installing it now\n'
+	apt-get update
+	apt-get install lighttpd php$phpVersion-fpm php-cgi -y
+	lighttpd-enable-mod fastcgi-php >/dev/null
+	service lighttpd force-reload
 fi
 
 if [ -d "/var/www/html" ]; then

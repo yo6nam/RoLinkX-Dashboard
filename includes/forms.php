@@ -225,7 +225,6 @@ function svxForm() {
 		$svxPinsArray[] = 'gpio' . $pin;
 		$svxPinsArray[] = '!gpio' . $pin;
 	}
-
 	$profileOption = null;
 	$voicesPath = '/opt/rolink/share/sounds';
 
@@ -235,41 +234,54 @@ function svxForm() {
 	/* Host / Reflector */
 	preg_match('/(HOST=)(\S+)/', $cfgFileData, $varReflector);
 	$reflectorValue = (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
+
 	/* Port */
 	preg_match('/(PORT=)(\d+)/', $cfgFileData, $varPort);
 	$portValue = (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
+
 	/* Callsign for authentification */
 	preg_match('/(CALLSIGN=")(\S+)"/', $cfgFileData, $varCallSign);
 	$callSignValue = (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
+
 	/* Key for authentification */
 	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
 	$authKeyValue = (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
+
 	/* Callsign for beacons */
 	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
 	$beaconValue = (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
+
 	/* RX GPIO */
 	preg_match('/(GPIO_SQL_PIN=)(\S+)/', $cfgFileData, $varRxGPIO);
 	$rxGPIOValue = (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
+
 	/* TX GPIO */
 	preg_match('/(PTT_PIN=)(\S+)/', $cfgFileData, $varTxGPIO);
 	$txGPIOValue = (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';
+
 	/* Roger beep */
 	preg_match('/(RGR_SOUND_ALWAYS=)(\d+)/', $cfgFileData, $varRogerBeep);
 	$rogerBeepValue = (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+
 	/* Squelch delay */
 	preg_match('/(SQL_DELAY=)(\d+)/', $cfgFileData, $varSquelchDelay);
 	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value=' . $varSquelchDelay[2] : '';
+
 	/* Monitor TGs*/
 	preg_match('/(MONITOR_TGS=)(\S+)/', $cfgFileData, $varMonitorTgs);
 	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value=' . $varMonitorTgs[2] : '';
+
 	/* TG Select Timeout */
 	preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $cfgFileData, $varTgSelTimeOut);
 	$tgSelTimeOutValue	= (isset($varTgSelTimeOut[2])) ? 'value=' . $varTgSelTimeOut[2] : '';
+
 	/* Opus codec bitrate */
 	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
 	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
+
 	/* Voice Language */
 	preg_match('/(DEFAULT_LANG=)(\S+)/', $cfgFileData, $varVoicePack);
+
 	/* Short / Long Intervals */
 	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
 	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
@@ -277,6 +289,7 @@ function svxForm() {
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) . '/../profiles/';
 	$proFiles		= array_slice(scandir($profilesPath), 2);
+
 	if (!empty($proFiles)) {
 		$profileOption	= '<hr />
 			<div class="input-group input-group-sm mb-1">

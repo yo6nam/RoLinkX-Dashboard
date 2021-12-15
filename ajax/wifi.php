@@ -42,7 +42,7 @@ function toggleFS() {
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	if ($fileSystemStatus[0] == 'rw') {
 		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
-		sleep(2);
+		sleep(1);
 	}
 }
 
@@ -131,7 +131,7 @@ if ($weHaveData) {
 	// Change FS State
 	if ($fileSystemStatus[0] == 'ro') {
 		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(2);
+		sleep(1);
 	}
 	file_put_contents($wpaTemp, $wpaData);
 	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");

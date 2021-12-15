@@ -100,6 +100,7 @@ preg_match('/(MONITOR_TGS=)(\S+)/', $oldCfg, $varMonitorTgs);
 preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $oldCfg, $varTgSelTimeOut);
 preg_match('/(SQL_DELAY=)(\d+)/', $oldCfg, $varSqlDelay);
 
+// Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
 $portValue			= (isset($varPort[2])) ? $varPort[2] : '';
 $callSignValue		= (isset($varCallSign[2])) ? $varCallSign[2] : '';
@@ -110,6 +111,7 @@ $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
 $codecBitrateValue	= (isset($varCodecBitRate[2])) ? $varCodecBitRate[2] : '';
 $rogerBeepValue		= (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+
 // Advanced category values
 $rxGPIOValue		= (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
 $txGPIOValue		= (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';

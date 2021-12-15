@@ -131,7 +131,7 @@ $moduleReply .= (isset($filterCmd)) ? 'Filter : ' . str_replace("+DMOSETFILTER:0
 echo $moduleReply;
 
 /* All done, start SVXLink service */
-sleep(2);
+sleep(1);
 toggleFS();
 shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
 

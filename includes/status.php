@@ -40,7 +40,6 @@ function networking() {
 	if (empty($lanData) && empty($wlanData)) return false;
 	$lanIp	= (isset($lanData[0]) && preg_match('/^169\.254/', $lanData[0]) === 0) ? $lanData[0] : '' ;
 	$wlanIp = (isset($wlanData[0]) && preg_match('/^169\.254/', $wlanData[0]) === 0) ? $wlanData[0] : '' ;
-
 	if (!empty($lanIp)) {
 		$returnData .= '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">LAN IP</span>

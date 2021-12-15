@@ -81,7 +81,7 @@ if (isset($_POST)) {
 	}
 }
 
-// Switch back to Read-Only FS
+/* Switch back to Read-Only FS */
 function toggleFS() {
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	if ($fileSystemStatus[0] == 'rw') {
@@ -108,11 +108,6 @@ function restartSVXLink() {
 if ($rewifi == 1) echo wifiRestart();
 function wifiRestart() {
 	exec("/usr/bin/sudo /sbin/wpa_cli -i wlan0 reconfigure");
-	/* Reserved for future version
-	exec("/usr/bin/sudo /usr/bin/autohotspotN reload", $reply);
-	$result = (empty($reply)) ? 'Command failed' : json_encode($reply);
-	return $result;
-	*/
 	return true;
 }
 
