@@ -80,21 +80,25 @@ switch ($page) {
 	</div>';
 	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
 	$ajax = "<script>
-	var auto_refresh = setInterval( function () {
+	cpuData();
+	function cpuData() {
 		$.ajax({
-			type: 'GET',
-			dataType: 'json',
-			url: 'includes/status.php?cpuData',
-			success: function (data) {
-				$('#cpuLoad').attr('placeholder', data[0]).val('');
-				$('#cpuTemp').attr('placeholder', data[1]).val('');
-				if (data[2]) {
-                	$('#cpuTemp').addClass(data[2]);
-				} else {
-					$('#cpuTemp').removeClass('bg-warning text-dark');
-				}
-			},
+				type: 'GET',
+				dataType: 'json',
+				url: 'includes/status.php?cpuData',
+				success: function (data) {
+					$('#cpuLoad').attr('placeholder', data[0]).val('');
+					$('#cpuTemp').attr('placeholder', data[1]).val('');
+					if (data[2]) {
+    	            	$('#cpuTemp').addClass(data[2]);
+					} else {
+						$('#cpuTemp').removeClass('bg-warning text-dark');
+					}
+				},
 		});
+	}
+	var auto_refresh = setInterval( function () {
+		cpuData()
 	}, 3000);
 	</script>";
 }
