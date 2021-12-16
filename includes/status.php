@@ -24,6 +24,7 @@
 
 if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(1);
 if (isset($_GET['svxReflector'])) echo getReflector(1);
+if (isset($_GET['cpuData'])) echo getCpuStats(1);
 
 // Reusable icon
 $eIcon = '&nbsp;&nbsp;
@@ -75,21 +76,24 @@ function getUpTime() {
 }
 
 /* CPU Load & Temp */
-function getCpuStats() {
-	$cpuLoad = getServerLoad();
-	$avgLoad = (is_null($cpuLoad)) ? 'N/A' : number_format($cpuLoad, 2) . "%";
-	exec("cat /etc/armbianmonitor/datasources/soctemp", $reply);
-	if ($reply != 0) {
+function getCpuStats($ajax = 0) {
+	$avgLoad = $cpuTemp = '...';
+	$tempWarning = null;
+	if ($ajax) {
+		$cpuLoad = getServerLoad();
+		$avgLoad = (is_null($cpuLoad)) ? 'N/A' : number_format($cpuLoad, 2) . "%";
+		exec("cat /etc/armbianmonitor/datasources/soctemp", $reply);
 		$tempOffset = 28;
-    	$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
-    	$cpuTemp = $cpuTempVal . '&deg;C';
-    	$tempWarning = ($cpuTempVal > 60) ? 'bg-warning text-dark' : '';
-    	return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;">CPU</span>
-  		<input type="text" class="form-control text-center" placeholder="'.$avgLoad.'" readonly>
-  		<input type="text" class="form-control text-center '. $tempWarning .'" placeholder="'.$cpuTemp.'" readonly>
-	</div>';
+		$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
+		$cpuTemp = $cpuTempVal . '℃';
+		$tempWarning = ($cpuTempVal > 60) ? 'bg-warning text-dark' : '';
+		return json_encode(array($avgLoad, $cpuTemp, $tempWarning));
 	}
+	return '<div class="input-group mb-2">
+  		<span class="input-group-text" style="width: 6.5rem;">CPU</span>
+  		<input id="cpuLoad" type="text" class="form-control text-center" placeholder="'.$avgLoad.'" readonly>
+  		<input id="cpuTemp" type="text" class="form-control text-center '. $tempWarning .'" placeholder="'.$cpuTemp.'" readonly>
+	</div>';
 }
 
 function _getServerLoadLinuxData(){

@@ -79,6 +79,24 @@ switch ($page) {
 	</div>
 	</div>';
 	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
+	$ajax = "<script>
+	var auto_refresh = setInterval( function () {
+		$.ajax({
+			type: 'GET',
+			dataType: 'json',
+			url: 'includes/status.php?cpuData',
+			success: function (data) {
+				$('#cpuLoad').attr('placeholder', data[0]).val('');
+				$('#cpuTemp').attr('placeholder', data[1]).val('');
+				if (data[2]) {
+                	$('#cpuTemp').addClass(data[2]);
+				} else {
+					$('#cpuTemp').removeClass('bg-warning text-dark');
+				}
+			},
+		});
+	}, 3000);
+	</script>";
 }
 ?>
 <!DOCTYPE html>
@@ -106,7 +124,7 @@ switch ($page) {
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
-        <link href="css/styles.css?cb=20211215" rel="stylesheet" />
+        <link href="css/styles.css?cb=20211216" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
@@ -151,6 +169,7 @@ switch ($page) {
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20211215"></script>
+        <script src="js/scripts.js?cb=20211216"></script>
+    	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>
