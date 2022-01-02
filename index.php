@@ -79,7 +79,7 @@ switch ($page) {
 	</div>
 	</div>';
 	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
-	$ajax = "<script>
+	$ajax = ($config['cfgCpuStats'] == 'true') ? "<script>
 	cpuData();
 	function cpuData() {
 		$.ajax({
@@ -100,7 +100,7 @@ switch ($page) {
 	var auto_refresh = setInterval( function () {
 		cpuData()
 	}, 3000);
-	</script>";
+	</script>" : null;
 }
 ?>
 <!DOCTYPE html>
