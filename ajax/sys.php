@@ -162,15 +162,29 @@ function switchFSState($changeFS) {
 /* Update dashboard */
 if ($updateDash == 1) echo updateDashboard();
 function updateDashboard() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	// Change FS State
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_dash", $reply);
 	$result = ($reply[0] == 'Finished!') ? 'Update succeeded!' : 'Update failed!';
+	toggleFS();
 	return $result;
 }
 
 /* Update RoLink (svxlink) */
 if ($updateRoLink == 1) echo updateRoLink();
 function updateRoLink() {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
+	// Change FS State
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
+	toggleFS();
 	return $reply[0];
 }
 
