@@ -1,7 +1,7 @@
 <?php
 /*
 *   RoLinkX Dashboard v1.0
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ switch ($page) {
 		<meta name="msapplication-TileColor" content="#ffffff">
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
-        <link href="css/styles.css?cb=20211216" rel="stylesheet" />
+        <link href="css/styles.css?cb=20220113" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
@@ -168,12 +168,12 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v1.0 © 2021 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v1.0 © 2022 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20211216"></script>
+        <script src="js/scripts.js?cb=20220113"></script>
     	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>

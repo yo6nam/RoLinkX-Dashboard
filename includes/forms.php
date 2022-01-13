@@ -286,6 +286,10 @@ function svxForm() {
 	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
 	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
 
+	/* TimeOut Timer (TX) */
+	preg_match('/(TIMEOUT=)(\d+)\nTX/', $cfgFileData, $varTxTimeout);
+	$txTimeOutValue	= (isset($varTxTimeout[2])) ? 'value=' . $varTxTimeout[2] : '';
+
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) . '/../profiles/';
 	$proFiles		= array_slice(scandir($profilesPath), 2);
@@ -407,6 +411,10 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
 		  <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" '. $tgSelTimeOutValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">TX Timeout</span>
+		  <input id="svx_txt" type="text" class="form-control" placeholder="180" aria-label="TX Timeout" aria-describedby="inputGroup-sizing-sm" '. $txTimeOutValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>

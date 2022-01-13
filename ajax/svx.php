@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v1.0b
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ $frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp'
 $frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_STRING);
 $frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_STRING);
 $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
+$frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
@@ -99,6 +100,7 @@ preg_match('/(PTT_PIN=)(\S+)/', $oldCfg, $varTxGPIO);
 preg_match('/(MONITOR_TGS=)(\S+)/', $oldCfg, $varMonitorTgs);
 preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $oldCfg, $varTgSelTimeOut);
 preg_match('/(SQL_DELAY=)(\d+)/', $oldCfg, $varSqlDelay);
+preg_match('/(TIMEOUT=)(\d+)\nTX/', $oldCfg, $varTxTimeout);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -117,6 +119,7 @@ $rxGPIOValue		= (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
 $txGPIOValue		= (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';
 $monitorTgsValue	= (isset($varMonitorTgs[2])) ? $varMonitorTgs[2] : '';
 $tgSelectTOValue	= (isset($varTgSelTimeOut[2])) ? $varTgSelTimeOut[2] : '';
+$txTimeOutValue		= (isset($varTxTimeout[2])) ? $varTxTimeout[2] : '';
 $sqlDelayValue		= (isset($varSqlDelay[2])) ? $varSqlDelay[2] : '';
 
 /* Profile defaults */
@@ -217,6 +220,12 @@ if ($tgSelectTOValue != $frmTgTimeOut) {
 $oldVar[14]	= '/(SQL_DELAY=)(\d+)/';
 $newVar[14]	= '${1}'. $frmSqlDelay;
 if ($sqlDelayValue != $frmSqlDelay) {
+	++$changes;
+}
+
+$oldVar[15]	= '/(TIMEOUT=)(\d+)\nTX/';
+$newVar[15]	= '${1}'. $frmTxTimeOut . PHP_EOL . 'TX';
+if ($txTimeOutValue != $frmTxTimeOut) {
 	++$changes;
 }
 
