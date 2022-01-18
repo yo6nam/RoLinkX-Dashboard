@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.0b
+ *   RoLinkX Dashboard v1.0c
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -388,12 +388,12 @@ $(document).ready(function () {
   $('#updateRoLink').click(function () {
     $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
-      title: 'Updating, please wait...',
+      title: 'Updating, please wait!<br/>It might take a few minutes...',
       width: '40vh',
       icon: 'icon-warning',
       headerColor: '#941919',
       autoOpen: 5,
-      timeout: 30000,
+      timeout: 90000,
       timeoutProgressbar: true,
       closeOnEscape: false,
       closeButton: false,
@@ -401,16 +401,14 @@ $(document).ready(function () {
       overlay: true,
     });
     $('#updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#updateRoLink').prop('disabled', false).fadeTo('fast', 1);
-    }, 15000);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { updateRoLink: 1 },
       success: function (data) {
         if (data) {
-          $('#sysmsg').showNotice(data, 8000);
+          $('#updateRoLink').prop('disabled', false).fadeTo('fast', 1);
+          $('#sysmsg').showNotice(data, 4000);
         }
       },
     });

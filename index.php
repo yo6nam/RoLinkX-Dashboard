@@ -173,7 +173,7 @@ switch ($page) {
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20220113"></script>
+        <script src="js/scripts.js?cb=20220118"></script>
     	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>
