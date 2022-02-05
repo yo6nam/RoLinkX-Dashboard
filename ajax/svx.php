@@ -66,7 +66,7 @@ if (isset($_POST['dtmfCommand'])) {
 	}
 	if (!empty($dtmfCommand)) {
 		shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /tmp/dtmf');
-		exec("/usr/bin/echo $dtmfCommand >/tmp/dtmf", $reply);
+		exec("/usr/bin/echo '$dtmfCommand' >/tmp/dtmf", $reply);
 		echo "<b>$dtmfCommand</b> executed!";
 	}
 	exit(0);

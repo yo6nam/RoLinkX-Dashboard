@@ -324,6 +324,8 @@ function dtmfSender() {
 					<button id="sendDTMF_DisableLink" type="button" class="btn btn-info mb-1" value="55#">Disable &#128279;</button>
 					<button id="sendDTMF_TG9" type="button" class="btn btn-info mb-1" value="5519#">TG#9</button>
 					<button id="sendDTMF_TG226" type="button" class="btn btn-info mb-1" value="551226#">TG#226</button>
+					<button id="sendDTMF_ParrotOn" type="button" class="btn btn-info mb-1" value="1#">Parrot On</button>
+					<button id="sendDTMF_ParrotOff" type="button" class="btn btn-info mb-1" value="#">Parrot Off</button>
 				</div>
 				<button id="sendDTMF" type="button" class="btn btn-danger btn-lg">Send</button>
 			</div>
