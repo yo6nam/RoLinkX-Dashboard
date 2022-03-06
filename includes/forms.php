@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
+*   RoLinkX Dashboard v1.0a
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -161,52 +161,35 @@ function freqToChan($freq) {
 function wifiForm() {
 	$ssidList	= getSSIDs();
 	$apsList	= scanWifi();
-
-	$ssidNet_1	= (empty($ssidList[0][0])) ? 'Your SSID' : $ssidList[0][0] . ' (saved)';
-	$ssidNet_2	= (empty($ssidList[0][1])) ? 'Your SSID' : $ssidList[0][1] . ' (saved)';
-	$ssidNet_3	= (empty($ssidList[0][2])) ? 'Your SSID' : $ssidList[0][2] . ' (saved)';
-	$pwdNet_1	= (empty($ssidList[1][0])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][0]);
-	$pwdNet_2	= (empty($ssidList[1][1])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][1]);
-	$pwdNet_3	= (empty($ssidList[1][2])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][2]);
-
+	exec('/sbin/iwgetid --raw', $con);
 	$wifiForm = '<h2 class="mt-2 alert alert-info fw-bold">Configurare interfață Wi-Fi</h2>';
 	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Add / Edit networks</div>
-		<div class="card-body">
-		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">[1] Name (SSID)</span>
-		  <input id="wlan_network_1" type="text" class="form-control" placeholder="'. $ssidNet_1 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+		<div class="card-body">' . PHP_EOL;
+	for ($i = 0; $i < 3; $i++) {
+		$a = (isset($ssidList[0][$i]) && $con[0] === $ssidList[0][$i]) ? true : false;
+		$s = (empty($ssidList[0][$i])) ? 'Your SSID' : $ssidList[0][$i] . (($a) ? ' (connected)' : ' (saved)');
+		$p = (empty($ssidList[1][$i])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);
+		$c = ($i + 1);
+		$b = ($a) ? ' bg-success text-white' : null;
+		$wifiForm .= '<div class="input-group input-group-sm mb-2">
+		  <span class="input-group-text'. $b .'" style="width: 9rem;">['. $c .'] Name (SSID)</span>
+		  <input id="wlan_network_'. $c .'" type="text" class="form-control" placeholder="'. $s .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
 		</div>
 		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">[1] Key (Password)</span>
-		  <input id="wlan_authkey_1" type="text" class="form-control" placeholder="'. $pwdNet_1 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
+		  <span class="input-group-text" style="width: 9rem;">['. $c .'] Key (Password)</span>
+		  <input id="wlan_authkey_'. $c .'" type="text" class="form-control" placeholder="'. $p .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
 		</div>
-	<hr/>
-		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">[2] Name (SSID)</span>
-		  <input id="wlan_network_2" type="text" class="form-control" placeholder="'. $ssidNet_2 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
-		</div>
-		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">[2] Key (Password)</span>
-		  <input id="wlan_authkey_2" type="text" class="form-control" placeholder="'. $pwdNet_2 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
-		</div>
-	<hr/>
-		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">[3] Name (SSID)</span>
-		  <input id="wlan_network_3" type="text" class="form-control" placeholder="'. $ssidNet_3 .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
-		</div>
-		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">[3] Key (Password)</span>
-		  <input id="wlan_authkey_3" type="text" class="form-control" placeholder="'. $pwdNet_3 .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
-		</div>
+	<hr/>' . PHP_EOL;
+	}
+	$wifiForm .= '<div class="m-3 alert alert-info" role="alert">Note : To delete a network use the - (dash) character as SSID</div>
 		<div class="d-flex justify-content-center mt-4">
 			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Salvează</button>
 			<button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
 		</div>
 		</div>
 	</div>' . PHP_EOL;
-
 	$wifiForm .= '<script>
 	var auto_refresh = setInterval( function () {
 		$("#updateList").load("includes/forms.php?scan");
