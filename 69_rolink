@@ -10,6 +10,7 @@ www-data ALL=(ALL) NOPASSWD:/usr/bin/wc
 www-data ALL=(ALL) NOPASSWD:/usr/bin/tr
 www-data ALL=(ALL) NOPASSWD:/usr/bin/cut
 www-data ALL=(ALL) NOPASSWD:/usr/bin/amixer
+www-data ALL=(ALL) NOPASSWD:/usr/sbin/alsactl
 www-data ALL=(ALL) NOPASSWD:/usr/bin/autohotspotN
 www-data ALL=(ALL) NOPASSWD:/usr/bin/sed -i * /etc/hosts
 www-data ALL=(ALL) NOPASSWD:/usr/bin/chmod guo+rw /dev/ttyS[1-4]

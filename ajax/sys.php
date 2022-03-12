@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v1.1
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -42,6 +42,11 @@ exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fi
 
 /* Configuration */
 if (isset($_POST)) {
+	// Change FS State
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(2);
+	}
 	$changed = false;
 	$config = include '../config.php';
 	foreach ($config as $cfgItem => $cfgItemValue) {
@@ -55,11 +60,6 @@ if (isset($_POST)) {
 		}
 	}
 	if ($changed) {
-		// Change FS State
-		if ($fileSystemStatus[0] == 'ro') {
-			exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-			sleep(2);
-		}
 		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
 		echo 'Configuration saved!';
 		toggleFS();
@@ -75,8 +75,12 @@ if (isset($_POST)) {
 			'vac_mb' => 'Mic1 Boost',
 			'vac_adc' => 'ADC Gain'
 		);
+		// Set the new value
 		exec("/usr/bin/sudo /usr/bin/amixer set '$mixerControls[$mixerControl]' $mixerValue%");
+		// Store configuration to the persistent alsamixer configuration file
+		exec("/usr/bin/sudo /usr/sbin/alsactl store");
 		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
+		toggleFS();
 		exit(0);
 	}
 }
