@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0a
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v1.3
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -277,6 +277,10 @@ function svxForm() {
 	$profilesPath	= dirname(__FILE__) . '/../profiles/';
 	$proFiles		= array_slice(scandir($profilesPath), 2);
 
+	/* Configuration info sent to reflector ('tip' only) */
+	$cfgRefFile = file_get_contents('/opt/rolink/conf/rolink.json');
+	$cfgRefData = json_decode($cfgRefFile, true);
+
 	if (!empty($proFiles)) {
 		$profileOption	= '<hr />
 			<div class="input-group input-group-sm mb-1">
@@ -361,6 +365,10 @@ function svxForm() {
 			$svxForm .= '<option value="'. $lid .'"' . $sel .'>'. $lid .' minute</option>' . PHP_EOL;
 		}
 		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Type</span>
+		  <input id="svx_tip" type="text" class="form-control" placeholder="nod portabil" aria-label="Description" aria-describedby="inputGroup-sizing-sm" value="'. $cfgRefData['tip'] .'">
 		</div>
 		<div class="separator">Advanced</div>';
 		$svxForm .= '<div class="input-group input-group-sm mb-1">

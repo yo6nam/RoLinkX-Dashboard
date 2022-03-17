@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.0c
+ *   RoLinkX Dashboard v1.3
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -126,6 +126,7 @@ $(document).ready(function () {
         vop: $('#svx_vop').val(),
         sid: $('#svx_sid').val(),
         lid: $('#svx_lid').val(),
+        tip: $('#svx_tip').val(),
         cbr: $('#svx_cbr').val(),
         rgr: $('#svx_rgr').val(),
         rxp: $('#svx_rxp').val(),
@@ -179,6 +180,7 @@ $(document).ready(function () {
             $('#svx_cal').val(profile.callsign);
             $('#svx_key').val(profile.key);
             $('#svx_clb').val(profile.beacon);
+            $('#svx_tip').val(profile.type);
             $('#sysmsg').showNotice(
               'Profile loaded!<br/>Click <b>Save</b> button to apply',
               3000

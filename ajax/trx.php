@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v1.3
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ $nfoParam['pl_in'] = $ctcssVars[floatval($tpl)];
 $nfoParam['pl_out']	= $ctcssVars[floatval($tpl)];
 $nfoParam['rx_frq'] = sprintf("%0.3f", $grp);
 $nfoParam['shift'] = '';
-$nfoParam['tip'] = 'nod portabil';
+$nfoParam['tip'] = '';
 $nfoParam['tx_frq'] = sprintf("%0.3f", $grp);
 $nfoParam['tg'] = 226;
 
@@ -124,7 +124,7 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 }
 
 /* Give feedback to user */
-$moduleReply = '*** Response from SA818 module ***</br>';
+$moduleReply = '* Response from SA818 module *</br>';
 $moduleReply .= (isset($groupCmd)) ? 'Channel : ' . str_replace("+DMOSETGROUP:0", "Success!", $groupCmd) . '</br>' : '';
 $moduleReply .= (isset($volumeCmd)) ? 'Volume : ' . str_replace("+DMOSETVOLUME:0", "Success!", $volumeCmd) . '</br>' : '';
 $moduleReply .= (isset($filterCmd)) ? 'Filter : ' . str_replace("+DMOSETFILTER:0", "Success!", $filterCmd) . '</br>' : '';

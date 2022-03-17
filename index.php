@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.2
+*   RoLinkX Dashboard v1.3
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -168,12 +168,12 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v1.2 © 2022 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v1.3 © 2022 Copyright <a class="text-primary" href="https://www.xpander.ro/">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20220118"></script>
+        <script src="js/scripts.js?cb=17032022"></script>
     	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>

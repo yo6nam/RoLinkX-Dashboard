@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0b
+*   RoLinkX Dashboard v1.3
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,8 @@
 
 $cfgFile		= '/opt/rolink/conf/rolink.conf';
 $newFile		= '/tmp/rolink.conf.tmp';
+$cfgRefFile 	= file_get_contents('/opt/rolink/conf/rolink.json');
+$tmpRefFile 	= '/tmp/rolink.json.tmp';
 $profilesPath	= dirname(__FILE__) . '/../profiles/';
 $newProfile		= false;
 $changes		= 0;
@@ -46,6 +48,7 @@ $frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : filter_input(INPUT_POST, 'clb'
 $frmVoice		= (empty($_POST['vop'])) ? 'en_US' : filter_input(INPUT_POST, 'vop', FILTER_SANITIZE_STRING);
 $frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
 $frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
+$frmType		= (empty($_POST['tip'])) ? 'nod portabil' : filter_input(INPUT_POST, 'tip', FILTER_SANITIZE_STRING);
 $frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
 $frmRogerBeep	= (empty($_POST['rgr'])) ? '0' : filter_input(INPUT_POST, 'rgr', FILTER_SANITIZE_NUMBER_INT);
 $frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp', FILTER_SANITIZE_STRING);
@@ -82,7 +85,8 @@ function toggleFS() {
 }
 
 // Add file contents to buffer
-$oldCfg = file_get_contents($cfgFile);
+$oldCfg 	= file_get_contents($cfgFile);
+$cfgRefData = json_decode($cfgRefFile, true);
 
 // Get current variables
 preg_match('/(CALLSIGN=")(\S+)"/', $oldCfg, $varCallSign);
@@ -129,6 +133,7 @@ $profiles['callsign']	= $callSignValue;
 $profiles['key']		= $authKeyValue;
 $profiles['beacon']		= $beaconValue;
 $profiles['bitrate']	= $codecBitrateValue;
+$profiles['type']		= 'nod portabil';
 
 /* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
@@ -229,6 +234,12 @@ if ($txTimeOutValue != $frmTxTimeOut) {
 	++$changes;
 }
 
+/* Configuration info sent to reflector ('tip' only) */
+if ($cfgRefData['tip'] != $frmType) {
+	++$changes;
+	$profiles['type'] = $frmType;
+}
+
 /* Create profile */
 if (!empty($frmProfile)) {
 	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
@@ -274,6 +285,13 @@ if ($changes > 0) {
 	}
 	file_put_contents($newFile, $newCfg);
 	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
+	// Update json file if decription/type changed
+	if ($cfgRefData['tip'] != $frmType) {
+		$cfgRefData['tip'] = $frmType;
+		$nfoParams = json_encode($cfgRefData, JSON_PRETTY_PRINT);
+		file_put_contents($tmpRefFile, $nfoParams);
+		shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
+	}
 	$msgOut .= 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
 	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
 
