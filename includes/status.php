@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v1.4
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -259,6 +259,15 @@ function getCallSign() {
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Call Sign</span>
   		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
+	</div>';
+}
+
+/* Get kernel & release version */
+function getKernel() {
+	preg_match('/VERSION_CODENAME=(\S+)/', file_get_contents('/etc/os-release'), $reply);
+	return '<div class="input-group mb-2">
+  		<span class="input-group-text" style="width: 6.5rem;">Kernel</span>
+  		<input type="text" class="form-control" placeholder="' . posix_uname()['release'] . ' (' . $reply[1] . ')" readonly>
 	</div>';
 }
 

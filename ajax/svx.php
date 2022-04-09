@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.3
+*   RoLinkX Dashboard v1.4
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,15 @@ $newProfile		= false;
 $changes		= 0;
 $msgOut			= null;
 $oldVar = $newVar = $profiles = array();
+
+// Read version installed
+if (is_file('/opt/rolink/version')) {
+	$localData		= file_get_contents('/opt/rolink/version');
+	$localVersion	= explode('|', $localData);
+} else {
+	echo 'Please update RoLink/SVXLink first!';
+	return;
+}
 
 // Get File system status
 exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
@@ -91,7 +100,7 @@ $cfgRefData = json_decode($cfgRefFile, true);
 // Get current variables
 preg_match('/(CALLSIGN=")(\S+)"/', $oldCfg, $varCallSign);
 preg_match('/(HOST=)(\S+)/', $oldCfg, $varReflector);
-preg_match('/(PORT=)(\d+)/', $oldCfg, $varPort);
+preg_match('/(^PORT=)(\d+)/m', $oldCfg, $varPort);
 preg_match('/(AUTH_KEY=)"(\S+)"/', $oldCfg, $varAuthKey);
 preg_match('/(CALLSIGN=)(\w\S+)/', $oldCfg, $varBeacon);
 preg_match('/(DEFAULT_LANG=)(\S+)/', $oldCfg, $varVoicePack);
@@ -105,6 +114,9 @@ preg_match('/(MONITOR_TGS=)(\S+)/', $oldCfg, $varMonitorTgs);
 preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $oldCfg, $varTgSelTimeOut);
 preg_match('/(SQL_DELAY=)(\d+)/', $oldCfg, $varSqlDelay);
 preg_match('/(TIMEOUT=)(\d+)\nTX/', $oldCfg, $varTxTimeout);
+// Since 1.7.99.62
+preg_match('/(HOSTS=)(\S+)/', $oldCfg, $varRefHosts);
+preg_match('/(HOST_PORT=)(\d+)/', $oldCfg, $varPorts);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -117,6 +129,9 @@ $shortIdentValue	= (isset($varShortIdent[2])) ?  $varShortIdent[2] : '';
 $longIdentValue		= (isset($varLongIdent[2])) ? $varLongIdent[2] : '';
 $codecBitrateValue	= (isset($varCodecBitRate[2])) ? $varCodecBitRate[2] : '';
 $rogerBeepValue		= (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
+// Since 1.7.99.62
+$refHostsValue		= (isset($varRefHosts[2])) ? $varRefHosts[2] : '';
+$portsValue			= (isset($varPorts[2])) ? $varPorts[2] : '';
 
 // Advanced category values
 $rxGPIOValue		= (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
@@ -135,6 +150,18 @@ $profiles['beacon']		= $beaconValue;
 $profiles['bitrate']	= $codecBitrateValue;
 $profiles['type']		= 'nod portabil';
 
+/* Convert config of new installs */
+if (preg_match('/svx\.ro/', $oldCfg)) {
+	$sCfg = $rCfg = array();
+	$sCfg[1] = '/#H/im';
+	$sCfg[2] = '/HOST=/im';
+	$sCfg[3] = '/^PORT=/im';
+	$rCfg[1] = 'H';
+	$rCfg[2] = '#HOST=';
+	$rCfg[3] = '#PORT=';
+	$oldCfg = preg_replace($sCfg, $rCfg, $oldCfg);
+}
+
 /* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
 $newVar[0]	= '${1}' . $frmBeacon;
@@ -145,6 +172,10 @@ if ($beaconValue != $frmBeacon) {
 
 $oldVar[1]	= '/(HOST=)(\S+)/';
 $newVar[1]	= '${1}' . $frmReflector;
+
+if ($localVersion[1] > '1.7.99.62' && empty($varRefHosts)) {
+	$newVar[1]	= '#${1}' . $frmReflector . PHP_EOL . 'HOSTS=' . $frmReflector . ':' . $frmPort; // Upgrade config file to new version
+}
 if ($reflectorValue != $frmReflector) {
 	++$changes;
 	$profiles['reflector'] = $frmReflector;
@@ -152,8 +183,11 @@ if ($reflectorValue != $frmReflector) {
 
 $oldVar[2]	= '/(PORT=)(\d+)/';
 $newVar[2]	= '${1}' . $frmPort;
+if ($localVersion[1] > '1.7.99.62' && empty($varPorts)) {
+	$newVar[2]	= '#${1}' . $frmPort; // Upgrade config file to new version
+}
 if ($portValue != $frmPort) {
-	++$changes;
+	if ($portsValue != $frmPort) ++$changes;
 	$profiles['port'] = $frmPort;
 }
 
@@ -233,6 +267,12 @@ $newVar[15]	= '${1}'. $frmTxTimeOut . PHP_EOL . 'TX';
 if ($txTimeOutValue != $frmTxTimeOut) {
 	++$changes;
 }
+
+$oldVar[16]	= '/(HOSTS=)(\S+)/';
+$newVar[16]	= '${1}' . $frmReflector . ':' . $frmPort;
+
+$oldVar[17]	= '/(HOST_PORT=)(\d+)/';
+$newVar[17]	= '${1}' . $frmPort;
 
 /* Configuration info sent to reflector ('tip' only) */
 if ($cfgRefData['tip'] != $frmType) {

@@ -367,10 +367,11 @@ $(document).ready(function () {
 
   // Update Dashboard
   $('#updateDash').click(function () {
-    $('#updateDash').prop('disabled', true).fadeTo('fast', 0.15);
+    $(this).text("Please wait...");
+    $('#updateDash, #cfgSave').prop('disabled', true).fadeTo('fast', 0.15);
     setTimeout(function () {
-      $('#updateDash').prop('disabled', false).fadeTo('fast', 1);
-    }, 9000);
+      $('#updateDash, #cfgSave').prop('disabled', false).fadeTo('fast', 1);
+    }, 15000);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
@@ -402,14 +403,14 @@ $(document).ready(function () {
       overlayClose: false,
       overlay: true,
     });
-    $('#updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
+    $('#updateRoLink, #cfgSave').prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { updateRoLink: 1 },
       success: function (data) {
         if (data) {
-          $('#updateRoLink').prop('disabled', false).fadeTo('fast', 1);
+          $('#updateRoLink, #cfgSave').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 4000);
         }
       },
