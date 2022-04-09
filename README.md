@@ -75,6 +75,7 @@ cd ~/RoLinkX-Dashboard/;git pull;sudo ./setup.sh
 # Notes
 1. On SA818_V5.x FW version (check with AT+VERSION command) the serial port will only work on a cold boot
 and stop responding after a reboot. A cause/fix remains to be determined.  
+Solution : Shut down, remove power from OrangePi for a few sconds, power up and try programming the SA818 module.  
 
 2. Converting the File System to read-only state can be achieved using the "Make FS read-only" button from the Config page or by using the script used for RoLink installation (Option #5)
 
