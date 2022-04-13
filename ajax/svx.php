@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.4
+*   RoLinkX Dashboard v1.5
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -328,6 +328,13 @@ if ($changes > 0) {
 	// Update json file if decription/type changed
 	if ($cfgRefData['tip'] != $frmType) {
 		$cfgRefData['tip'] = $frmType;
+		$nfoParams = json_encode($cfgRefData, JSON_PRETTY_PRINT);
+		file_put_contents($tmpRefFile, $nfoParams);
+		shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
+	}
+	// Update json file with signature of using RoLinkX Dashboard
+	if (!isset($cfgRefData['isx']) || $cfgRefData['isx'] == 1) {
+		$cfgRefData['isx'] = 2;
 		$nfoParams = json_encode($cfgRefData, JSON_PRETTY_PRINT);
 		file_put_contents($tmpRefFile, $nfoParams);
 		shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
