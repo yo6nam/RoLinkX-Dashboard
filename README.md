@@ -2,7 +2,7 @@
 ## Web dashboard for OrangePi Zero & SVXLink (RoLink)
  
 Purpose : Make your life easier<br>
-Development : stable (v1.1)<br>
+Development : stable<br>
 Features :
 - System overview (Uptime / CPU Stats / Networking)
 - System control (Reboot / Wi-Fi / SVXLink)
@@ -10,11 +10,11 @@ Features :
 - SVXLink (RoLink) client configuration editor (with profiles)
 - DTMF Sender (commands to control SVXLink status / TGs / etc.)
 - SA818(S)V/U programming
-- Audio (alsamixer) controls
+- Audio (alsamixer) realt-time controls
 - File System switch (Read/Write <-> Read-only) <sup>See note 2</sup>
 - Display stations connected to current reflector
-- Display logs (Syslog or SVXLink) in real time
-- Updates with a click of a button
+- Display logs (Syslog & SVXLink) in real time
+- Updates with the click of a button
 
 Requirements (hardware):<br>
 - OrangePi Zero LTS 256/512MB
