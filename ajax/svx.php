@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.5
+*   RoLinkX Dashboard v1.51
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -162,6 +162,9 @@ if (preg_match('/svx\.ro/', $oldCfg)) {
 	$oldCfg = preg_replace($sCfg, $rCfg, $oldCfg);
 }
 
+/* Temporary fix */
+$oldCfg = preg_replace('/(\#+)/', '#', $oldCfg);
+
 /* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
 $newVar[0]	= '${1}' . $frmBeacon;
@@ -184,7 +187,7 @@ if ($reflectorValue != $frmReflector) {
 $oldVar[2]	= '/(PORT=)(\d+)/';
 $newVar[2]	= '${1}' . $frmPort;
 if ($localVersion[1] > '1.7.99.62' && empty($varPorts)) {
-	$newVar[2]	= '#${1}' . $frmPort; // Upgrade config file to new version
+	$newVar[2]	= '#${1}' . $frmPort . PHP_EOL . 'HOST_PORT=' . $frmPort; // Upgrade config file to new version
 }
 if ($portValue != $frmPort) {
 	if ($portsValue != $frmPort) ++$changes;
