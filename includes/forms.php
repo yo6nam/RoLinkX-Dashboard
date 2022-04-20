@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.3
+*   RoLinkX Dashboard v1.6
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -426,7 +426,8 @@ function svxForm() {
 		$svxForm .= $profileOption;
 		$svxForm .= '
 		<div class="d-flex justify-content-center mt-4">
-			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Salvează</button>
+			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
+			<button id="restore" type="submit" class="btn btn-info btn-lg m-2">Restore defaults</button>
 			</div>' . PHP_EOL;
 	return $svxForm;
 }
@@ -639,10 +640,13 @@ function cfgForm() {
 		<button id="cfgSave" type="button" class="btn btn-danger btn-lg mx-2">Save</button>';
 		$localData		= file_get_contents('/opt/rolink/version');
 		$localVersion	= explode('|', $localData);
-		if ($localVersion[0] > '20211204') {
+		$isOnline		= checkdnsrr('google.com');
+		// Check if RoLink version is capable of updates and if we're connected to the internet
+		if ($localVersion[0] > '20211204' && $isOnline) {
 			$configData .= '<button id="updateDash" type="button" class="btn btn-primary btn-lg mx-2">Dashboard update</button>';
 			$configData .= '<button id="updateRoLink" type="button" class="btn btn-warning btn-lg mx-2">RoLink update</button>';
 		}
+		$configData .= ($isOnline) ? null : '<button type="button" class="btn btn-dark btn-lg mx-2">Internet not available</button>';
 		// Show "Make Read-only" button
 		if (!is_link('/var/lib/dhcp/dhclient.eth0.leases')) {
 			$configData .= '</div><div class="d-flex justify-content-center m-2"><button id="makeRO" type="button" class="btn btn-dark btn-lg">Make FS Read-Only</button>';

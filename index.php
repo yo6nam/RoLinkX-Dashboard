@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.52
+*   RoLinkX Dashboard v1.6
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -169,12 +169,12 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v1.52 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v1.6 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20220410"></script>
+        <script src="js/scripts.js?cb=20220420"></script>
     	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>

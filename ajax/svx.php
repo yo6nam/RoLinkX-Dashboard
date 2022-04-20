@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.52
+*   RoLinkX Dashboard v1.6
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 */
 
 $cfgFile		= '/opt/rolink/conf/rolink.conf';
+$restoreFile	= '/var/www/html/rolink/assets/rolink.conf';
 $newFile		= '/tmp/rolink.conf.tmp';
 $cfgRefFile 	= file_get_contents('/opt/rolink/conf/rolink.json');
 $tmpRefFile 	= '/tmp/rolink.json.tmp';
@@ -81,6 +82,24 @@ if (isset($_POST['dtmfCommand'])) {
 		exec("/usr/bin/echo '$dtmfCommand' >/tmp/dtmf", $reply);
 		echo "<b>$dtmfCommand</b> executed!";
 	}
+	exit(0);
+}
+
+/* Process restore command */
+if (isset($_POST['restore'])) {
+	if (!is_file($restoreFile)) {
+		echo "Restore data not available!";
+		exit(1);
+	}
+	if ($fileSystemStatus[0] == 'ro') {
+		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
+		sleep(1);
+	}
+	file_put_contents('/tmp/rolink.conf.tmp', file_get_contents($restoreFile));
+	shell_exec("sudo /usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf");
+	toggleFS();
+	shell_exec('/usr/bin/sudo /usr/bin/systemctl restart rolink.service');
+	echo "RoLink configuration restored to defaults";
 	exit(0);
 }
 
@@ -163,7 +182,7 @@ if (preg_match('/svx\.ro/', $oldCfg)) {
 }
 
 /* Temporary fix */
-$oldCfg = preg_replace('/(\#+)/', '#', $oldCfg);
+$oldCfg = preg_replace('/(\#+)(\w)/', '#${2}', $oldCfg);
 
 /* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';

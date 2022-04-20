@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.3
+ *   RoLinkX Dashboard v1.6
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -102,6 +102,27 @@ $(document).ready(function () {
       success: function (data) {
         if (data) {
           $('#sysmsg').showNotice(data, 3000);
+        }
+      },
+    });
+  });
+
+  // SVXLink restore config
+  $('#restore').click(function () {
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
+    setTimeout(function () {
+      $(this).prop('disabled', false).fadeTo('fast', 1);
+    }, 5000);
+    $.ajax({
+      type: 'POST',
+      url: 'ajax/svx.php',
+      data: { restore: true },
+      success: function (data) {
+        if (data) {
+          $('#sysmsg').showNotice(data, 3000);
+          setTimeout(function () {
+            location.reload(true);
+          }, 3200);
         }
       },
     });
@@ -371,7 +392,7 @@ $(document).ready(function () {
     $('#updateDash, #cfgSave').prop('disabled', true).fadeTo('fast', 0.15);
     setTimeout(function () {
       $('#updateDash, #cfgSave').prop('disabled', false).fadeTo('fast', 1);
-    }, 15000);
+    }, 30000);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
