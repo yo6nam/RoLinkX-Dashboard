@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.6
+*   RoLinkX Dashboard v1.7
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -258,6 +258,10 @@ function svxForm() {
 	preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $cfgFileData, $varTgSelTimeOut);
 	$tgSelTimeOutValue	= (isset($varTgSelTimeOut[2])) ? 'value=' . $varTgSelTimeOut[2] : '';
 
+	/* Announce connection status interval */
+	preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $cfgFileData, $varAnnounceConnectionStatus);
+	$announceConnectionStatusValue	= (isset($varAnnounceConnectionStatus[2])) ? 'value=' . $varAnnounceConnectionStatus[2] : '';
+
 	/* Opus codec bitrate */
 	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
 	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
@@ -402,6 +406,10 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
 		  <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" '. $tgSelTimeOutValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Connection Status</span>
+		  <input id="svx_acs" type="text" class="form-control" placeholder="0" aria-label="Connection Status" aria-describedby="inputGroup-sizing-sm" '. $announceConnectionStatusValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">TX Timeout</span>

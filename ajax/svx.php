@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.6
+*   RoLinkX Dashboard v1.7
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ $frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp'
 $frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_STRING);
 $frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_STRING);
 $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
+$frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 
@@ -136,6 +137,8 @@ preg_match('/(TIMEOUT=)(\d+)\nTX/', $oldCfg, $varTxTimeout);
 // Since 1.7.99.62
 preg_match('/(HOSTS=)(\S+)/', $oldCfg, $varRefHosts);
 preg_match('/(HOST_PORT=)(\d+)/', $oldCfg, $varPorts);
+// Since 1.7.99.68-r2
+preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $oldCfg, $announceConnectionStatus);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -159,6 +162,7 @@ $monitorTgsValue	= (isset($varMonitorTgs[2])) ? $varMonitorTgs[2] : '';
 $tgSelectTOValue	= (isset($varTgSelTimeOut[2])) ? $varTgSelTimeOut[2] : '';
 $txTimeOutValue		= (isset($varTxTimeout[2])) ? $varTxTimeout[2] : '';
 $sqlDelayValue		= (isset($varSqlDelay[2])) ? $varSqlDelay[2] : '';
+$acsValue			= (isset($announceConnectionStatus[2])) ? $announceConnectionStatus[2] : null;
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -183,6 +187,9 @@ if (preg_match('/svx\.ro/', $oldCfg)) {
 
 /* Temporary fix */
 $oldCfg = preg_replace('/(\#+)(\w)/', '#${2}', $oldCfg);
+if (!isset($acsValue)) {
+	$oldCfg = preg_replace('/(ANNOUNCE_REMOTE_MIN_INTERVAL=)(\d+)/', '${1}${2}' . "\nANNOUNCE_CONNECTION_STATUS=0", $oldCfg);
+}
 
 /* Process new values, if inserted */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
@@ -295,6 +302,12 @@ $newVar[16]	= '${1}' . $frmReflector . ':' . $frmPort;
 
 $oldVar[17]	= '/(HOST_PORT=)(\d+)/';
 $newVar[17]	= '${1}' . $frmPort;
+
+$oldVar[18]	= '/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/';
+$newVar[18]	= '${1}' . $frmACStatus;
+if ($acsValue != (int)$frmACStatus) {
+	++$changes;
+}
 
 /* Configuration info sent to reflector ('tip' only) */
 if ($cfgRefData['tip'] != $frmType) {
