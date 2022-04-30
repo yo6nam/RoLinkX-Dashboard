@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.7
+*   RoLinkX Dashboard v1.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -41,9 +41,6 @@ if (is_file('/opt/rolink/version')) {
 	echo 'Please update RoLink/SVXLink first!';
 	return;
 }
-
-// Get File system status
-exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 
 // Retrieve GET vars
 $frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_STRING) : '';
@@ -92,24 +89,26 @@ if (isset($_POST['restore'])) {
 		echo "Restore data not available!";
 		exit(1);
 	}
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(1);
-	}
+	toggleFS(true);
 	file_put_contents('/tmp/rolink.conf.tmp', file_get_contents($restoreFile));
 	shell_exec("sudo /usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf");
-	toggleFS();
+	toggleFS(false);
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl restart rolink.service');
 	echo "RoLink configuration restored to defaults";
 	exit(0);
 }
 
-// Switch back to Read-Only FS
-function toggleFS() {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-	if ($fileSystemStatus[0] == 'rw') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
-		sleep(1);
+// Switch file system status (ReadWrite <-> ReadOnly)
+function toggleFS($status) {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
+	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
+	exec($changeTo);
+	sleep(1);
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
+	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
+		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
+		echo 'Something went wrong switching FS!<br/>Please reboot';
+		exit(1);
 	}
 }
 
@@ -320,10 +319,7 @@ if (!empty($frmProfile)) {
 	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
 	$proFileName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', $frmProfile) . '.json';
 	// Change FS State
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(1);
-	}
+	toggleFS(true);
 	file_put_contents($profilesPath . $proFileName, $profile);
 	$newProfile = true;
 }
@@ -339,13 +335,10 @@ if (!empty($frmLoadProfile)) {
 
 /* Delete profile */
 if (!empty($frmDelProfile)) {
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(1);
-	}
+	toggleFS(true);
 	unlink($profilesPath . $frmDelProfile);
  	echo 'Profile "'. basename($frmDelProfile, '.json') .'" has been deleted';
- 	toggleFS();
+ 	toggleFS(false);
  	exit(0);
 }
 
@@ -354,10 +347,7 @@ if ($changes > 0) {
 	// Stop SVXLink service before attempting anything
 	shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(1);
-	}
+	toggleFS(true);
 	file_put_contents($newFile, $newCfg);
 	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
 	// Update json file if decription/type changed
@@ -383,5 +373,5 @@ if ($changes > 0) {
 	$msgOut .= 'No new data to process.<br/>Keeping original configuration.';
 	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
 }
-toggleFS();
+toggleFS(false);
 echo $msgOut;

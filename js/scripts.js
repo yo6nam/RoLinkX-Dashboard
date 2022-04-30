@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.7
+ *   RoLinkX Dashboard v1.8
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -229,6 +229,8 @@ $(document).ready(function () {
         wk2: $('#wlan_authkey_2').val(),
         wn3: $('#wlan_network_3').val(),
         wk3: $('#wlan_authkey_3').val(),
+        wn4: $('#wlan_network_4').val(),
+        wk4: $('#wlan_authkey_4').val()
       },
       success: function (data) {
         if (data) {

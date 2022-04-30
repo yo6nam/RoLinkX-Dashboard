@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v1.8
+*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -33,16 +33,20 @@ $wnB = (isset($_POST['wn2'])) ? filter_input(INPUT_POST, 'wn2', FILTER_SANITIZE_
 $wkB = (isset($_POST['wk2'])) ? filter_input(INPUT_POST, 'wk2', FILTER_SANITIZE_STRING) : '';
 $wnC = (isset($_POST['wn3'])) ? filter_input(INPUT_POST, 'wn3', FILTER_SANITIZE_STRING) : '';
 $wkC = (isset($_POST['wk3'])) ? filter_input(INPUT_POST, 'wk3', FILTER_SANITIZE_STRING) : '';
+$wnD = (isset($_POST['wn4'])) ? filter_input(INPUT_POST, 'wn4', FILTER_SANITIZE_STRING) : '';
+$wkD = (isset($_POST['wk4'])) ? filter_input(INPUT_POST, 'wk4', FILTER_SANITIZE_STRING) : '';
 
-// Get File system status
-exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-
-// Switch back to Read-Only FS
-function toggleFS() {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-	if ($fileSystemStatus[0] == 'rw') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
-		sleep(1);
+// Switch file system status (ReadWrite <-> ReadOnly)
+function toggleFS($status) {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
+	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
+	exec($changeTo);
+	sleep(1);
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
+	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
+		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
+		echo 'Something went wrong switching FS!<br/>Please reboot';
+		exit(1);
 	}
 }
 
@@ -73,26 +77,31 @@ $ssidList	= getSSIDs();
 $networkA	= (empty($ssidList[0][0])) ? '' : $ssidList[0][0];
 $networkB	= (empty($ssidList[0][1])) ? '' : $ssidList[0][1];
 $networkC	= (empty($ssidList[0][2])) ? '' : $ssidList[0][2];
+$networkD	= (empty($ssidList[0][3])) ? '' : $ssidList[0][3];
 $authKeyA	= (empty($ssidList[1][0])) ? '' : $ssidList[1][0];
 $authKeyB	= (empty($ssidList[1][1])) ? '' : $ssidList[1][1];
 $authKeyC	= (empty($ssidList[1][2])) ? '' : $ssidList[1][2];
+$authKeyD	= (empty($ssidList[1][3])) ? '' : $ssidList[1][3];
 
 /* Check for user input data */
-if ($wnA || $wnB || $wnC || $wkA || $wkB || $wkC) $weHaveData = true;
+if ($wnA || $wnB || $wnC || $wnD || $wkA || $wkB || $wkC || $wkD) $weHaveData = true;
 
 /* Networks */
 if ($wnA && $wnA != $networkA) $networkA = $wnA;
 if ($wnB && $wnB != $networkB) $networkB = $wnB;
 if ($wnC && $wnC != $networkC) $networkC = $wnC;
+if ($wnD && $wnD != $networkD) $networkD = $wnD;
 
 if ($wkA && $wkA != $authKeyA) $authKeyA = $wkA;
 if ($wkB && $wkB != $authKeyB) $authKeyB = $wkB;
 if ($wkC && $wkC != $authKeyC) $authKeyC = $wkC;
+if ($wkD && $wkD != $authKeyD) $authKeyD = $wkD;
 
 /* Delete networks if supplied with '-' character */
 if ($wnA == '-') $networkA = '';
 if ($wnB == '-') $networkB = '';
 if ($wnC == '-') $networkC = '';
+if ($wnD == '-') $networkD = '';
 
 /* Update the wpa_supplicant.conf file with new data */
 $wpaData = 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
@@ -127,16 +136,21 @@ if (!empty($networkC)) {
 }' . PHP_EOL;
 }
 
+if (!empty($networkD)) {
+	$wpaData .= 'network={
+        ssid='. json_encode($networkD) .'
+        psk='. json_encode($authKeyD) .'
+        key_mgmt=WPA-PSK
+        scan_ssid=1
+}' . PHP_EOL;
+}
+
 if ($weHaveData) {
-	// Change FS State
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(1);
-	}
+	toggleFS(true);
 	file_put_contents($wpaTemp, $wpaData);
 	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");
 	echo 'New data stored.<br/>Reboot the system to apply changes!';
-	toggleFS();
+	toggleFS(false);
 } else {
 	echo 'No new data, so nothing changed';
 }

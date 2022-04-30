@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.3
+*   RoLinkX Dashboard v1.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -26,9 +26,6 @@ $config		= include '../config.php';
 $txPin		= $config['cfgPttPin'];
 $tty		= $config['cfgTty'];
 $pinPath	= '/sys/class/gpio/gpio'. $txPin .'/value';
-
-// Get File system status
-exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 
 /* Get POST vars */
 $grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_STRING) : '';
@@ -69,11 +66,7 @@ if (empty($grp) && empty($vol) && empty($flt)) {
 }
 
 if (!empty($grp)) {
-	// Change FS State
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(1);
-	}
+	toggleFS(true);
 	$nfoParams = json_encode($nfoParam, JSON_PRETTY_PRINT);
 	file_put_contents($tmpRefFile, $nfoParams);
 	shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
@@ -132,14 +125,19 @@ echo $moduleReply;
 
 /* All done, start SVXLink service */
 sleep(1);
-toggleFS();
+toggleFS(false);
 shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
 
-// Switch back to Read-Only FS
-function toggleFS() {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-	if ($fileSystemStatus[0] == 'rw') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
-		sleep(1);
+// Switch file system status (ReadWrite <-> ReadOnly)
+function toggleFS($status) {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
+	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
+	exec($changeTo);
+	sleep(1);
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
+	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
+		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
+		echo 'Something went wrong switching FS!<br/>Please reboot';
+		exit(1);
 	}
 }

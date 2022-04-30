@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.7
+*   RoLinkX Dashboard v1.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ function getSSIDs() {
 	preg_match_all('/ssid="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultSSID);
 	if (empty($resultSSID)) return false;
 	foreach ($resultSSID[1] as $key => $ap) {
-		if ($key <= 2) {
+		if ($key <= 3) {
 			  $storedSSID[] = $ap;
 		  }
 	}
@@ -47,7 +47,7 @@ function getSSIDs() {
 	preg_match_all('/psk="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultPWDS);
 	if (empty($resultPWDS)) return false;
 	foreach ($resultPWDS[1] as $key => $pw) {
-		if ($key <= 2) {
+		if ($key <= 3) {
 			  $storedPwds[] = $pw;
 		  }
 	}
@@ -167,7 +167,7 @@ function wifiForm() {
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Add / Edit networks</div>
 		<div class="card-body">' . PHP_EOL;
-	for ($i = 0; $i < 3; $i++) {
+	for ($i = 0; $i < 4; $i++) {
 		$a = (isset($ssidList[0][$i]) && $con[0] === $ssidList[0][$i]) ? true : false;
 		$s = (empty($ssidList[0][$i])) ? 'Your SSID' : $ssidList[0][$i] . (($a) ? ' (connected)' : ' (saved)');
 		$p = (empty($ssidList[1][$i])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.4
+*   RoLinkX Dashboard v1.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,6 @@ function networking() {
 /* Get Hostname */
 function hostName() {
 	return '<div class="input-group mb-2">
-  		<!-- <span class="input-group-text" style="width: 6.5rem;">Host Name</span> -->
   		<button class="btn btn-dark" style="width: 6.5rem;" type="button" id="switchHostName">Host Name</button>
   		<input type="text" class="form-control" placeholder="'. gethostname() .'" readonly>
 	</div>';

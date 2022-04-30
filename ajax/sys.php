@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.2
+*   RoLinkX Dashboard v1.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -37,9 +37,6 @@ $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILT
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
 $mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER_SANITIZE_NUMBER_INT) : '';
 
-// Get File system status
-exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-
 /* Configuration */
 if (isset($_POST)) {
 	$changed = false;
@@ -55,14 +52,10 @@ if (isset($_POST)) {
 		}
 	}
 	if ($changed) {
-		// Change FS State
-		if ($fileSystemStatus[0] == 'ro') {
-			exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-			sleep(2);
-		}
+		toggleFS(true);
 		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
 		echo 'Configuration saved!';
-		toggleFS();
+		toggleFS(false);
 		exit(0);
 	}
 
@@ -75,27 +68,28 @@ if (isset($_POST)) {
 			'vac_mb' => 'Mic1 Boost',
 			'vac_adc' => 'ADC Gain'
 		);
-		// Change FS State
-		if ($fileSystemStatus[0] == 'ro') {
-			exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-			sleep(2);
-		}
+		toggleFS(true);
 		// Set the new value
 		exec("/usr/bin/sudo /usr/bin/amixer set '$mixerControls[$mixerControl]' $mixerValue%");
 		// Store configuration to the persistent alsamixer configuration file
 		exec("/usr/bin/sudo /usr/sbin/alsactl store");
 		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
-		toggleFS();
+		toggleFS(false);
 		exit(0);
 	}
 }
 
-/* Switch back to Read-Only FS */
-function toggleFS() {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-	if ($fileSystemStatus[0] == 'rw') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,ro /");
-		sleep(2);
+// Switch file system status (ReadWrite <-> ReadOnly)
+function toggleFS($status) {
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
+	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
+	exec($changeTo);
+	sleep(1);
+	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
+	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
+		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
+		echo 'Something went wrong switching FS!<br/>Please reboot';
+		exit(1);
 	}
 }
 
@@ -144,14 +138,10 @@ function switchHostName($fileSystemStatus) {
 	preg_match('/CALLSIGN=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $callSign);
 	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim(strtolower($callSign[1])));
 	if ($newHostName != 'N0CALL' && $hostName != $newHostName) {
-		// Change FS State
-		if ($fileSystemStatus[0] == 'ro') {
-			exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-			sleep(2);
-		}
+		toggleFS(true);
 		exec("/usr/bin/sudo /usr/bin/hostnamectl set-hostname $newHostName");
 		exec("/usr/bin/sudo /usr/bin/sed -i 's/$hostName/$newHostName/' /etc/hosts");
-		toggleFS();
+		toggleFS(false);
 		return 'Hostname has been changed from <br/><b>' . $hostName . '</b> to <b>' . $newHostName . '</b><br/>You need to reboot to apply changes.';
 	} else {
 		return 'Nothing changed.<br/>New and old hostnames are the same.';
@@ -163,23 +153,19 @@ function switchHostName($fileSystemStatus) {
 /* Switch file system state */
 if (!empty($changeFS)) echo switchFSState($changeFS);
 function switchFSState($changeFS) {
-	$askedFSS = ($changeFS == 'ro') ? 'rw' : 'ro';
-	exec("/usr/bin/sudo /usr/bin/mount -o remount,$askedFSS /");
-	echo 'File system status changed to '. strtoupper($askedFSS);
+	$askedFSS = ($changeFS == 'ro') ? true : false;
+	toggleFS($askedFSS);
+	echo 'File system status changed!';
 }
 
 /* Update dashboard */
 if ($updateDash == 1) echo updateDashboard();
 function updateDashboard() {
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-	// Change FS State
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(2);
-	}
+	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_dash", $reply);
 	$result = ($reply[0] == 'Finished!') ? 'Update succeeded!' : 'Update failed!';
-	toggleFS();
+	toggleFS(false);
 	return $result;
 }
 
@@ -187,13 +173,9 @@ function updateDashboard() {
 if ($updateRoLink == 1) echo updateRoLink();
 function updateRoLink() {
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
-	// Change FS State
-	if ($fileSystemStatus[0] == 'ro') {
-		exec("/usr/bin/sudo /usr/bin/mount -o remount,rw /");
-		sleep(2);
-	}
+	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
-	toggleFS();
+	toggleFS(false);
 	return $reply[0];
 }
 
