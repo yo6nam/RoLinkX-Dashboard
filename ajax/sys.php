@@ -28,6 +28,7 @@ $rewifi				= (isset($_POST['rewifi'])) ? filter_input(INPUT_POST, 'rewifi', FILT
 $resvx				= (isset($_POST['resvx'])) ? filter_input(INPUT_POST, 'resvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $endsvx				= (isset($_POST['endsvx'])) ? filter_input(INPUT_POST, 'endsvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 'switchHostName', FILTER_SANITIZE_NUMBER_INT) : '';
+$latencyCheck		= (isset($_POST['latencyCheck'])) ? filter_input(INPUT_POST, 'latencyCheck', FILTER_SANITIZE_NUMBER_INT) : '';
 $changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_STRING) : null;
 $updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
 $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
@@ -91,6 +92,18 @@ function toggleFS($status) {
 		echo 'Something went wrong switching FS!<br/>Please reboot';
 		exit(1);
 	}
+}
+
+// Check details about connection (TCP Bandwidth / Latency & UDP Latency)
+if ($latencyCheck == 1) echo latencyCheck();
+function latencyCheck() {
+	if (empty(exec("command -v qperf"))) return 'Application not installed!<br/>Please install <b>qperf</b> manually';
+	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $host);
+	if (empty($host)) return 'Missing or wrong server address!';
+	exec("/usr/bin/qperf -m 5k -ip 19766 -t 1 $host[1] tcp_bw tcp_lat udp_lat", $qperf);
+	if (preg_match('/failed/', $qperf[1])) return 'Server not available.<br/>Try again later!';
+	$report = 'TCP ' . $qperf[1] . '<br/>TCP ' . $qperf[3] . '<br/>UDP ' . $qperf[5];
+	return $report;
 }
 
 /* Stop SVXLink */

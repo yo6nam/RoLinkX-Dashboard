@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.8
+ *   RoLinkX Dashboard v1.9
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -363,6 +363,22 @@ $(document).ready(function () {
           setTimeout(function () {
             location.reload();
           }, 3200);
+        }
+      },
+    });
+  });
+
+  // Latency check
+  $('#latencyCheck').click(function () {
+    $('#latencyCheck').prop('disabled', true).fadeTo('fast', 0.15);
+    $.ajax({
+      type: 'POST',
+      url: 'ajax/sys.php',
+      data: { latencyCheck: 1 },
+      success: function (data) {
+        if (data) {
+          $('#sysmsg').showNotice(data, 9000);
+          $('#latencyCheck').prop('disabled', false).fadeTo('fast', 1);
         }
       },
     });

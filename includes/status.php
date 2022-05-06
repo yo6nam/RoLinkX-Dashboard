@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.8
+*   RoLinkX Dashboard v1.9
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,6 @@
 if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(1);
 if (isset($_GET['svxReflector'])) echo getReflector(1);
 if (isset($_GET['cpuData'])) echo getCpuStats(1);
-
-// Reusable icon
-$eIcon = '&nbsp;&nbsp;
-	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="red" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
-	<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-	<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-	</svg>';
 
 /* Get IP(s) */
 function networking() {
@@ -155,29 +148,29 @@ function getSSID() {
 
 /* Get Public IP */
 function getPublicIP() {
-	global $eIcon;
 	$ip		= 'Not available';
-	$width	= 8;
 	$gotIP	= false;
+	$stateColor = 'color:white;background:red;';
+	$action = null;
 	// Method 1
 	exec("dig @resolver4.opendns.com myip.opendns.com +short", $getIP);
 	if (filter_var($getIP[0], FILTER_VALIDATE_IP) !== false) {
 		$ip		= $getIP[0];
-		$eIcon	= null;
-		$width	= 6.5;
+		$stateColor = 'background:lightgreen;';
+		$action = 'id="latencyCheck"';
 		$gotIP	= true;
 	}
 	// Method 2
-	if (!$gotIP) {
+	if ($gotIP) {
 		$getIP = file_get_contents('http://ipecho.net/plain');
 		if (filter_var($getIP, FILTER_VALIDATE_IP) !== false) {
 			$ip		= $getIP;
-			$eIcon	= null;
-			$width	= 6.5;
+			$action = 'id="latencyCheck"';
+			$stateColor = 'background:lightgreen;';
 		}
 	}
     return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: '. $width .'rem;">External IP'. $eIcon .'</span>
+    	<button class="btn" type="button" style="width: 6.5rem;'. $stateColor .'" '. $action .'>External IP</button>
   		<input type="text" class="form-control" placeholder="'. $ip .'" readonly>
 	</div>';
 }
@@ -286,7 +279,6 @@ function getFileSystem() {
 function getRemoteVersion() {
 	if (getPublicIP() == 'Not available') return;
 	if (!is_file('/opt/rolink/version')) return;
-	$updateIcon		= null;
 	$remoteData		= false;
 	$localData		= file_get_contents('/opt/rolink/version');
 	$localVersion	= explode('|', $localData);
@@ -296,16 +288,14 @@ function getRemoteVersion() {
 		$remoteData = file_get_contents('https://svx.439100.ro/data/version');
 	}
 	if ($remoteData) {
-		global $eIcon;
 		$remoteVersion = explode('|', $remoteData);
 		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
-		$updateIcon	= ((int)$remoteVersion[0] > (int)$localVersion[0]) ? $eIcon : '';
 		setcookie("remote_version", $remoteVersion[0], time()+60*60*24); // Expiry in 24 hours (no need to check more often)
 	} elseif (!isset($result)) {
 		$result = 'Unavailable';
 	}
 	return '<div class="input-group mb-2">
- 		<span class="input-group-text" style="width: 6.5rem;">Version'. $updateIcon .'</span>
+ 		<span class="input-group-text" style="width: 6.5rem;">Version</span>
   		<input type="text" class="form-control" placeholder="'. $result . '" readonly>
 	</div>';
 }

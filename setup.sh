@@ -1,5 +1,5 @@
 #!/bin/bash
-# RoLinkX Dashboard v1.0
+# RoLinkX Dashboard v1.9
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -64,6 +64,13 @@ else
 	apt-get install lighttpd php$phpVersion-fpm php-cgi -y
 	lighttpd-enable-mod fastcgi-php >/dev/null
 	service lighttpd force-reload
+fi
+
+# Check and install qperf
+if command -v qperf >/dev/null; then
+	printf 'qperf is present, moving on...\n'
+else
+	apt-get install qperf -y >/dev/null
 fi
 
 if [ -d "/var/www/html" ]; then
