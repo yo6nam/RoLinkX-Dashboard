@@ -150,29 +150,62 @@ function getSSID() {
 function getPublicIP() {
 	$ip		= 'Not available';
 	$gotIP	= false;
-	$stateColor = 'color:white;background:red;';
-	$action = null;
+	$status = 'color:white;background:red';
+	$toggle = null;
 	// Method 1
 	exec("dig @resolver4.opendns.com myip.opendns.com +short", $getIP);
 	if (filter_var($getIP[0], FILTER_VALIDATE_IP) !== false) {
 		$ip		= $getIP[0];
-		$stateColor = 'background:lightgreen;';
-		$action = 'id="latencyCheck"';
+		$status = 'background:lightgreen';
+		$toggle = 'class="input-group-text collapsed dropdown-toggle" role="button"';
 		$gotIP	= true;
 	}
 	// Method 2
-	if ($gotIP) {
+	if (!$gotIP) {
 		$getIP = file_get_contents('http://ipecho.net/plain');
 		if (filter_var($getIP, FILTER_VALIDATE_IP) !== false) {
 			$ip		= $getIP;
-			$action = 'id="latencyCheck"';
-			$stateColor = 'background:lightgreen;';
+			$status = 'background:lightgreen';
+			$toggle = 'class="input-group-text collapsed dropdown-toggle" role="button"';
+			$gotIP	= true;
 		}
 	}
-    return '<div class="input-group mb-2">
-    	<button class="btn" type="button" style="width: 6.5rem;'. $stateColor .'" '. $action .'>External IP</button>
+	$data ='<div class="input-group mb-2">
+    	<span '. $toggle .' data-bs-toggle="collapse" data-bs-target="#netPerf" aria-expanded="false" aria-controls="netPerf" style="width: 6.5rem;'. $status .'">External IP</span>
   		<input type="text" class="form-control" placeholder="'. $ip .'" readonly>
 	</div>';
+	$data .= ($gotIP) ? '<div id="netPerf" class="accordion-collapse collapse">
+		<div class="accordion-body">
+			<div class="row">
+    			<div class="col text-center pb-2">
+      				<button type="button" class="btn btn-info col-sm px-2" id="latencyCheck"><i class="icon-timer px-2" aria-hidden="true"></i>Run test</button>
+    			</div>
+  			</div>
+			<div class="row">
+				<div class="col-sm">
+					<label for="tcp_bw" class="form-control-sm col-form-label">TCP Bandwidth</label>
+					<input id="tcp_bw" type="text" class="form-control text-center" placeholder="..." readonly>
+				</div>
+				<div class="col-sm">
+					<label for="tcp_lat" class="form-control-sm col-form-label">TCP Latency</label>
+					<input id="tcp_lat" type="text" class="form-control text-center" placeholder="..." readonly>
+				</div>
+				<div class="col-sm">
+					<label for="udp_sbw" class="form-control-sm col-form-label">UDP TX Bandwidth</label>
+					<input id="udp_sbw" type="text" class="form-control text-center" placeholder="..." readonly>
+				</div>
+				<div class="col-sm">
+					<label for="udp_rbw" class="form-control-sm col-form-label">UDP RX Bandwidth</label>
+					<input id="udp_rbw" type="text" class="form-control text-center" placeholder="..." readonly>
+				</div>
+				<div class="col-sm">
+					<label for="udp_lat" class="form-control-sm col-form-label">UDP Latency</label>
+					<input id="udp_lat" type="text" class="form-control text-center" placeholder="..." readonly>
+				</div>
+			</div>
+		</div>
+	</div>' : null;
+	return $data;
 }
 
 /* Get SVXLink status */

@@ -1,5 +1,5 @@
 #!/bin/bash
-# RoLinkX Dashboard v1.9
+# RoLinkX Dashboard v1.92
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -70,7 +70,8 @@ fi
 if command -v qperf >/dev/null; then
 	printf 'qperf is present, moving on...\n'
 else
-	apt-get install qperf -y >/dev/null
+	printf 'qperf is NOT present, installing it now\n'
+	apt-get install qperf -y
 fi
 
 if [ -d "/var/www/html" ]; then

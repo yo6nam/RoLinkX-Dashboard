@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.9
+ *   RoLinkX Dashboard v1.92
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -370,6 +370,7 @@ $(document).ready(function () {
 
   // Latency check
   $('#latencyCheck').click(function () {
+	$(this).text("Please wait...");
     $('#latencyCheck').prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
@@ -377,10 +378,26 @@ $(document).ready(function () {
       data: { latencyCheck: 1 },
       success: function (data) {
         if (data) {
-          $('#sysmsg').showNotice(data, 9000);
-          $('#latencyCheck').prop('disabled', false).fadeTo('fast', 1);
+			try {
+    			networkData = JSON.parse(data);
+			} catch (error) {
+				$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
+					$('#sysmsg').showNotice(data, 3000);
+					$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+  				});
+    			return;
+			}
+			$('#tcp_bw').attr('placeholder', networkData[0]).val('');
+			$('#tcp_lat').attr('placeholder', networkData[1]).val('');
+			$('#udp_sbw').attr('placeholder', networkData[2]).val('');
+			$('#udp_rbw').attr('placeholder', networkData[3]).val('');
+			$('#udp_lat').attr('placeholder', networkData[4]).val('');
+			$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
+				$('#sysmsg').showNotice('Completed successfully', 3000);
+				$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+  			});
         }
-      },
+      }
     });
   });
 
@@ -401,29 +418,28 @@ $(document).ready(function () {
             location.reload();
           }, 3200);
         }
-      },
+      }
     });
   });
 
   // Update Dashboard
   $('#updateDash').click(function () {
     $(this).text("Please wait...");
-    $('#updateDash, #cfgSave').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#updateDash, #cfgSave').prop('disabled', false).fadeTo('fast', 1);
-    }, 30000);
+    $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { updateDash: 1 },
       success: function (data) {
         if (data) {
-          $('#sysmsg').showNotice(data, 3000);
+          $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1, function() {
+            $('#sysmsg').showNotice(data, 3000);
+          });
           setTimeout(function () {
             location.reload();
           }, 3500);
         }
-      },
+      }
     });
   });
 
@@ -443,17 +459,18 @@ $(document).ready(function () {
       overlayClose: false,
       overlay: true,
     });
-    $('#updateRoLink, #cfgSave').prop('disabled', true).fadeTo('fast', 0.15);
+    $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { updateRoLink: 1 },
       success: function (data) {
         if (data) {
-          $('#updateRoLink, #cfgSave').prop('disabled', false).fadeTo('fast', 1);
-          $('#sysmsg').showNotice(data, 4000);
+          $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1, function() {
+            $('#sysmsg').showNotice(data, 3000);
+          });
         }
-      },
+      }
     });
   });
 
@@ -494,7 +511,7 @@ $(document).ready(function () {
             $.ajax({ type: 'POST', url: 'ajax/sys.php', data: { reboot: 1 } });
           });
         }
-      },
+      }
     });
   });
 
@@ -528,7 +545,7 @@ $(document).ready(function () {
             location.reload(true);
           }, 3200);
         }
-      },
+      }
     });
   });
 
@@ -560,7 +577,7 @@ $(document).ready(function () {
             .fadeIn('fast')
             .append(data + '<br/>');
         }
-      },
+      }
     });
   });
 

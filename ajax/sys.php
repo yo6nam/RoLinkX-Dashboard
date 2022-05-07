@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.8
+*   RoLinkX Dashboard v1.92
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -100,10 +100,14 @@ function latencyCheck() {
 	if (empty(exec("command -v qperf"))) return 'Application not installed!<br/>Please install <b>qperf</b> manually';
 	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $host);
 	if (empty($host)) return 'Missing or wrong server address!';
-	exec("/usr/bin/qperf -m 5k -ip 19766 -t 1 $host[1] tcp_bw tcp_lat udp_lat", $qperf);
+	exec("/usr/bin/qperf -m 5k -t 1 $host[1] tcp_bw tcp_lat udp_bw udp_lat", $qperf);
 	if (preg_match('/failed/', $qperf[1])) return 'Server not available.<br/>Try again later!';
-	$report = 'TCP ' . $qperf[1] . '<br/>TCP ' . $qperf[3] . '<br/>UDP ' . $qperf[5];
-	return $report;
+	preg_match('/=\s(.*)$/', $qperf[1], $tcp_bw);
+	preg_match('/=\s(.*)$/', $qperf[3], $tcp_lat);
+	preg_match('/=\s(.*)$/', $qperf[5], $udp_sbw);
+	preg_match('/=\s(.*)$/', $qperf[6], $udp_rbw);
+	preg_match('/=\s(.*)$/', $qperf[8], $udp_lat);
+	return json_encode(array($tcp_bw[1], $tcp_lat[1], $udp_sbw[1], $udp_rbw[1], $udp_lat[1]));
 }
 
 /* Stop SVXLink */
