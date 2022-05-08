@@ -70,24 +70,19 @@ $(document).ready(function () {
 
   // SA818 Programming
   $('#programm').click(function () {
+	$(this).prop('disabled', true).fadeTo('fast', 0.15);
     $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
       title: 'Sending data, please wait...',
-      width: '40vh',
+      width: '46vh',
       icon: 'icon-warning',
       headerColor: '#941919',
       autoOpen: 5,
-      timeout: 12000,
-      timeoutProgressbar: true,
       closeOnEscape: false,
       closeButton: false,
       overlayClose: false,
       overlay: true,
     });
-    $('#programm').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#programm').prop('disabled', false).fadeTo('fast', 1);
-    }, 12000);
     $.ajax({
       type: 'POST',
       url: 'ajax/trx.php',
@@ -101,39 +96,36 @@ $(document).ready(function () {
       },
       success: function (data) {
         if (data) {
-          $('#sysmsg').showNotice(data, 3000);
+		  $('#sysmsg').iziModal('destroy');
+		  $('#programm').prop('disabled', false).fadeTo('fast', 1);
+          $('#sysmsg').showNotice(data, 3500);
         }
-      },
+      }
     });
   });
 
   // SVXLink restore config
   $('#restore').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $(this).prop('disabled', false).fadeTo('fast', 1);
-    }, 5000);
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
       data: { restore: true },
       success: function (data) {
         if (data) {
+		  $('#restore').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
             location.reload(true);
-          }, 3200);
+          }, 3500);
         }
-      },
+      }
     });
   });
 
   // SVXLink config
   $('#savesvxcfg').click(function () {
-    $('#savesvxcfg').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#savesvxcfg').prop('disabled', false).fadeTo('fast', 1);
-    }, 5000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
@@ -160,12 +152,13 @@ $(document).ready(function () {
       },
       success: function (data) {
         if (data) {
+          $('#savesvxcfg').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
             location.reload(true);
-          }, 3200);
+          }, 5000);
         }
-      },
+      }
     });
   });
 
@@ -177,12 +170,12 @@ $(document).ready(function () {
       data: { prd: $('#svx_spn').val() },
       success: function (data) {
         if (data) {
-          $('#sysmsg').showNotice(data, 3000);
+          $('#sysmsg').showNotice(data, 2000);
         }
         setTimeout(function () {
           location.reload(true);
-        }, 3200);
-      },
+        }, 5000);
+      }
     });
   });
 
@@ -208,17 +201,14 @@ $(document).ready(function () {
               3000
             );
           }
-        },
+        }
       });
     }
   });
 
   // WiFi config
   $('#savewifi').click(function () {
-    $('#savewifi').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#savewifi').prop('disabled', false).fadeTo('fast', 1);
-    }, 5000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/wifi.php',
@@ -234,12 +224,13 @@ $(document).ready(function () {
       },
       success: function (data) {
         if (data) {
+          $('#savewifi').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
             location.reload(true);
           }, 3200);
         }
-      },
+      }
     });
   });
 
@@ -247,54 +238,50 @@ $(document).ready(function () {
 
   // Power Off OS
   $('#halt').click(function () {
-    $('#halt').prop('disabled', true).fadeTo('fast', 0.15);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { halt: 1 },
+      data: { halt: 1 }
     });
   });
 
   // Reboot OS
   $('#reboot').click(function () {
-    $('#reboot').prop('disabled', true).fadeTo('fast', 0.15);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { reboot: 1 },
+      data: { reboot: 1 }
     });
   });
 
   // Restart Wi-Fi
   $('#rewifi').click(function () {
-    $('#rewifi').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#rewifi').prop('disabled', false).fadeTo('fast', 1);
-    }, 1000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { rewifi: 1 },
       success: function (data) {
         if (data) {
+          $('#rewifi').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('Wi-Fi service restarted', 3000);
         }
-      },
+      }
     });
   });
 
   // Restart SVXLink service
   $('#resvx').click(function () {
-    $('#resvx').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#resvx').prop('disabled', false).fadeTo('fast', 1);
-    }, 1000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { resvx: 1 },
       success: function (data) {
         if (data == true) {
+          $('#resvx').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('RoLink service has been (re)started', 3000);
           setTimeout(function () {
             $.ajax({
@@ -311,22 +298,20 @@ $(document).ready(function () {
             });
           }, 3200);
         }
-      },
+      }
     });
   });
 
   // Stop SVXLink service
   $('#endsvx').click(function () {
-    $('#endsvx').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#endsvx').prop('disabled', false).fadeTo('fast', 1);
-    }, 1000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { endsvx: 1 },
       success: function (data) {
         if (data == true) {
+          $('#endsvx').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('RoLink service has been stopped', 3000);
           setTimeout(function () {
             $.ajax({
@@ -343,28 +328,26 @@ $(document).ready(function () {
             });
           }, 3200);
         }
-      },
+      }
     });
   });
 
   // Switch Host Name (default -> callsign)
   $('#switchHostName').click(function () {
-    $('#switchHostName').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#switchHostName').prop('disabled', false).fadeTo('fast', 1);
-    }, 6000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { switchHostName: 1 },
       success: function (data) {
         if (data) {
+          $('#switchHostName').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
             location.reload();
-          }, 3200);
+          }, 4000);
         }
-      },
+      }
     });
   });
 
@@ -387,14 +370,21 @@ $(document).ready(function () {
   				});
     			return;
 			}
-			var udpLatency = networkData[4].match(/\b\d+\b/);
-			if (udpLatency > 150) { // Anything above 150ms becomes unusable
-				$('#udp_lat').addClass('bg-danger text-white');
-			} else if (udpLatency >= 100 && udpLatency <= 150) { // Warning threshold
-				$('#udp_lat').addClass('bg-warning text-dark');
-			} else {
-				$('#udp_lat').addClass('bg-success text-white');
-			}
+			var tcpBandwidth = networkData[0].match(/(\S+)\s(\MB|KB)/);
+			validate('#tcp_bw', tcpBandwidth, 1)
+
+			var tcpLatency = networkData[1].match(/(\S+)\s(\S+)/);
+			validate('#tcp_lat', tcpLatency, 2)
+
+			var udpTxBandwidth = networkData[2].match(/(\S+)\s(\MB|KB)/);
+			validate('#udp_sbw', udpTxBandwidth, 1)
+
+			var udpRxBandwidth = networkData[3].match(/(\S+)\s(\MB|KB)/);
+			validate('#udp_rbw', udpRxBandwidth, 1)
+
+			var udpLatency = networkData[4].match(/(\S+)\s(\S+)/);
+			validate('#udp_lat', udpLatency, 2)
+
 			$('#tcp_bw').val(networkData[0]);
 			$('#tcp_lat').val(networkData[1]);
 			$('#udp_sbw').val(networkData[2]);
@@ -407,20 +397,55 @@ $(document).ready(function () {
         }
       }
     });
+	function validate(container, data, type) {
+	    var status = [];
+	    status['ok'] = 'bg-success text-white'
+	    status['limit'] = 'bg-warning text-dark'
+	    status['bad'] = 'bg-danger text-white'
+
+	    switch (type) {
+	        case 1:
+	            if (data[2] == 'KB') {
+	                if (data[1] < 350) {
+	                    $(container).addClass(status['bad']);
+	                } else if (data[1] >= 350 && data[1] <= 500) {
+	                    $(container).addClass(status['limit']);
+	                } else {
+	                    $(container).addClass(status['ok']);
+	                }
+	            } else {
+	                $(container).addClass(status['ok']);
+	            }
+	            break;
+	        case 2:
+	            if (data[2] == 'ms') {
+	                if (data[1] > 150) {
+	                    $(container).addClass(status['bad']);
+	                } else if (data[1] >= 100 && data[1] <= 150) {
+	                    $(container).addClass(status['limit']);
+	                } else {
+	                    $(container).addClass(status['ok']);
+	                }
+	            } else {
+	                $(container).addClass(status['bad']);
+	            }
+	            break;
+	        default:
+	            return;
+	    }
+	}
   });
 
   // Switch file system state (RW <-> RO)
   $('#changeFS').click(function () {
-    $('#changeFS').prop('disabled', true).fadeTo('fast', 0.15);
-    setTimeout(function () {
-      $('#changeFS').prop('disabled', false).fadeTo('fast', 1);
-    }, 2000);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { changeFS: $('#changeFS').val() },
       success: function (data) {
         if (data) {
+          $('#changeFS').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
             location.reload();
@@ -525,10 +550,10 @@ $(document).ready(function () {
 
   // Configuration values
   $('#cfgSave').click(function () {
-    $('#cfgSave').prop('disabled', true).fadeTo('fast', 0.15);
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     setTimeout(function () {
       $('#cfgSave').prop('disabled', false).fadeTo('fast', 1);
-    }, 5000);
+    }, 3000);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',

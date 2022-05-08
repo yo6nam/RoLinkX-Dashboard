@@ -82,9 +82,9 @@ function scanWifi($ext = 0) {
 		if ($ext != 1) {
 			$apList = '<div class="accordion mb-3" id="wifiNetworks">
 	<div class="accordion-item">
-	 <h2 class="accordion-header" id="heading">
+	 <h3 class="accordion-header" id="heading">
 		<button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks</button>
-	 </h2>
+	 </h3>
 	 <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
 		<div id="updateList" class="accordion-body">';
 		 }
@@ -162,7 +162,7 @@ function wifiForm() {
 	$ssidList	= getSSIDs();
 	$apsList	= scanWifi();
 	exec('/sbin/iwgetid --raw', $con);
-	$wifiForm = '<h2 class="mt-2 alert alert-info fw-bold">Wi-Fi configuration</h2>';
+	$wifiForm = '<h4 class="mt-2 alert alert-info fw-bold">Wi-Fi configuration</h4>';
 	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Add / Edit networks</div>
@@ -185,7 +185,7 @@ function wifiForm() {
 	}
 	$wifiForm .= '<div class="m-3 alert alert-info" role="alert">Note : To delete a network use the - (dash) character as SSID</div>
 		<div class="d-flex justify-content-center mt-4">
-			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Salvează</button>
+			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Save</button>
 			<button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
 		</div>
 		</div>
@@ -299,7 +299,7 @@ function svxForm() {
 		</div>';
 	}
 
-	$svxForm = '<h2 class="mt-2 alert alert-warning fw-bold">SVXLink configuration</h2>
+	$svxForm = '<h4 class="mt-2 alert alert-warning fw-bold">SVXLink configuration</h4>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Profile Name</span>
 		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
@@ -454,7 +454,7 @@ function sa818Form() {
 		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
 		);
-	$sa818Form = '<h2 class="mt-2 alert alert-danger fw-bold">SA818 programmer</h2>
+	$sa818Form = '<h4 class="mt-2 alert alert-danger fw-bold">SA818 programmer</h4>
 		<div class="form-floating mb-1">
 			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
 				<option selected disabled>Select a value</option>';
@@ -534,7 +534,7 @@ function sa818Form() {
 
 /* Logs */
 function logsForm() {
-	$logData = '<h2 class="mt-2 alert alert-dark fw-bold">Logs</h2>';
+	$logData = '<h4 class="mt-2 alert alert-dark fw-bold">Logs</h4>';
 	$logData .= '<div class="container">
 		<div class="row justify-content-center">
 		  <div class="col-lg-12">
@@ -583,7 +583,7 @@ function cfgForm() {
 	exec('/usr/bin/sudo /usr/bin/amixer get \'Mic1 Boost\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetMic1Boost);
 	exec('/usr/bin/sudo /usr/bin/amixer get \'ADC Gain\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetADCGain);
 
-	$configData = '<h2 class="mt-2 alert alert-warning fw-bold">Configuration</h2>
+	$configData = '<h4 class="mt-2 alert alert-warning fw-bold">Configuration</h4>
 	<div class="card m-1">
 	<h4 class="m-2">Serial & GPIO</h4>
 	<div class="form-floating m-2">
