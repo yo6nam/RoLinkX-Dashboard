@@ -102,11 +102,11 @@ function latencyCheck() {
 	if (empty($host)) return 'Missing or wrong server address!';
 	exec("/usr/bin/qperf -m 5k -t 1 $host[1] tcp_bw tcp_lat udp_bw udp_lat", $qperf);
 	if (preg_match('/failed/', $qperf[1])) return 'Server not available.<br/>Try again later!';
-	preg_match('/=\s(.*)$/', $qperf[1], $tcp_bw);
-	preg_match('/=\s(.*)$/', $qperf[3], $tcp_lat);
-	preg_match('/=\s(.*)$/', $qperf[5], $udp_sbw);
-	preg_match('/=\s(.*)$/', $qperf[6], $udp_rbw);
-	preg_match('/=\s(.*)$/', $qperf[8], $udp_lat);
+	preg_match('/=\s+(.*)$/', $qperf[1], $tcp_bw);
+	preg_match('/=\s+(.*)$/', $qperf[3], $tcp_lat);
+	preg_match('/=\s+(.*)$/', $qperf[5], $udp_sbw);
+	preg_match('/=\s+(.*)$/', $qperf[6], $udp_rbw);
+	preg_match('/=\s+(.*)$/', $qperf[8], $udp_lat);
 	return json_encode(array($tcp_bw[1], $tcp_lat[1], $udp_sbw[1], $udp_rbw[1], $udp_lat[1]));
 }
 

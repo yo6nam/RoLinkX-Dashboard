@@ -370,7 +370,7 @@ $(document).ready(function () {
 
   // Latency check
   $('#latencyCheck').click(function () {
-	$(this).text("Please wait...");
+	$(this).html('<span role="status" class="spinner-border spinner-border-sm mx-2"></span>Please wait...');
     $('#latencyCheck').prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
@@ -387,14 +387,22 @@ $(document).ready(function () {
   				});
     			return;
 			}
-			$('#tcp_bw').attr('placeholder', networkData[0]).val('');
-			$('#tcp_lat').attr('placeholder', networkData[1]).val('');
-			$('#udp_sbw').attr('placeholder', networkData[2]).val('');
-			$('#udp_rbw').attr('placeholder', networkData[3]).val('');
-			$('#udp_lat').attr('placeholder', networkData[4]).val('');
+			var udpLatency = networkData[4].match(/\b\d+\b/);
+			if (udpLatency > 150) { // Anything above 150ms becomes unusable
+				$('#udp_lat').addClass('bg-danger text-white');
+			} else if (udpLatency >= 100 && udpLatency <= 150) { // Warning threshold
+				$('#udp_lat').addClass('bg-warning text-dark');
+			} else {
+				$('#udp_lat').addClass('bg-success text-white');
+			}
+			$('#tcp_bw').val(networkData[0]);
+			$('#tcp_lat').val(networkData[1]);
+			$('#udp_sbw').val(networkData[2]);
+			$('#udp_rbw').val(networkData[3]);
+			$('#udp_lat').val(networkData[4]);
 			$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
-				$('#sysmsg').showNotice('Completed successfully', 3000);
 				$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+				$('#sysmsg').showNotice('Completed successfully', 3000);
   			});
         }
       }

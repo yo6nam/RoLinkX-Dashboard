@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.9
+*   RoLinkX Dashboard v1.92
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -202,6 +202,9 @@ function getPublicIP() {
 					<label for="udp_lat" class="form-control-sm col-form-label">UDP Latency</label>
 					<input id="udp_lat" type="text" class="form-control text-center" placeholder="..." readonly>
 				</div>
+			</div>
+			<div class="pt-3 text-center">
+				<small class="d-inline-flex px-2 py-1 font-monospace text-muted border rounded-3">Optimal performance is achieved when bandwidth is higher than 350 KB/sec and latency is lower than 150 ms</small>
 			</div>
 		</div>
 	</div>' : null;

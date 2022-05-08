@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.8
+*   RoLinkX Dashboard v1.92
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -162,7 +162,7 @@ function wifiForm() {
 	$ssidList	= getSSIDs();
 	$apsList	= scanWifi();
 	exec('/sbin/iwgetid --raw', $con);
-	$wifiForm = '<h2 class="mt-2 alert alert-info fw-bold">Configurare interfață Wi-Fi</h2>';
+	$wifiForm = '<h2 class="mt-2 alert alert-info fw-bold">Wi-Fi configuration</h2>';
 	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Add / Edit networks</div>
@@ -299,7 +299,7 @@ function svxForm() {
 		</div>';
 	}
 
-	$svxForm = '<h2 class="mt-2 alert alert-warning fw-bold">Configurare SVXLink</h2>
+	$svxForm = '<h2 class="mt-2 alert alert-warning fw-bold">SVXLink configuration</h2>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Profile Name</span>
 		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
@@ -454,10 +454,10 @@ function sa818Form() {
 		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
 		);
-	$sa818Form = '<h2 class="mt-2 alert alert-danger fw-bold">Configurare modul SA818</h2>
+	$sa818Form = '<h2 class="mt-2 alert alert-danger fw-bold">SA818 programmer</h2>
 		<div class="form-floating mb-1">
 			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
-				<option selected disabled>Selectează o valoare</option>';
+				<option selected disabled>Select a value</option>';
 					/* Generate frequency list (2m & 70cm, no APRS or repeater inputs/outputs) */
 					for ($f=144.000; $f<=145.5875; $f+=0.0125) {
 						if (sprintf("%0.3f", $f) == '144.800') continue;
@@ -469,19 +469,19 @@ function sa818Form() {
 						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>' . PHP_EOL;
 					}
 	$sa818Form .= '</select>
-			<label for="sa_grp">Frecvenţă (MHz)</label>
+			<label for="sa_grp">Frequency (MHz)</label>
 		</div>
 		<div class="form-floating mb-1">
-			<select id="sa_dev" class="form-select" aria-label="Deviaţie (kHz)">
-				<option selected disabled>Selectează o valoare</option>
+			<select id="sa_dev" class="form-select" aria-label="Deviation (kHz)">
+				<option selected disabled>Select a value</option>
 				<option value="0">12.5</option>
 				<option value="1" selected>25</option>
 			</select>
-			<label for="sa_dev">Deviaţie (kHz)</label>
+			<label for="sa_dev">Deviation (kHz)</label>
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_tpl" class="form-select" aria-label="CTCSS (Hz)">
-				<option selected disabled>Selectează o valoare</option>';
+				<option selected disabled>Select a value</option>';
 					/* Build CTCSS selects */
 					foreach ($ctcssVars as $key => $val) {
 						$selected = ($key == 13) ? ' selected' : '';
@@ -492,7 +492,7 @@ function sa818Form() {
 		</div>
 		<div class="form-floating mb-1">
 			<select id="sa_sql" class="form-select" aria-label="Squelch">
-				<option selected disabled>Selectează o valoare</option>';
+				<option selected disabled>Select a value</option>';
 					/* Generate squelch values */
 					for ($sq=1; $sq<=8; $sq+=1) {
 						$selected = ($sq == 4) ? ' selected' : '';
@@ -502,17 +502,17 @@ function sa818Form() {
 			<label for="sa_sql">Squelch</label>
 		</div>
 		<div class="form-floating mb-1">
-			<select id="sa_vol" class="form-select" aria-label="Volum">
+			<select id="sa_vol" class="form-select" aria-label="Volume">
 				<option value="" selected>No change</option>';
 					/* Generate volume values */
 					for ($vol=1; $vol<=8; $vol+=1) {
 						$sa818Form .= '<option value="'. $vol . '">'. $vol .'</option>' . PHP_EOL;
 					}
 	$sa818Form .= '</select>
-			<label for="sa_vol">Volum</label>
+			<label for="sa_vol">Volume</label>
 		</div>
 		<div class="form-floating mb-1">
-			<select id="sa_flt" class="form-select" aria-label="Filtre">
+			<select id="sa_flt" class="form-select" aria-label="Filter">
 				<option value="" selected>No change</option>
 				<option value="0,0,0">Disable All</option>
 				<option value="1,0,0">Enable Pre/De-Emphasis</option>
@@ -523,10 +523,10 @@ function sa818Form() {
 				<option value="1,0,1">Enable Pre/De-Emphasis & Low Pass</option>
 				<option value="1,1,1">Enable All</option>
 			</select>
-			<label for="sa_flt">Filtre</label>
+			<label for="sa_flt">Filter</label>
 		</div>
 		<div class="d-flex justify-content-center mt-4">
-			<button id="programm" type="button" class="btn btn-danger btn-lg">Programează!</button>
+			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
 		</div>' . PHP_EOL;
 	$sa818Form .= '<div class="mt-3 alert alert-info" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>' . PHP_EOL;
 	return $sa818Form;

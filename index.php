@@ -136,7 +136,11 @@ switch ($page) {
 	<body>
 		<div class="d-flex" id="wrapper">
             <div class="border-end bg-white" id="sidebar-wrapper">
-                <div class="sidebar-heading border-bottom bg-light fw-bold"><i class="icon-dashboard" style="font-size:26px;color:purple;vertical-align: middle;padding: 0 4px 4px 0;"></i>RoLinkX Dashboard</div>
+                <div class="sidebar-heading border-bottom bg-light fw-bold">
+    				<a href="./" class="text-decoration-none" style="color:purple">
+    					<i class="icon-dashboard" style="font-size:26px;color:purple;vertical-align: middle;padding: 0 4px 4px 0;"></i>RoLinkX Dashboard
+    				</a>
+    			</div>
                 <div class="list-group list-group-flush">
 					<a class="<?php echo ($page == '') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./">Status</a>
 					<a class="<?php echo ($page == 'wifi') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=wifi">WiFi</a>
@@ -149,7 +153,11 @@ switch ($page) {
             <div id="page-content-wrapper">
                 <nav <?php echo $mobile; ?>class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                     <div class="container-fluid">
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button><h1 class="sidebar-heading bg-light fw-light mt-1 text-dark">RoLinkX Dashboard</h1><i class="icon-dashboard" style="font-size:40px;color:purple"></i>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    					<span class="navbar-toggler-icon"></span>
+    					</button>
+   						<h1 class="sidebar-heading bg-light fw-light mt-1 text-dark"><a href="./" class="text-decoration-none" style="color:black">RoLinkX Dashboard</a></h1>
+   						<i class="icon-dashboard" style="font-size:40px;color:purple"></i>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
 								<li class="nav-item"><a class="<?php echo ($page == '') ? 'active p-2' : ''; ?> nav-link" href="./">Status</a></li>
@@ -174,7 +182,7 @@ switch ($page) {
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
-        <script src="js/scripts.js?cb=20220507"></script>
+        <script src="js/scripts.js?cb=20220508"></script>
     	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>
