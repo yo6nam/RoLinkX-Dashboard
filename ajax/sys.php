@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.92
+*   RoLinkX Dashboard v1.94
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -97,8 +97,10 @@ function toggleFS($status) {
 // Check details about connection (TCP Bandwidth / Latency & UDP Latency)
 if ($latencyCheck == 1) echo latencyCheck();
 function latencyCheck() {
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return 'RoLink not installed!';
 	if (empty(exec("command -v qperf"))) return 'Application not installed!<br/>Please install <b>qperf</b> manually';
-	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $host);
+	preg_match('/HOST=(\S+)/', file_get_contents($cfgFile), $host);
 	if (empty($host)) return 'Missing or wrong server address!';
 	exec("/usr/bin/qperf -m 5k -t 1 $host[1] tcp_bw tcp_lat udp_bw udp_lat", $qperf);
 	if (preg_match('/failed/', $qperf[1])) return 'Server not available.<br/>Try again later!';
@@ -149,10 +151,12 @@ function sysReboot() {
 }
 
 /* Switch Host Name */
-if ($switchHostName == 1) echo switchHostName($fileSystemStatus);
-function switchHostName($fileSystemStatus) {
+if ($switchHostName == 1) echo switchHostName();
+function switchHostName() {
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return 'RoLink not installed!';
 	$hostName = gethostname();
-	preg_match('/CALLSIGN=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $callSign);
+	preg_match('/CALLSIGN=(\S+)/', file_get_contents($cfgFile), $callSign);
 	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim(strtolower($callSign[1])));
 	if ($newHostName != 'N0CALL' && $hostName != $newHostName) {
 		toggleFS(true);
@@ -166,7 +170,6 @@ function switchHostName($fileSystemStatus) {
 	return false;
 }
 
-
 /* Switch file system state */
 if (!empty($changeFS)) echo switchFSState($changeFS);
 function switchFSState($changeFS) {
@@ -178,7 +181,6 @@ function switchFSState($changeFS) {
 /* Update dashboard */
 if ($updateDash == 1) echo updateDashboard();
 function updateDashboard() {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_dash", $reply);
 	$result = ($reply[0] == 'Finished!') ? 'Update succeeded!' : 'Update failed!';
@@ -189,7 +191,6 @@ function updateDashboard() {
 /* Update RoLink (svxlink) */
 if ($updateRoLink == 1) echo updateRoLink();
 function updateRoLink() {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
 	toggleFS(false);

@@ -228,8 +228,11 @@ function getSVXLinkStatus($update = 0) {
 /* Get Reflector address */
 function getReflector($ext = 0) {
 	$config = ($ext == 0) ? include 'config.php' : include '../config.php';
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	$conStatus = $stateColor = $prevStatus = '';
-	preg_match('/HOST=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $reply);
+	if (is_file($cfgFile)) {
+		preg_match('/HOST=(\S+)/', file_get_contents($cfgFile), $reply);
+	}
 	$refHost = (!empty($reply)) ? $reply[1] : 'Not available';
 	preg_match_all('/(Could not open GPIO|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
 	if (!empty($logData) && getSVXLinkStatus(1) != 'Not running') {
@@ -283,10 +286,14 @@ function getRefNodes() {
 
 /* Get SVX Callsign	*/
 function getCallSign() {
-	preg_match('/CALLSIGN=(\S+)/', file_get_contents('/opt/rolink/conf/rolink.conf'), $reply);
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (is_file($cfgFile)) {
+		preg_match('/CALLSIGN=(\S+)/', file_get_contents($cfgFile), $reply);
+	}
+	$callsign = (!empty($reply)) ? $reply[1] : 'Not available';
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Call Sign</span>
-  		<input type="text" class="form-control" placeholder="'. $reply[1] .'" readonly>
+  		<input type="text" class="form-control" placeholder="'. $callsign .'" readonly>
 	</div>';
 }
 
@@ -318,20 +325,23 @@ function getRemoteVersion() {
 	$remoteData		= false;
 	$localData		= file_get_contents('/opt/rolink/version');
 	$localVersion	= explode('|', $localData);
+	$notify			= 'width: 6.5rem';
 	if (isset($_COOKIE["remote_version"])) {
 		$result = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
+		$notify = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
 	} else {
 		$remoteData = file_get_contents('https://svx.439100.ro/data/version');
 	}
 	if ($remoteData) {
 		$remoteVersion = explode('|', $remoteData);
 		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
+		$notify = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
 		setcookie("remote_version", $remoteVersion[0], time()+60*60*24); // Expiry in 24 hours (no need to check more often)
 	} elseif (!isset($result)) {
 		$result = 'Unavailable';
 	}
 	return '<div class="input-group mb-2">
- 		<span class="input-group-text" style="width: 6.5rem;">Version</span>
+ 		<span class="input-group-text" style="'. $notify .'">Version</span>
   		<input type="text" class="form-control" placeholder="'. $result . '" readonly>
 	</div>';
 }

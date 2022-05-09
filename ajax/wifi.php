@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.93
+*   RoLinkX Dashboard v1.94
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ function getSSIDs() {
 	$storedSSID = null;
 	$storedPwds = null;
 	$wpaBuffer  = file_get_contents($wpaFile);
-	preg_match_all('/ssid="(\S+)"/', $wpaBuffer, $resultSSID);
+	preg_match_all('/ssid="(.*)"/', $wpaBuffer, $resultSSID);
 	if (empty($resultSSID)) return false;
 	foreach ($resultSSID[1] as $key => $ap) {
 		if ($key <= 3) {
@@ -170,7 +170,7 @@ if ($weHaveData) {
 	toggleFS(true);
 	file_put_contents($wpaTemp, $wpaData);
 	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");
-	echo 'New data stored.<br/>Reboot the system to apply changes!';
+	echo 'New data stored.<br/>Reboot if you want to connect!';
 	toggleFS(false);
 } else {
 	echo 'No new data, so nothing changed';

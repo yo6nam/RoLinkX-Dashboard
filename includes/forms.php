@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.93
+*   RoLinkX Dashboard v1.94
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ function getSSIDs() {
 	$storedSSID = null;
 	$storedPwds = null;
 
-	preg_match_all('/ssid="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultSSID);
+	preg_match_all('/ssid="(.*)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultSSID);
 	if (empty($resultSSID)) return false;
 	foreach ($resultSSID[1] as $key => $ap) {
 		if ($key <= 3) {
@@ -168,7 +168,8 @@ function wifiForm() {
 		<div class="card-header">Add / Edit networks</div>
 		<div class="card-body">' . PHP_EOL;
 	for ($i = 0; $i < 4; $i++) {
-		$a = (isset($ssidList[0][$i]) && $con[0] === $ssidList[0][$i]) ? true : false;
+		$active = (isset($con[0])) ? $con[0] : null;
+		$a = (isset($ssidList[0][$i]) && $active === $ssidList[0][$i]) ? true : false;
 		$s = (empty($ssidList[0][$i])) ? 'Your SSID' : $ssidList[0][$i] . (($a) ? ' (connected)' : ' (saved)');
 		$p = (empty($ssidList[1][$i])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);
 		$c = ($i + 1);
@@ -205,6 +206,9 @@ function wifiForm() {
 function svxForm() {
 	global $pinsArray;
 	$svxPinsArray = array();
+
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
 
 	/* Convert pins to both states (normal/inverted) */
 	foreach ($pinsArray as $pin) {
@@ -531,7 +535,7 @@ function sa818Form() {
 		<div class="d-flex justify-content-center mt-4">
 			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
 		</div>' . PHP_EOL;
-	$sa818Form .= '<div class="mt-3 alert alert-info" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>' . PHP_EOL;
+	$sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>' . PHP_EOL;
 	return $sa818Form;
 }
 
@@ -645,19 +649,21 @@ function cfgForm() {
     	</div>
 	</div>
 </div>
-		<div class="m-3 alert alert-info" role="alert">Note : Adjusting the sliders has immediate effect!</div>
+		<div class="alert alert-info m-2 p-1" role="alert">Note : Adjusting the sliders has immediate effect!</div>
 </div>
 	<div class="d-flex justify-content-center mt-4">
 		<button id="cfgSave" type="button" class="btn btn-danger btn-lg mx-2">Save</button>';
-		$localData		= file_get_contents('/opt/rolink/version');
-		$localVersion	= explode('|', $localData);
-		$isOnline		= checkdnsrr('google.com');
-		// Check if RoLink version is capable of updates and if we're connected to the internet
-		if ($localVersion[0] > '20211204' && $isOnline) {
-			$configData .= '<button id="updateDash" type="button" class="btn btn-primary btn-lg mx-2">Dashboard update</button>';
-			$configData .= '<button id="updateRoLink" type="button" class="btn btn-warning btn-lg mx-2">RoLink update</button>';
+		if (is_file('/opt/rolink/version')) {
+			$localData		= file_get_contents('/opt/rolink/version');
+			$localVersion	= explode('|', $localData);
+			$isOnline		= checkdnsrr('google.com');
+			// Check if RoLink version is capable of updates and if we're connected to the internet
+			if ($localVersion[0] > '20211204' && $isOnline) {
+				$configData .= '<button id="updateDash" type="button" class="btn btn-primary btn-lg mx-2">Dashboard update</button>';
+				$configData .= '<button id="updateRoLink" type="button" class="btn btn-warning btn-lg mx-2">RoLink update</button>';
+			}
+			$configData .= ($isOnline) ? null : '<button type="button" class="btn btn-dark btn-lg mx-2">Internet not available</button>';
 		}
-		$configData .= ($isOnline) ? null : '<button type="button" class="btn btn-dark btn-lg mx-2">Internet not available</button>';
 		// Show "Make Read-only" button
 		if (!preg_match('/ro,ro/', file_get_contents('/etc/fstab'))) {
 			$configData .= '</div><div class="d-flex justify-content-center m-2"><button id="makeRO" type="button" class="btn btn-dark btn-lg">Make FS Read-Only</button>';
