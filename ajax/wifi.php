@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.8
+*   RoLinkX Dashboard v1.93
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 
 $wpaFile = '/etc/wpa_supplicant/wpa_supplicant.conf';
 $wpaTemp = '/tmp/wpa_supplicant.tmp';
-$weHaveData = false;
+$weHaveData = $fail = false;
 
 /* Get POST vars */
 $wnA = (isset($_POST['wn1'])) ? filter_input(INPUT_POST, 'wn1', FILTER_SANITIZE_STRING) : '';
@@ -58,7 +58,7 @@ function getSSIDs() {
 	preg_match_all('/ssid="(\S+)"/', $wpaBuffer, $resultSSID);
 	if (empty($resultSSID)) return false;
 	foreach ($resultSSID[1] as $key => $ap) {
-		if ($key <= 2) {
+		if ($key <= 3) {
   			$storedSSID[] = $ap;
   		}
 	}
@@ -66,7 +66,7 @@ function getSSIDs() {
 	preg_match_all('/psk="(\S+)"/', $wpaBuffer, $resultPWDS);
 	if (empty($resultPWDS)) return false;
 	foreach ($resultPWDS[1] as $key => $pw) {
-		if ($key <= 2) {
+		if ($key <= 3) {
   			$storedPwds[] = $pw;
   		}
 	}
@@ -97,11 +97,32 @@ if ($wkB && $wkB != $authKeyB) $authKeyB = $wkB;
 if ($wkC && $wkC != $authKeyC) $authKeyC = $wkC;
 if ($wkD && $wkD != $authKeyD) $authKeyD = $wkD;
 
-/* Delete networks if supplied with '-' character */
-if ($wnA == '-') $networkA = '';
-if ($wnB == '-') $networkB = '';
-if ($wnC == '-') $networkC = '';
-if ($wnD == '-') $networkD = '';
+/* Delete networks if supplied with '-' character or validate key lenght */
+if ($wnA == '-') {
+	$networkA = '';
+} elseif ($wnA && strlen($wkA) < 8) {
+	$fail = true;
+}
+if ($wnB == '-') {
+	$networkB = '';
+} elseif ($wnB && strlen($wkB) < 8) {
+	$fail = true;
+}
+if ($wnC == '-') {
+	$networkC = '';
+} elseif ($wnC && strlen($wkC) < 8) {
+	$fail = true;
+}
+if ($wnD == '-') {
+	$networkD = '';
+} elseif ($wnD && strlen($wkD) < 8) {
+	$fail = true;
+}
+
+if ($fail) {
+	echo $wkC .'Invalid network security key lenght!';
+	exit(1);
+}
 
 /* Update the wpa_supplicant.conf file with new data */
 $wpaData = 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev

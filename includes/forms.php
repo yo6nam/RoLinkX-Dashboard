@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.92
+*   RoLinkX Dashboard v1.93
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -83,12 +83,12 @@ function scanWifi($ext = 0) {
 			$apList = '<div class="accordion mb-3" id="wifiNetworks">
 	<div class="accordion-item">
 	 <h3 class="accordion-header" id="heading">
-		<button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks</button>
+		<button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks (click to open)</button>
 	 </h3>
 	 <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
 		<div id="updateList" class="accordion-body">';
 		 }
-			$apList .= '<table class="table"><thead><tr>
+			$apList .= '<table class="table table-sm"><thead><tr>
 			<th scope="col">#</th>
 			<th scope="col">SSID</th>
 			<th scope="col">RSSI</th>
@@ -183,8 +183,11 @@ function wifiForm() {
 		</div>
 	<hr/>' . PHP_EOL;
 	}
-	$wifiForm .= '<div class="m-3 alert alert-info" role="alert">Note : To delete a network use the - (dash) character as SSID</div>
-		<div class="d-flex justify-content-center mt-4">
+	$wifiForm .= '<div class="row justify-content-center m-1">
+			<div class="col-auto alert alert-info m-2 p-1" role="alert">To delete a network use the - (dash) character as SSID</div>
+			<div class="col-auto alert alert-warning m-2 p-1" role="alert">Note : Open networks (no key) are not suppored</div>
+		</div>
+		<div class="d-flex justify-content-center mt-2">
 			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Save</button>
 			<button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
 		</div>
@@ -656,7 +659,7 @@ function cfgForm() {
 		}
 		$configData .= ($isOnline) ? null : '<button type="button" class="btn btn-dark btn-lg mx-2">Internet not available</button>';
 		// Show "Make Read-only" button
-		if (!is_link('/var/lib/dhcp/dhclient.eth0.leases')) {
+		if (!preg_match('/ro,ro/', file_get_contents('/etc/fstab'))) {
 			$configData .= '</div><div class="d-flex justify-content-center m-2"><button id="makeRO" type="button" class="btn btn-dark btn-lg">Make FS Read-Only</button>';
 		}
 	$configData .= '</div>' . PHP_EOL;

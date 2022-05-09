@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.92
+*   RoLinkX Dashboard v1.93
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -301,7 +301,7 @@ function getKernel() {
 
 /* File System status */
 function getFileSystem() {
-	if (!is_link('/var/lib/dhcp/dhclient.eth0.leases')) return;
+	if (!preg_match('/ro,ro/', file_get_contents('/etc/fstab'))) return;
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $fileSystemStatus);
 	$stateFS		= ($fileSystemStatus[0] == 'rw') ? 'Read/Write' : 'Read-only';
 	$stateFSColor	= ($fileSystemStatus[0] == 'rw') ? 'background:red;color: white;' : 'background:lightgreen;';
