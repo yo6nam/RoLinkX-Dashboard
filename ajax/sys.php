@@ -63,7 +63,7 @@ if (isset($_POST)) {
 
 	/* Time Zone */
 	$currentTimezone = trim(file_get_contents('/etc/timezone'));
-	if ($timezone != $currentTimezone) {
+	if (isset($timezone) && $timezone != $currentTimezone) {
 		toggleFS(true);
 		exec("/usr/bin/sudo /usr/bin/systemctl stop rolink.service");
 		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone ' . $timezone);
