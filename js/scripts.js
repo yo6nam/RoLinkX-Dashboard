@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.94
+ *   RoLinkX Dashboard v1.95
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -574,6 +574,7 @@ $(document).ready(function () {
         cfgRefNodes: $('#cfgRefNodes').prop('checked'),
         cfgCallsign: $('#cfgCallsign').prop('checked'),
         cfgDTMF: $('#cfgDTMF').prop('checked'),
+        timezone: $('#timezone').val(),
       },
       success: function (data) {
         if (data) {

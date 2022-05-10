@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.94
+*   RoLinkX Dashboard v1.95
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -592,22 +592,32 @@ function cfgForm() {
 
 	$configData = '<h4 class="mt-2 alert alert-warning fw-bold">Configuration</h4>
 	<div class="card m-1">
-	<h4 class="m-2">Serial & GPIO</h4>
+		<h4 class="m-2">Serial & GPIO</h4>
+		<div class="form-floating m-2">
+			<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
+		foreach ($pinsArray as $pin) {
+			$configData .= '<option value="'. $pin . '"' . ($pin == $config['cfgPttPin'] ? ' selected' : '') . '>'. $pin .'</option>' . PHP_EOL;
+		}
+		$configData .= '</select>
+		<label for="cfgPttPin">GPIO Pin (PTT)</label>
+		</div>' . PHP_EOL;
+		$configData .= '<div class="form-floating m-2">
+				<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
+		foreach ($ttysArray as $tty) {
+			$configData .= '<option value="'. $tty . '"' . ($tty == $config['cfgTty'] ? ' selected' : '') . '>'. $tty .'</option>' . PHP_EOL;
+		}
+		$configData .= '</select>
+		<label for="cfgTty">Serial Port (ttyS)</label>
+	</div>
+	<h4 class="m-2">System</h4>
 	<div class="form-floating m-2">
-		<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
-	foreach ($pinsArray as $pin) {
-		$configData .= '<option value="'. $pin . '"' . ($pin == $config['cfgPttPin'] ? ' selected' : '') . '>'. $pin .'</option>' . PHP_EOL;
-	}
-	$configData .= '</select>
-	<label for="cfgPttPin">GPIO Pin (PTT)</label>
-	</div>' . PHP_EOL;
-	$configData .= '<div class="form-floating m-2">
-			<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
-	foreach ($ttysArray as $tty) {
-		$configData .= '<option value="'. $tty . '"' . ($tty == $config['cfgTty'] ? ' selected' : '') . '>'. $tty .'</option>' . PHP_EOL;
-	}
-	$configData .= '</select>
-	<label for="cfgTty">Serial Port (ttyS)</label>
+		<select id="timezone" class="form-select" aria-label="Time Zone">' . PHP_EOL;
+		$tz = file('./assets/timezones.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		foreach ($tz as $timezone) {
+			$configData .= '<option value="'. $timezone . '"' . ($timezone == trim(file_get_contents('/etc/timezone')) ? ' selected' : '') . '>'. $timezone .'</option>' . PHP_EOL;
+		}
+		$configData .= '</select>
+		<label for="timezone">Time Zone</label>
 	</div>
 	<h4 class="m-2">Status page content</h4>
 	<div class="row form-floating m-2">' . PHP_EOL;

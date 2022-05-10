@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.94
+*   RoLinkX Dashboard v1.95
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ $changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS',
 $updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
 $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
 $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILTER_SANITIZE_NUMBER_INT) : null;
+$timezone			= (isset($_POST['timezone'])) ? filter_input(INPUT_POST, 'timezone', FILTER_SANITIZE_STRING) : null;
 
 // Mixer control
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
@@ -56,6 +57,19 @@ if (isset($_POST)) {
 		toggleFS(true);
 		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
 		echo 'Configuration saved!';
+		toggleFS(false);
+		exit(0);
+	}
+
+	/* Time Zone */
+	$currentTimezone = trim(file_get_contents('/etc/timezone'));
+	if ($timezone != $currentTimezone) {
+		toggleFS(true);
+		exec("/usr/bin/sudo /usr/bin/systemctl stop rolink.service");
+		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone ' . $timezone);
+		echo 'Timezone changed to <br/><b>' . $timezone . '</b>';
+		exec("/usr/bin/sudo /usr/bin/systemctl start rolink.service");
+		exec("/usr/bin/sudo /usr/bin/systemctl restart rsyslog.service");
 		toggleFS(false);
 		exit(0);
 	}
