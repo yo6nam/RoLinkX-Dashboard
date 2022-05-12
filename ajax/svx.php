@@ -171,6 +171,10 @@ $profiles['key']		= $authKeyValue;
 $profiles['beacon']		= $beaconValue;
 $profiles['bitrate']	= $codecBitrateValue;
 $profiles['type']		= 'nod portabil';
+$profiles['shortIdent'] = $shortIdentValue;
+$profiles['longIdent']	= $longIdentValue;
+$profiles['rogerBeep']	= $rogerBeepValue;
+$profiles['connectionStatus'] = $acsValue;
 
 /* Convert config of new installs */
 if (preg_match('/svx\.ro/', $oldCfg)) {
