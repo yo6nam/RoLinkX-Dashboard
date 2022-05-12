@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.93
+*   RoLinkX Dashboard v1.96
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 * Status reporting module
 */
 
-if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(1);
+if (isset($_GET['svxStatus'])) echo getSVXLinkStatus();
 if (isset($_GET['svxReflector'])) echo getReflector(1);
 if (isset($_GET['cpuData'])) echo getCpuStats(1);
 
@@ -69,13 +69,14 @@ function getUpTime() {
 
 /* CPU Load & Temp */
 function getCpuStats($ajax = 0) {
+	$config = ($ajax == 1) ? include '../config.php' : include 'config.php';
 	$avgLoad = $cpuTemp = '...';
 	$tempWarning = null;
 	if ($ajax) {
 		$cpuLoad = getServerLoad();
 		$avgLoad = (is_null($cpuLoad)) ? 'N/A' : number_format($cpuLoad, 2) . "%";
 		exec("cat /etc/armbianmonitor/datasources/soctemp", $reply);
-		$tempOffset = 28;
+		$tempOffset = ($config['cfgTempOffset'] == 'true') ? 28 : 0;
 		$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
 		$cpuTemp = $cpuTempVal . '℃';
 		$tempWarning = ($cpuTempVal > 60) ? 'bg-warning text-dark' : '';
@@ -212,14 +213,15 @@ function getPublicIP() {
 }
 
 /* Get SVXLink status */
-function getSVXLinkStatus($update = 0) {
+function getSVXLinkStatus($ext = 0) {
 	exec("pgrep svxlink", $reply);
+	if ($ext) return (empty($reply) ? false : true);
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
-	if ($update) return $result;
+	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
 	$config = include 'config.php';
 	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button>' : NULL;
 	return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;">SVXLink</span>
+  		<span class="input-group-text" style="'. $status .'">SVXLink</span>
   		<input id="svxStatus" type="text" class="form-control" placeholder="'. $result .'" readonly>'
   		. $dtmfTrigger .
 	'</div>';
@@ -227,7 +229,7 @@ function getSVXLinkStatus($update = 0) {
 
 /* Get Reflector address */
 function getReflector($ext = 0) {
-	$config = ($ext == 0) ? include 'config.php' : include '../config.php';
+	$config = ($ext == 1) ? include '../config.php' : include 'config.php';
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	$conStatus = $stateColor = $prevStatus = '';
 	if (is_file($cfgFile)) {
@@ -235,7 +237,7 @@ function getReflector($ext = 0) {
 	}
 	$refHost = (!empty($reply)) ? $reply[1] : 'Not available';
 	preg_match_all('/(Could not open GPIO|Disconnected|established)/', file_get_contents('/tmp/svxlink.log'), $logData);
-	if (!empty($logData) && getSVXLinkStatus(1) != 'Not running') {
+	if (!empty($logData) && getSVXLinkStatus(1)) {
 		$statusData = (isset($logData[0][array_key_last($logData[0]) - 1])) ? $logData[0][array_key_last($logData[0]) - 1] : null;
 		$prevStatus = (count($logData) > 1) ? $statusData : null;
 		$conStatus	= ($prevStatus == 'Could not open GPIO') ? 'GPIO' : $logData[0][array_key_last($logData[0])];
@@ -261,7 +263,7 @@ function getReflector($ext = 0) {
 
 /* Get Reflector connected nodes */
 function getRefNodes() {
-	if (getSVXLinkStatus(1) == 'Not running') return false;
+	if (!getSVXLinkStatus(1)) return false;
 	$station = '<div id="refStations" class="accordion-collapse collapse">
 		<div class="accordion-body">
 			<div class="row">'. PHP_EOL;
@@ -288,11 +290,11 @@ function getRefNodes() {
 function getCallSign() {
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	if (is_file($cfgFile)) {
-		preg_match('/CALLSIGN=(\S+)/', file_get_contents($cfgFile), $reply);
+		preg_match('/(CALLSIGN=")(\S+)"/', file_get_contents($cfgFile), $reply);
 	}
-	$callsign = (!empty($reply)) ? $reply[1] : 'Not available';
+	$callsign = (!empty($reply)) ? $reply[2] : 'Not available';
 	return '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;">Call Sign</span>
+  		<span class="input-group-text" style="width: 6.5rem;">Callsign</span>
   		<input type="text" class="form-control" placeholder="'. $callsign .'" readonly>
 	</div>';
 }
@@ -300,9 +302,10 @@ function getCallSign() {
 /* Get kernel & release version */
 function getKernel() {
 	preg_match('/VERSION_CODENAME=(\S+)/', file_get_contents('/etc/os-release'), $reply);
+	$kernel = str_replace('-sunxi', '', posix_uname()['release']);
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Kernel</span>
-  		<input type="text" class="form-control" placeholder="' . posix_uname()['release'] . ' (' . $reply[1] . ')" readonly>
+  		<input type="text" class="form-control" placeholder="' . $kernel . ' (' . $reply[1] . ')" readonly>
 	</div>';
 }
 

@@ -11,5 +11,7 @@ return array (
   'cfgSvxStatus' => 'true',
   'cfgRefNodes' => 'true',
   'cfgCallsign' => 'true',
-  'cfgDTMF' => 'true'
+  'cfgDTMF' => 'true',
+  'cfgKernel' => 'true',
+  'cfgTempOffset' => 'true'
 );

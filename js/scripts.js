@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.95
+ *   RoLinkX Dashboard v1.96
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -196,6 +196,21 @@ $(document).ready(function () {
             $('#svx_key').val(profile.key);
             $('#svx_clb').val(profile.beacon);
             $('#svx_tip').val(profile.type);
+            if (typeof profile.bitrate !== 'undefined') {
+            	$('#svx_cbr').val(profile.bitrate)
+            }
+            if (typeof profile.rogerBeep !== 'undefined') {
+            	$('#svx_rgr').val(profile.rogerBeep)
+            }
+            if (typeof profile.shortIdent !== 'undefined') {
+            	$('#svx_sid').val(profile.shortIdent)
+            }
+            if (typeof profile.longIdent !== 'undefined') {
+            	$('#svx_lid').val(profile.longIdent)
+            }
+            if (typeof profile.connectionStatus !== 'undefined') {
+            	$('#svx_acs').val(profile.connectionStatus)
+            }
             $('#sysmsg').showNotice(
               'Profile loaded!<br/>Click <b>Save</b> button to apply',
               3000
@@ -286,19 +301,9 @@ $(document).ready(function () {
           $('#resvx').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('RoLink service has been (re)started', 3000);
           setTimeout(function () {
-            $.ajax({
-              type: 'GET',
-              url: 'includes/status.php?svxStatus',
-              success: function (data) {
-                $('#svxStatus')
-                  .attr('placeholder', data)
-                  .val('')
-                  .focus()
-                  .blur();
-                $('#refContainer').load('includes/status.php?svxReflector');
-              },
-            });
-          }, 3200);
+			$('#svxStatus').load('includes/status.php?svxStatus');
+			$('#refContainer').load('includes/status.php?svxReflector');
+          }, 1500);
         }
       }
     });
@@ -316,19 +321,9 @@ $(document).ready(function () {
           $('#endsvx').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('RoLink service has been stopped', 3000);
           setTimeout(function () {
-            $.ajax({
-              type: 'GET',
-              url: 'includes/status.php?svxStatus',
-              success: function (data) {
-                $('#svxStatus')
-                  .attr('placeholder', data)
-                  .val('')
-                  .focus()
-                  .blur();
-                $('#refContainer').load('includes/status.php?svxReflector');
-              },
-            });
-          }, 3200);
+			$('#svxStatus').load('includes/status.php?svxStatus');
+			$('#refContainer').load('includes/status.php?svxReflector');
+          }, 1500);
         }
       }
     });
@@ -574,6 +569,8 @@ $(document).ready(function () {
         cfgRefNodes: $('#cfgRefNodes').prop('checked'),
         cfgCallsign: $('#cfgCallsign').prop('checked'),
         cfgDTMF: $('#cfgDTMF').prop('checked'),
+        cfgKernel: $('#cfgKernel').prop('checked'),
+        cfgTempOffset: $('#cfgTempOffset').prop('checked'),
         timezone: $('#timezone').val(),
       },
       success: function (data) {

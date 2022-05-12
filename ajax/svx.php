@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.8
+*   RoLinkX Dashboard v1.96
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -237,12 +237,14 @@ $oldVar[5]	= '/(SHORT_IDENT_INTERVAL=)(\d+)/';
 $newVar[5]	= '${1}'. $frmShortId;
 if ($shortIdentValue != $frmShortId) {
 	++$changes;
+	$profiles['shortIdent'] = $frmShortId;
 }
 
 $oldVar[6]	= '/(LONG_IDENT_INTERVAL=)(\d+)/';
 $newVar[6]	= '${1}'. $frmLongId;
 if ($longIdentValue != $frmLongId) {
 	++$changes;
+	$profiles['longIdent'] = $frmLongId;
 }
 
 $oldVar[7]	= '/(OPUS_ENC_BITRATE=)(\d+)/';
@@ -262,17 +264,21 @@ $oldVar[9]	= '/(RGR_SOUND_ALWAYS=)(\d+)/';
 $newVar[9]	= '${1}'. $frmRogerBeep;
 if ($rogerBeepValue != $frmRogerBeep) {
 	++$changes;
+	$profiles['rogerBeep'] = $frmRogerBeep;
 }
+
 $oldVar[10]	= '/(GPIO_SQL_PIN=)(\S+)/';
 $newVar[10]	= '${1}'. $frmRxGPIO;
 if ($rxGPIOValue != $frmRxGPIO) {
 	++$changes;
 }
+
 $oldVar[11]	= '/(PTT_PIN=)(\S+)/';
 $newVar[11]	= '${1}'. $frmTxGPIO;
 if ($txGPIOValue != $frmTxGPIO) {
 	++$changes;
 }
+
 $oldVar[12]	= '/(MONITOR_TGS=)(\S+)/';
 $newVar[12]	= '${1}'. $frmMonitorTgs;
 if ($monitorTgsValue != $frmMonitorTgs) {
@@ -306,6 +312,7 @@ $oldVar[18]	= '/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/';
 $newVar[18]	= '${1}' . $frmACStatus;
 if ($acsValue != (int)$frmACStatus) {
 	++$changes;
+	$profiles['connectionStatus'] = $frmACStatus;
 }
 
 /* Configuration info sent to reflector ('tip' only) */

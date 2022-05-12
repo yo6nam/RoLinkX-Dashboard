@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.95
+*   RoLinkX Dashboard v1.96
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ switch ($page) {
     $htmlOutput = cfgForm();
     break;
   default:
-	$svxAction = (getSVXLinkStatus(1) == 'Not running') ? 'Start' : 'Restart';
+	$svxAction = (getSVXLinkStatus(1)) ? 'Restart' : 'Start';
 	$htmlOutput = '<h4 class="m-2 mt-2 alert alert-success fw-bold">Status</h4>
 	<div class="card m-2">
 	<div class="card-body">';
@@ -68,13 +68,13 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
 	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
 	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
-	$htmlOutput .= getKernel() . PHP_EOL;
-	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? getSVXLinkStatus() : null;
+	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? '<div id="svxStatus">' . getSVXLinkStatus() . '</div>' : null;
 	$htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
-	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
 	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : null;
-	$htmlOutput .= getRemoteVersion() . PHP_EOL;
+	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
+	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
 	$htmlOutput .= getFileSystem() . PHP_EOL;
+	$htmlOutput .= getRemoteVersion() . PHP_EOL;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
 	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
@@ -182,7 +182,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v1.95 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v1.96 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>

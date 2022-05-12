@@ -293,9 +293,8 @@ function svxForm() {
 	$cfgRefData = json_decode($cfgRefFile, true);
 
 	if (!empty($proFiles)) {
-		$profileOption	= '<hr />
-			<div class="input-group input-group-sm mb-1">
-			  <label class="input-group-text" for="svx_spn" style="width: 8rem;">Select profile</label>
+		$profileOption	= '<div class="input-group input-group-sm mb-1">
+			  <label class="input-group-text bg-info text-white" for="svx_spn" style="width: 8rem;">Select profile</label>
 			  <select id="svx_spn" class="form-select">
 				<option value="" selected disabled>Select a profile</option>';
 		foreach ($proFiles as $profile) {
@@ -303,15 +302,17 @@ function svxForm() {
 		}
 		$profileOption .= '</select>
 		<button id="delsvxprofile" class="btn btn-outline-danger" type="button">Delete</button>
-		</div>';
+		</div>
+		<div class="separator">General</div>';
 	}
 
-	$svxForm = '<h4 class="mt-2 alert alert-warning fw-bold">SVXLink configuration</h4>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Profile Name</span>
+	$svxForm = '<h4 class="mt-2 alert alert-warning fw-bold">SVXLink configuration</h4>';
+	$svxForm .= $profileOption;
+	$svxForm .= '<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Create new profile</span>
 		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
-		</div>
-		<div class="input-group input-group-sm mb-1">
+		</div>';
+	$svxForm .= '<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
 		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
 		</div>
@@ -438,7 +439,6 @@ function svxForm() {
 	$svxForm .= '
 		  </select>
 		</div>';
-		$svxForm .= $profileOption;
 		$svxForm .= '
 		<div class="d-flex justify-content-center mt-4">
 			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
@@ -581,7 +581,9 @@ function cfgForm() {
 		'cfgSvxStatus' => 'SVXLink Status',
 		'cfgRefNodes' => 'Connected nodes',
 		'cfgCallsign' => 'Callsign',
-		'cfgDTMF' => 'DTMF Sender'
+		'cfgDTMF' => 'DTMF Sender',
+		'cfgKernel' => 'Kernel version',
+		'cfgTempOffset' => 'CPU Temp Offset'
 	);
 
 	// Get mixer's current values
