@@ -22,7 +22,7 @@
 * Status reporting module
 */
 
-if (isset($_GET['svxStatus'])) echo getSVXLinkStatus();
+if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(2);
 if (isset($_GET['svxReflector'])) echo getReflector(1);
 if (isset($_GET['cpuData'])) echo getCpuStats(1);
 
@@ -215,10 +215,10 @@ function getPublicIP() {
 /* Get SVXLink status */
 function getSVXLinkStatus($ext = 0) {
 	exec("pgrep svxlink", $reply);
-	if ($ext) return (empty($reply) ? false : true);
+	if ($ext == 1) return ((empty($reply)) ? false : true);
+	$config = ($ext == 2) ? include '../config.php' : include 'config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
-	$config = include 'config.php';
 	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button>' : NULL;
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="'. $status .'">SVXLink</span>
