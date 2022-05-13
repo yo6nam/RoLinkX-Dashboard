@@ -269,8 +269,8 @@ function getRefNodes() {
 		<div class="accordion-body">
 			<div class="row">'. PHP_EOL;
 	preg_match_all('/Connected nodes:\s(.*)/', file_get_contents('/tmp/svxlink.log'), $connectedNodes, PREG_SET_ORDER);
-	$lastMatch = end($connectedNodes)[1];
 	if (empty($connectedNodes)) return false;
+	$lastMatch = end($connectedNodes)[1];
 	$nodes = explode(', ', $lastMatch);
 	if (is_array($nodes)) {
 		natsort($nodes);

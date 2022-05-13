@@ -30,6 +30,7 @@ $cfgRefData = json_decode(file_get_contents($cfgRefFile), true);
 
 // Switch file system status (ReadWrite <-> ReadOnly)
 function toggleFS($status) {
+	if (!preg_match('/ro,ro/', file_get_contents('/etc/fstab'))) return;
 	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
 	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
 	exec($changeTo);
