@@ -80,7 +80,8 @@ function getCpuStats($ajax = 0) {
 		$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
 		$cpuTemp = $cpuTempVal . '℃';
 		$tempWarning = ($cpuTempVal > 60) ? 'bg-warning text-dark' : '';
-		return json_encode(array($avgLoad, $cpuTemp, $tempWarning));
+		$svxState = getSVXLinkStatus(1);
+		return json_encode(array($avgLoad, $cpuTemp, $tempWarning, $svxState));
 	}
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">CPU</span>
