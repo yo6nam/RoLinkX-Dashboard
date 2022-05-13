@@ -170,19 +170,19 @@ function wifiForm() {
 	for ($i = 0; $i < 4; $i++) {
 		$active = (isset($con[0])) ? $con[0] : null;
 		$a = (isset($ssidList[0][$i]) && $active === $ssidList[0][$i]) ? true : false;
-		$s = (empty($ssidList[0][$i])) ? 'Your SSID' : $ssidList[0][$i] . (($a) ? ' (connected)' : ' (saved)');
-		$p = (empty($ssidList[1][$i])) ? 'Your key' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);
+		$n = (empty($ssidList[0][$i])) ? 'empty' : $ssidList[0][$i] . ' (saved)';
+		$p = (empty($ssidList[1][$i])) ? 'empty' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);
 		$c = ($i + 1);
 		$b = ($a) ? ' bg-success text-white' : null;
-		$wifiForm .= '<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text'. $b .'" style="width: 9rem;">['. $c .'] Name (SSID)</span>
-		  <input id="wlan_network_'. $c .'" type="text" class="form-control" placeholder="'. $s .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+		$s = ($a) ? ' (connected)' : null;
+		$wifiForm .= '<h4 class="d-flex justify-content-center badge badge-light fs-6'. $b .'"><i class="icon-wifi">&nbsp;</i>Network '. $c . $s .'</h4><div class="input-group input-group-sm mb-2">
+		  <span class="input-group-text" style="width: 7rem;">Name (SSID)</span>
+		  <input id="wlan_network_'. $c .'" type="text" class="form-control" placeholder="'. $n .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
 		</div>
-		<div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 9rem;">['. $c .'] Key (Password)</span>
+		<div class="input-group input-group-sm mb-4">
+		  <span class="input-group-text" style="width: 7rem;">Key (Password)</span>
 		  <input id="wlan_authkey_'. $c .'" type="text" class="form-control" placeholder="'. $p .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
-		</div>
-	<hr/>' . PHP_EOL;
+		</div>' . PHP_EOL;
 	}
 	$wifiForm .= '<div class="row justify-content-center m-1">
 			<div class="col-auto alert alert-info m-2 p-1" role="alert">To delete a network use the - (dash) character as SSID</div>
