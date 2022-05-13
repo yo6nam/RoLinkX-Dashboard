@@ -369,21 +369,24 @@ $(document).ready(function () {
   				});
     			return;
 			}
+			// Check if returned data is incomplete
+			if (Object.keys(networkData).length < 5) {
+				$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
+					$('#sysmsg').showNotice('Incomplete data received<br/>Try again in 30 seconds', 3000);
+					$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+  				});
+    			return;
+			}
 			var tcpBandwidth = networkData[0].match(/(\S+)\s(\MB|KB)/);
 			validate('#tcp_bw', tcpBandwidth, 1)
-
 			var tcpLatency = networkData[1].match(/(\S+)\s(\S+)/);
 			validate('#tcp_lat', tcpLatency, 2)
-
 			var udpTxBandwidth = networkData[2].match(/(\S+)\s(\MB|KB)/);
 			validate('#udp_sbw', udpTxBandwidth, 1)
-
 			var udpRxBandwidth = networkData[3].match(/(\S+)\s(\MB|KB)/);
 			validate('#udp_rbw', udpRxBandwidth, 1)
-
 			var udpLatency = networkData[4].match(/(\S+)\s(\S+)/);
 			validate('#udp_lat', udpLatency, 2)
-
 			$('#tcp_bw').val(networkData[0]);
 			$('#tcp_lat').val(networkData[1]);
 			$('#udp_sbw').val(networkData[2]);
@@ -401,7 +404,6 @@ $(document).ready(function () {
 	    status['ok'] = 'bg-success text-white'
 	    status['limit'] = 'bg-warning text-dark'
 	    status['bad'] = 'bg-danger text-white'
-
 	    switch (type) {
 	        case 1:
 	            if (data[2] == 'KB') {
