@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.96
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,6 @@
 * Index page
 */
 
-$htmlOutput = null;
 $pages = array("wifi", "svx", "sa", "log", "cfg");
 $page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
@@ -89,18 +88,23 @@ switch ($page) {
 	cpuData();
 	function cpuData() {
 		$.ajax({
-				type: 'GET',
-				dataType: 'json',
-				url: 'includes/status.php?cpuData',
-				success: function (data) {
-					$('#cpuLoad').attr('placeholder', data[0]).val('');
-					$('#cpuTemp').attr('placeholder', data[1]).val('');
-					if (data[2]) {
-    	            	$('#cpuTemp').addClass(data[2]);
-					} else {
-						$('#cpuTemp').removeClass('bg-warning text-dark');
-					}
-				},
+			type: 'GET',
+			dataType: 'json',
+			url: 'includes/status.php?cpuData',
+			success: function (data) {
+				$('#cpuLoad').attr('placeholder', data[0]).val('');
+				$('#cpuTemp').attr('placeholder', data[1]).val('');
+				if (data[2]) {
+					$('#cpuTemp').addClass(data[2]);
+				} else {
+					$('#cpuTemp').removeClass('bg-warning text-dark');
+				}
+				if (data[3]) {
+					$('#resvx').text('Restart RoLink');
+				} else {
+					$('#resvx').text('Start RoLink');
+				}
+			}
 		});
 	}
 	var auto_refresh = setInterval( function () {
@@ -182,7 +186,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v1.96 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v2.0 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>

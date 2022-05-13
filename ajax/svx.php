@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.96
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,10 @@
 * SVXLink configuration module
 */
 
+include __DIR__ . "/../includes/functions.php";
 $cfgFile		= '/opt/rolink/conf/rolink.conf';
 $restoreFile	= '/var/www/html/rolink/assets/rolink.conf';
 $newFile		= '/tmp/rolink.conf.tmp';
-$cfgRefFile 	= file_get_contents('/opt/rolink/conf/rolink.json');
-$tmpRefFile 	= '/tmp/rolink.json.tmp';
 $profilesPath	= dirname(__FILE__) . '/../profiles/';
 $newProfile		= false;
 $changes		= 0;
@@ -42,7 +41,7 @@ if (is_file('/opt/rolink/version')) {
 	return;
 }
 
-// Retrieve GET vars
+// Populate profile from GET vars
 $frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_STRING) : '';
 
 // Retrieve POST vars (defaults if empty values to avoid locking the config file)
@@ -65,7 +64,6 @@ $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', 
 $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
-
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
 
 /* Process DTMF commands */
@@ -76,7 +74,7 @@ if (isset($_POST['dtmfCommand'])) {
 		return false;
 	}
 	if (!empty($dtmfCommand)) {
-		shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /tmp/dtmf');
+		exec('/usr/bin/sudo /usr/bin/chmod guo+rw /tmp/dtmf');
 		exec("/usr/bin/echo '$dtmfCommand' >/tmp/dtmf", $reply);
 		echo "<b>$dtmfCommand</b> executed!";
 	}
@@ -91,32 +89,15 @@ if (isset($_POST['restore'])) {
 	}
 	toggleFS(true);
 	file_put_contents('/tmp/rolink.conf.tmp', file_get_contents($restoreFile));
-	shell_exec("sudo /usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf");
+	exec("/usr/bin/sudo /usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf");
 	toggleFS(false);
-	shell_exec('/usr/bin/sudo /usr/bin/systemctl restart rolink.service');
+	serviceControl('rolink.service','restart');
 	echo "RoLink configuration restored to defaults";
 	exit(0);
 }
 
-// Switch file system status (ReadWrite <-> ReadOnly)
-function toggleFS($status) {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
-	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
-	exec($changeTo);
-	sleep(1);
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
-	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
-		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
-		echo 'Something went wrong switching FS!<br/>Please reboot';
-		exit(1);
-	}
-}
-
-// Add file contents to buffer
-$oldCfg 	= file_get_contents($cfgFile);
-$cfgRefData = json_decode($cfgRefFile, true);
-
 // Get current variables
+$oldCfg = file_get_contents($cfgFile);
 preg_match('/(CALLSIGN=")(\S+)"/', $oldCfg, $varCallSign);
 preg_match('/(HOST=)(\S+)/', $oldCfg, $varReflector);
 preg_match('/(^PORT=)(\d+)/m', $oldCfg, $varPort);
@@ -194,7 +175,7 @@ if (!isset($acsValue)) {
 	$oldCfg = preg_replace('/(ANNOUNCE_REMOTE_MIN_INTERVAL=)(\d+)/', '${1}${2}' . "\nANNOUNCE_CONNECTION_STATUS=0", $oldCfg);
 }
 
-/* Process new values, if inserted */
+/* Process new values */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
 $newVar[0]	= '${1}' . $frmBeacon;
 if ($beaconValue != $frmBeacon) {
@@ -206,7 +187,8 @@ $oldVar[1]	= '/(HOST=)(\S+)/';
 $newVar[1]	= '${1}' . $frmReflector;
 
 if ($localVersion[1] > '1.7.99.62' && empty($varRefHosts)) {
-	$newVar[1]	= '#${1}' . $frmReflector . PHP_EOL . 'HOSTS=' . $frmReflector . ':' . $frmPort; // Upgrade config file to new version
+	// Upgrade config file to new version
+	$newVar[1]	= '#${1}' . $frmReflector . PHP_EOL . 'HOSTS=' . $frmReflector . ':' . $frmPort;
 }
 if ($reflectorValue != $frmReflector) {
 	++$changes;
@@ -216,7 +198,8 @@ if ($reflectorValue != $frmReflector) {
 $oldVar[2]	= '/(PORT=)(\d+)/';
 $newVar[2]	= '${1}' . $frmPort;
 if ($localVersion[1] > '1.7.99.62' && empty($varPorts)) {
-	$newVar[2]	= '#${1}' . $frmPort . PHP_EOL . 'HOST_PORT=' . $frmPort; // Upgrade config file to new version
+	// Upgrade config file to new version
+	$newVar[2]	= '#${1}' . $frmPort . PHP_EOL . 'HOST_PORT=' . $frmPort;
 }
 if ($portValue != $frmPort) {
 	if ($portsValue != $frmPort) ++$changes;
@@ -319,7 +302,7 @@ if ($acsValue != (int)$frmACStatus) {
 	$profiles['connectionStatus'] = $frmACStatus;
 }
 
-/* Configuration info sent to reflector ('tip' only) */
+/* Configuration info sent to reflector ('type' only) */
 if ($cfgRefData['tip'] != $frmType) {
 	++$changes;
 	$profiles['type'] = $frmType;
@@ -329,7 +312,6 @@ if ($cfgRefData['tip'] != $frmType) {
 if (!empty($frmProfile)) {
 	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
 	$proFileName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', $frmProfile) . '.json';
-	// Change FS State
 	toggleFS(true);
 	file_put_contents($profilesPath . $proFileName, $profile);
 	$newProfile = true;
@@ -356,30 +338,30 @@ if (!empty($frmDelProfile)) {
 // Compare current stored values vs new values from form
 if ($changes > 0) {
 	// Stop SVXLink service before attempting anything
-	shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
+	serviceControl('rolink.service','stop');
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
 	toggleFS(true);
 	file_put_contents($newFile, $newCfg);
-	shell_exec("sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
+	exec("/usr/bin/sudo /usr/bin/cp $newFile /opt/rolink/conf/rolink.conf");
 	// Update json file if decription/type changed
 	if ($cfgRefData['tip'] != $frmType) {
 		$cfgRefData['tip'] = $frmType;
 		$nfoParams = json_encode($cfgRefData, JSON_PRETTY_PRINT);
 		file_put_contents($tmpRefFile, $nfoParams);
-		shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
+		exec("/usr/bin/sudo /usr/bin/cp $tmpRefFile $cfgRefFile");
 	}
 	// Update json file with signature of using RoLinkX Dashboard
 	if (!isset($cfgRefData['isx']) || $cfgRefData['isx'] == 1) {
 		$cfgRefData['isx'] = 2;
 		$nfoParams = json_encode($cfgRefData, JSON_PRETTY_PRINT);
 		file_put_contents($tmpRefFile, $nfoParams);
-		shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
+		exec("/usr/bin/sudo /usr/bin/cp $tmpRefFile $cfgRefFile");
 	}
 	$msgOut .= 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
 	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
 
 	// All done, start SVXLink service
-	shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
+	serviceControl('rolink.service','start');
 } else {
 	$msgOut .= 'No new data to process.<br/>Keeping original configuration.';
 	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';

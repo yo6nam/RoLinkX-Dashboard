@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.8
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,10 +22,8 @@
 * SA818(S)(V/U) radio programming module
 */
 
-$config		= include '../config.php';
-$txPin		= $config['cfgPttPin'];
-$tty		= $config['cfgTty'];
-$pinPath	= '/sys/class/gpio/gpio'. $txPin .'/value';
+include __DIR__ . "/../includes/functions.php";
+include __DIR__ . "/../includes/php_serial.class.php";
 
 /* Get POST vars */
 $grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_STRING) : '';
@@ -35,9 +33,6 @@ $sql = (isset($_POST['sql'])) ? filter_input(INPUT_POST, 'sql', FILTER_SANITIZE_
 $vol = (isset($_POST['vol'])) ? filter_input(INPUT_POST, 'vol', FILTER_SANITIZE_STRING) : '';
 $flt = (isset($_POST['flt'])) ? filter_input(INPUT_POST, 'flt', FILTER_SANITIZE_STRING) : '';
 
-/* Update configuration info sent to reflector */
-$cfgRefFile = '/opt/rolink/conf/rolink.json';
-$tmpRefFile = '/tmp/rolink.json.tmp';
 $ctcssVars = array(
 		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
@@ -49,51 +44,52 @@ $ctcssVars = array(
 		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
 		);
-$nfoParam['k_id'] = 'n_a';
-$nfoParam['name'] = $nfoParam['nameA'] = $nfoParam['nodeLocation'] = '';
-$nfoParam['pl_in'] = $ctcssVars[floatval($tpl)];
-$nfoParam['pl_out']	= $ctcssVars[floatval($tpl)];
-$nfoParam['rx_frq'] = sprintf("%0.3f", $grp);
-$nfoParam['shift'] = '';
-$nfoParam['tip'] = '';
-$nfoParam['tx_frq'] = sprintf("%0.3f", $grp);
-$nfoParam['tg'] = 226;
 
 if (empty($grp) && empty($vol) && empty($flt)) {
 	sleep(2);
 	echo 'Not enough data to write!<br/>Check your parameters';
-	return;
+	exit(1);
 }
 
+/* Update configuration info sent to reflector */
 if (!empty($grp)) {
+	$cfgRefFile = '/opt/rolink/conf/rolink.json';
+	$tmpRefFile = '/tmp/rolink.json.tmp';
+	if (!is_file($cfgRefFile)) {
+		sleep(2);
+		echo 'RoLink not installed!';
+		exit(1);
+	}
+	$nfoParam = json_decode(file_get_contents($cfgRefFile), true);
+	$nfoParam['pl_in'] = $ctcssVars[floatval($tpl)];
+	$nfoParam['pl_out']	= $ctcssVars[floatval($tpl)];
+	$nfoParam['rx_frq'] = sprintf("%0.3f", $grp);
+	$nfoParam['tx_frq'] = sprintf("%0.3f", $grp);
+	$nfoParam['isx'] = 2;
 	toggleFS(true);
 	$nfoParams = json_encode($nfoParam, JSON_PRETTY_PRINT);
 	file_put_contents($tmpRefFile, $nfoParams);
-	shell_exec("sudo /usr/bin/cp $tmpRefFile /opt/rolink/conf/rolink.json");
+	shell_exec("/usr/bin/sudo /usr/bin/cp $tmpRefFile $cfgRefFile");
 }
 
-/* Include the serial class */
-include __DIR__ . "/../includes/php_serial.class.php";
-
 /* Stop SVXLink service before attempting anything */
-shell_exec('/usr/bin/sudo /usr/bin/systemctl stop rolink.service');
+serviceControl('rolink.service','stop');
 
 /* If stuck in TX, force exit */
-shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw '. $pinPath);
-shell_exec('/usr/bin/cat '. $pinPath .' | grep 1 && /usr/bin/echo 0 > '. $pinPath);
+unstick();
 
 /* Build the AT commands */
 if (!empty($dev) &&  !empty($grp) && !empty($tpl) && !empty($sql)) { // Frequency, Deviation, CTCSS, SQL
 	$pgmGroup = 'AT+DMOSETGROUP='. $dev .','. $grp .','. $grp .','. $tpl .','. $sql .','. $tpl;
-	$groupCmd = writeToSerial($pgmGroup, $tty, 2);
+	$groupCmd = writeToSerial($pgmGroup, $config['cfgTty'], 2);
 }
-if (!empty($vol)) {
+if (!empty($vol)) { // Audio input preamp
 	$pgmVolume = 'AT+DMOSETVOLUME='. $vol;
-	$volumeCmd = writeToSerial($pgmVolume, $tty, 1);
+	$volumeCmd = writeToSerial($pgmVolume, $config['cfgTty'], 1);
 }
-if (!empty($flt)) {
+if (!empty($flt)) { // Filters
 	$pgmFilter = 'AT+SETFILTER='. $flt;
-	$filterCmd = writeToSerial($pgmFilter, $tty, 1);
+	$filterCmd = writeToSerial($pgmFilter, $config['cfgTty'], 1);
 }
 function writeToSerial($command, $tty = 1, $delay = 1) {
 	if (empty($command)) return 'Empty command. Exiting...';
@@ -107,7 +103,7 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 	$cstatus = trim($serial->readPort());
 	if ($cstatus != "+DMOCONNECT:0") {
 		$serial->deviceClose();
-		return 'Could not connect to serial device';
+		return 'Could not connect!';
 	}
 	/* Process command */
 	$serial->sendMessage($command ."\r\n", $delay);
@@ -116,28 +112,13 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 	return $reply;
 }
 
-/* Give feedback to user */
-$moduleReply = '* Response from SA818 module *</br>';
+/* Send feedback to user */
+$moduleReply = '<b>Response from SA818</b></br>';
 $moduleReply .= (isset($groupCmd)) ? 'Channel : ' . str_replace("+DMOSETGROUP:0", "Success!", $groupCmd) . '</br>' : '';
 $moduleReply .= (isset($volumeCmd)) ? 'Volume : ' . str_replace("+DMOSETVOLUME:0", "Success!", $volumeCmd) . '</br>' : '';
 $moduleReply .= (isset($filterCmd)) ? 'Filter : ' . str_replace("+DMOSETFILTER:0", "Success!", $filterCmd) . '</br>' : '';
 echo $moduleReply;
 
 /* All done, start SVXLink service */
-sleep(1);
 toggleFS(false);
-shell_exec('/usr/bin/sudo /usr/bin/systemctl start rolink.service');
-
-// Switch file system status (ReadWrite <-> ReadOnly)
-function toggleFS($status) {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
-	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
-	exec($changeTo);
-	sleep(1);
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
-	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
-		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
-		echo 'Something went wrong switching FS!<br/>Please reboot';
-		exit(1);
-	}
-}
+serviceControl('rolink.service','start');

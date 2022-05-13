@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v1.96
+ *   RoLinkX Dashboard v2.0
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
  */
 
 $(document).ready(function () {
-  // Common notice function
   $.fn.showNotice = function (data, timeOutVal) {
     $(this).iziModal('destroy');
     $(this).iziModal({
@@ -169,12 +168,12 @@ $(document).ready(function () {
       url: 'ajax/svx.php',
       data: { prd: $('#svx_spn').val() },
       success: function (data) {
-        if (data) {
-          $('#sysmsg').showNotice(data, 2000);
-        }
-        setTimeout(function () {
-          location.reload(true);
-        }, 5000);
+		if (data) {
+			$('#sysmsg').showNotice(data, 2000);
+			setTimeout(function () {
+				location.reload(true);
+			}, 3000);
+		}
       }
     });
   });
@@ -250,8 +249,6 @@ $(document).ready(function () {
       }
     });
   });
-
-  /*********** System functions ***********/
 
   // Power Off OS
   $('#halt').click(function () {
@@ -399,6 +396,7 @@ $(document).ready(function () {
         }
       }
     });
+
 	function validate(container, data, type) {
 	    var status = [];
 	    status['ok'] = 'bg-success text-white'
@@ -465,20 +463,20 @@ $(document).ready(function () {
       url: 'ajax/sys.php',
       data: { updateDash: 1 },
       success: function (data) {
-        if (data) {
-          $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1, function() {
-            $('#sysmsg').showNotice(data, 3000);
-          });
-          setTimeout(function () {
-            location.reload();
-          }, 3500);
-        }
+		if (data) {
+			$('#sysmsg').showNotice(data, 3000);
+			$('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1)
+			setTimeout(function () {
+				location.reload();
+			}, 4000);
+		}
       }
     });
   });
 
   // RoLink update
   $('#updateRoLink').click(function () {
+	$('#cfgSave, #updateDash, #updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
     $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
       title: 'Updating, please wait!<br/>It might take a few minutes...',
@@ -493,16 +491,18 @@ $(document).ready(function () {
       overlayClose: false,
       overlay: true,
     });
-    $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
+
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
       data: { updateRoLink: 1 },
       success: function (data) {
         if (data) {
-          $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1, function() {
-            $('#sysmsg').showNotice(data, 3000);
-          });
+			$('#sysmsg').showNotice(data, 3000)
+			$('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1)
+			setTimeout(function () {
+				window.location.href = "/rolink";
+			}, 5000);
         }
       }
     });
@@ -706,7 +706,7 @@ $(document).ready(function () {
         error: function (request, status, err) {
           if (status == 'timeout') {
             connectToServer(0, selval);
-            $('#log_data').html('<br />Local timeout, reloading...');
+            $('#log_data').html('<br/>Local timeout, reloading...');
           }
         },
       });

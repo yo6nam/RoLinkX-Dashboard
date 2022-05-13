@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.95
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -35,9 +35,9 @@ $pinsArray = array(2, 3, 6, 7, 10, 18, 19);
 function getSSIDs() {
 	$storedSSID = null;
 	$storedPwds = null;
-
 	preg_match_all('/ssid="(.*)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultSSID);
 	if (empty($resultSSID)) return false;
+
 	foreach ($resultSSID[1] as $key => $ap) {
 		if ($key <= 3) {
 			  $storedSSID[] = $ap;
@@ -46,12 +46,12 @@ function getSSIDs() {
 
 	preg_match_all('/psk="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultPWDS);
 	if (empty($resultPWDS)) return false;
+
 	foreach ($resultPWDS[1] as $key => $pw) {
 		if ($key <= 3) {
 			  $storedPwds[] = $pw;
 		  }
 	}
-
 	return array($storedSSID, $storedPwds);
 }
 
@@ -67,14 +67,14 @@ function scanWifi($ext = 0) {
 		if (!isset($arrNetwork[4])) continue;
 		$ssid = trim($arrNetwork[4]);
 		if (empty($ssid) || preg_match('[\x00-\x1f\x7f\'\`\´\"]', $ssid)) {
-				continue;
-		  }
-		  $networks[$ssid]['ssid'] = $ssid;
+			continue;
+		}
+		$networks[$ssid]['ssid'] = $ssid;
 		$networks[$ssid] = array(
-				'rssi' => $arrNetwork[2],
-					 'protocol' => authType($arrNetwork[3]),
-					 'channel' => freqToChan($arrNetwork[1])
-				);
+			'rssi' => $arrNetwork[2],
+			'protocol' => authType($arrNetwork[3]),
+			'channel' => freqToChan($arrNetwork[1])
+		);
 	}
 
 	if (!empty($networks)) {
@@ -119,7 +119,7 @@ function scanWifi($ext = 0) {
 			$apList .= '</div></div></div></div>';
 		}
 	}
- return $apList;
+	return $apList;
 }
 
 function authType($type) {
@@ -220,66 +220,50 @@ function svxForm() {
 
 	/* Get current variables */
 	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
-
 	/* Host / Reflector */
 	preg_match('/(HOST=)(\S+)/', $cfgFileData, $varReflector);
 	$reflectorValue = (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
-
 	/* Port */
 	preg_match('/(PORT=)(\d+)/', $cfgFileData, $varPort);
 	$portValue = (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
-
 	/* Callsign for authentification */
 	preg_match('/(CALLSIGN=")(\S+)"/', $cfgFileData, $varCallSign);
 	$callSignValue = (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
-
 	/* Key for authentification */
 	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
 	$authKeyValue = (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
-
 	/* Callsign for beacons */
 	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
 	$beaconValue = (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
-
 	/* RX GPIO */
 	preg_match('/(GPIO_SQL_PIN=)(\S+)/', $cfgFileData, $varRxGPIO);
 	$rxGPIOValue = (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
-
 	/* TX GPIO */
 	preg_match('/(PTT_PIN=)(\S+)/', $cfgFileData, $varTxGPIO);
 	$txGPIOValue = (isset($varTxGPIO[2])) ? $varTxGPIO[2] : '';
-
 	/* Roger beep */
 	preg_match('/(RGR_SOUND_ALWAYS=)(\d+)/', $cfgFileData, $varRogerBeep);
 	$rogerBeepValue = (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
-
 	/* Squelch delay */
 	preg_match('/(SQL_DELAY=)(\d+)/', $cfgFileData, $varSquelchDelay);
 	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value=' . $varSquelchDelay[2] : '';
-
 	/* Monitor TGs*/
 	preg_match('/(MONITOR_TGS=)(\S+)/', $cfgFileData, $varMonitorTgs);
 	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value=' . $varMonitorTgs[2] : '';
-
 	/* TG Select Timeout */
 	preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $cfgFileData, $varTgSelTimeOut);
 	$tgSelTimeOutValue	= (isset($varTgSelTimeOut[2])) ? 'value=' . $varTgSelTimeOut[2] : '';
-
 	/* Announce connection status interval */
 	preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $cfgFileData, $varAnnounceConnectionStatus);
 	$announceConnectionStatusValue	= (isset($varAnnounceConnectionStatus[2])) ? 'value=' . $varAnnounceConnectionStatus[2] : '';
-
 	/* Opus codec bitrate */
 	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
 	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
-
 	/* Voice Language */
 	preg_match('/(DEFAULT_LANG=)(\S+)/', $cfgFileData, $varVoicePack);
-
 	/* Short / Long Intervals */
 	preg_match('/(SHORT_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varShortIdent);
 	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
-
 	/* TimeOut Timer (TX) */
 	preg_match('/(TIMEOUT=)(\d+)\nTX/', $cfgFileData, $varTxTimeout);
 	$txTimeOutValue	= (isset($varTxTimeout[2])) ? 'value=' . $varTxTimeout[2] : '';
@@ -293,7 +277,7 @@ function svxForm() {
 	$cfgRefData = json_decode($cfgRefFile, true);
 
 	if (!empty($proFiles)) {
-		$profileOption	= '<div class="input-group input-group-sm mb-1">
+		$profileOption	= '<div class="input-group input-group-sm mb-3">
 			  <label class="input-group-text bg-info text-white" for="svx_spn" style="width: 8rem;">Select profile</label>
 			  <select id="svx_spn" class="form-select">
 				<option value="" selected disabled>Select a profile</option>';
@@ -314,7 +298,7 @@ function svxForm() {
 		</div>';
 	$svxForm .= '<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
-		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
+		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Server address" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Port</span>
@@ -378,7 +362,7 @@ function svxForm() {
 		}
 		$svxForm .= '</select>
 		</div>
-		<div class="input-group input-group-sm mb-1">
+		<div class="input-group input-group-sm mb-3">
 		  <span class="input-group-text" style="width: 8rem;">Type</span>
 		  <input id="svx_tip" type="text" class="form-control" placeholder="nod portabil" aria-label="Description" aria-describedby="inputGroup-sizing-sm" value="'. $cfgRefData['tip'] .'">
 		</div>
@@ -543,23 +527,23 @@ function sa818Form() {
 function logsForm() {
 	$logData = '<h4 class="mt-2 alert alert-dark fw-bold">Logs</h4>';
 	$logData .= '<div class="container">
-		<div class="row justify-content-center">
-		  <div class="col-lg-12">
-			 <div class="card bg-light shadow border-0">
+	<div class="row justify-content-center">
+		<div class="col-lg-12">
+			<div class="card bg-light shadow border-0">
 				<div class="card-header bg-white">
-				 <img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
-				 <div id="log_selector">
-					<select id="log">
-						<option value="" disabled>-Log file-</option>
-						<option value="1" selected>Syslog</option>
-						<option value="2">RoLink</option>
-					</select>
-				</div>
+					<img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
+					<div id="log_selector">
+						<select id="log">
+							<option value="" disabled>-Log file-</option>
+							<option value="1" selected>Syslog</option>
+							<option value="2">RoLink</option>
+						</select>
+					</div>
 				</div>
 				<div class="card-body px-lg-3 py-lg-2 scrolog">
-					<div class="small" id="log_data"></div>
+					<div class="small" id="log_data" style="height:65vh;overflow:auto"></div>
 				</div>
-			 </div>
+			</div>
 		</div>
 	</div>
 </div>';
@@ -569,8 +553,8 @@ function logsForm() {
 /* Config */
 function cfgForm() {
 	global $pinsArray;
-	$config		= include 'config.php';
-	$ttysArray	= array(1, 2, 3);
+	include __DIR__ . "/../includes/functions.php";
+	$ttysArray = array(1, 2, 3);
 	$statusPageItems = array(
 		'cfgHostname' => 'Hostname',
 		'cfgUptime' => 'Uptime',

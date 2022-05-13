@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.96
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 * Status reporting module
 */
 
-if (isset($_GET['svxStatus'])) echo getSVXLinkStatus(2);
+if (isset($_GET['svxStatus'])) echo getSVXLinkStatus();
 if (isset($_GET['svxReflector'])) echo getReflector(1);
 if (isset($_GET['cpuData'])) echo getCpuStats(1);
 
@@ -69,7 +69,7 @@ function getUpTime() {
 
 /* CPU Load & Temp */
 function getCpuStats($ajax = 0) {
-	$config = ($ajax == 1) ? include '../config.php' : include 'config.php';
+	$config = include __DIR__ . '/../config.php';
 	$avgLoad = $cpuTemp = '...';
 	$tempWarning = null;
 	if ($ajax) {
@@ -91,7 +91,7 @@ function getCpuStats($ajax = 0) {
 
 function _getServerLoadLinuxData(){
     if (is_readable("/proc/stat")) {
-        $stats = @file_get_contents("/proc/stat");
+        $stats = file_get_contents("/proc/stat");
         if ($stats !== false) {
             $stats = preg_replace("/[[:blank:]]+/", " ", $stats);
             $stats = str_replace(array("\r\n", "\n\r", "\r"), "\n", $stats);
@@ -137,7 +137,7 @@ function getSSID() {
 		$wifiStatus = $reply[0];
 		$wifiMode = 'SSID';
 	} else {
-		exec('systemctl is-active hostapd', $mode);
+		exec('/usr/bin/systemctl is-active hostapd', $mode);
 		$wifiStatus = ($mode[0] == 'active') ? 'Hotspot' : 'Not associated' ;
 		$wifiMode = 'Wi-Fi mode';
 	}
@@ -216,7 +216,7 @@ function getPublicIP() {
 function getSVXLinkStatus($ext = 0) {
 	exec("pgrep svxlink", $reply);
 	if ($ext == 1) return ((empty($reply)) ? false : true);
-	$config = ($ext == 2) ? include '../config.php' : include 'config.php';
+	$config = include __DIR__ . '/../config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
 	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button>' : NULL;
@@ -229,7 +229,7 @@ function getSVXLinkStatus($ext = 0) {
 
 /* Get Reflector address */
 function getReflector($ext = 0) {
-	$config = ($ext == 1) ? include '../config.php' : include 'config.php';
+	$config = include __DIR__ . '/../config.php';
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	$conStatus = $stateColor = $prevStatus = '';
 	if (is_file($cfgFile)) {
@@ -339,7 +339,7 @@ function getRemoteVersion() {
 		$remoteVersion = explode('|', $remoteData);
 		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
 		$notify = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
-		setcookie("remote_version", $remoteVersion[0], time()+60*60*24); // Expiry in 24 hours (no need to check more often)
+		setcookie("remote_version", $remoteVersion[0], time()+60*60*24);
 	} elseif (!isset($result)) {
 		$result = 'Unavailable';
 	}

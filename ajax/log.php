@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.0
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ switch ($logFile) {
 
 if (!$num) {
 	$fileLen	= shell_exec("$sudo $wc -l $logfile | $cut -d \" \" -f 1 | $tr -d '\n' 2>/dev/null");
-	$logLines	= shell_exec("$sudo $tail -30 $logfile");
+	$logLines	= shell_exec("$sudo $tail -100 $logfile");
 	$logLineArr	= preg_split('/\n/', trim($logLines));
 	$dataArr = array('count'=>$fileLen, 'loglines'=>$logLineArr);
 	echo json_encode($dataArr);
@@ -53,7 +53,6 @@ if (!$num) {
 	$nextline	= $num+1;
 	sleep(2);
 	$curr_len = shell_exec("$sudo $wc -l $logfile | $cut -d \" \" -f 1 | $tr -d '\n' 2>/dev/null");
-
 	if ($curr_len == $num) {
 		clearstatcache($logfile);
 		$logTimeStamp		= filectime($logfile);
@@ -66,7 +65,6 @@ if (!$num) {
 			$newTimeStamp = filectime($logfile);
 			$timeout++;
 	 	}
-
 		if ($timeout >= $maxWait){
 			$dataArr = array('count'=>-1);
 			echo json_encode($dataArr);

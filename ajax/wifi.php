@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.94
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 * Wi-Fi management module
 */
 
+include __DIR__ . "/../includes/functions.php";
 $wpaFile = '/etc/wpa_supplicant/wpa_supplicant.conf';
 $wpaTemp = '/tmp/wpa_supplicant.tmp';
 $weHaveData = $fail = false;
@@ -36,20 +37,6 @@ $wkC = (isset($_POST['wk3'])) ? filter_input(INPUT_POST, 'wk3', FILTER_SANITIZE_
 $wnD = (isset($_POST['wn4'])) ? filter_input(INPUT_POST, 'wn4', FILTER_SANITIZE_STRING) : '';
 $wkD = (isset($_POST['wk4'])) ? filter_input(INPUT_POST, 'wk4', FILTER_SANITIZE_STRING) : '';
 
-// Switch file system status (ReadWrite <-> ReadOnly)
-function toggleFS($status) {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
-	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
-	exec($changeTo);
-	sleep(1);
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
-	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
-		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
-		echo 'Something went wrong switching FS!<br/>Please reboot';
-		exit(1);
-	}
-}
-
 function getSSIDs() {
 	global $wpaFile;
 	$storedSSID = null;
@@ -62,7 +49,6 @@ function getSSIDs() {
   			$storedSSID[] = $ap;
   		}
 	}
-
 	preg_match_all('/psk="(\S+)"/', $wpaBuffer, $resultPWDS);
 	if (empty($resultPWDS)) return false;
 	foreach ($resultPWDS[1] as $key => $pw) {
@@ -169,9 +155,9 @@ if (!empty($networkD)) {
 if ($weHaveData) {
 	toggleFS(true);
 	file_put_contents($wpaTemp, $wpaData);
-	shell_exec("sudo /usr/bin/cp $wpaTemp $wpaFile");
-	echo 'New data stored.<br/>Reboot if you want to connect!';
+	exec("/usr/bin/sudo /usr/bin/cp $wpaTemp $wpaFile");
 	toggleFS(false);
+	echo 'New data stored.<br/>Reboot if you want to connect!';
 } else {
 	echo 'No new data, so nothing changed';
 }

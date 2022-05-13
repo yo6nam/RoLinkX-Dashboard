@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v1.95
+*   RoLinkX Dashboard v2.0
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,8 @@
 /*
 * System reporting / actions module
 */
+
+include __DIR__ . "/../includes/functions.php";
 
 $halt				= (isset($_POST['halt'])) ? filter_input(INPUT_POST, 'halt', FILTER_SANITIZE_NUMBER_INT) : '';
 $reboot				= (isset($_POST['reboot'])) ? filter_input(INPUT_POST, 'reboot', FILTER_SANITIZE_NUMBER_INT) : '';
@@ -64,13 +66,13 @@ if (isset($_POST)) {
 	/* Time Zone */
 	$currentTimezone = trim(file_get_contents('/etc/timezone'));
 	if (isset($timezone) && $timezone != $currentTimezone) {
+		serviceControl('rolink.service','stop');
 		toggleFS(true);
-		exec("/usr/bin/sudo /usr/bin/systemctl stop rolink.service");
 		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone ' . $timezone);
-		echo 'Timezone changed to <br/><b>' . $timezone . '</b>';
-		exec("/usr/bin/sudo /usr/bin/systemctl start rolink.service");
-		exec("/usr/bin/sudo /usr/bin/systemctl restart rsyslog.service");
 		toggleFS(false);
+		serviceControl('rolink.service','start');
+		serviceControl('rsyslog.service','restart');
+		echo 'Timezone changed to <br/><b>' . $timezone . '</b>';
 		exit(0);
 	}
 
@@ -84,27 +86,11 @@ if (isset($_POST)) {
 			'vac_adc' => 'ADC Gain'
 		);
 		toggleFS(true);
-		// Set the new value
 		exec("/usr/bin/sudo /usr/bin/amixer set '$mixerControls[$mixerControl]' $mixerValue%");
-		// Store configuration to the persistent alsamixer configuration file
 		exec("/usr/bin/sudo /usr/sbin/alsactl store");
-		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
 		toggleFS(false);
+		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
 		exit(0);
-	}
-}
-
-// Switch file system status (ReadWrite <-> ReadOnly)
-function toggleFS($status) {
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $prevStatus);
-	$changeTo = ($status) ? '/usr/bin/sudo /usr/bin/mount -o remount,rw /' : '/usr/bin/sudo /usr/bin/mount -o remount,ro /';
-	exec($changeTo);
-	sleep(1);
-	exec('/usr/bin/cat /proc/mounts | grep -Po \'(?<=(ext4\s)).*(?=,noatime)\'', $afterStatus);
-	if ($status && $prevStatus[0] == 'ro' & $afterStatus[0] == 'ro' ||
-		!$status && $prevStatus[0] == 'rw' & $afterStatus[0] == 'rw') {
-		echo 'Something went wrong switching FS!<br/>Please reboot';
-		exit(1);
 	}
 }
 
@@ -129,14 +115,16 @@ function latencyCheck() {
 /* Stop SVXLink */
 if ($endsvx == 1) echo stopSVXLink();
 function stopSVXLink() {
-	exec("/usr/bin/sudo /usr/bin/systemctl stop rolink.service");
+	unstick();
+	serviceControl('rolink.service','stop');
 	return true;
 }
 
 /* Restart SVXLink */
 if ($resvx == 1) echo restartSVXLink();
 function restartSVXLink() {
-	exec("/usr/bin/sudo /usr/bin/systemctl restart rolink.service");
+	unstick();
+	serviceControl('rolink.service','restart');
 	return true;
 }
 
@@ -151,9 +139,8 @@ function wifiRestart() {
 if ($halt == 1) sysHalt();
 function sysHalt() {
 	/* If stuck in TX, force exit */
-	$config = include '../config.php';
-	$pinPath = '/sys/class/gpio/gpio'. $config['cfgPttPin'] .'/value';
-	shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw '. $pinPath .'; /usr/bin/echo 0 > '. $pinPath .';/usr/bin/sudo /usr/sbin/halt -p');
+	unstick();
+	exec('/usr/bin/sudo /usr/sbin/halt -p');
 	exit(0);
 }
 
