@@ -367,7 +367,9 @@ $(document).ready(function () {
     			return;
 			}
 			// Check if returned data is incomplete
-			if (Object.keys(networkData).length < 5) {
+			if (Object.keys(networkData).length < 5 || networkData[0] == null ||
+				networkData[1] == null || networkData[2] == null ||
+				networkData[3] == null || networkData[4] == null) {
 				$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
 					$('#sysmsg').showNotice('Incomplete data received<br/>Try again in 30 seconds', 3000);
 					$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
