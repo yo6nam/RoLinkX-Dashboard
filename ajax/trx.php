@@ -22,8 +22,8 @@
 * SA818(S)(V/U) radio programming module
 */
 
-include __DIR__ . "/../includes/functions.php";
-include __DIR__ . "/../includes/php_serial.class.php";
+include __DIR__ .'/../includes/functions.php';
+include __DIR__ .'/../includes/php_serial.class.php';
 
 /* Get POST vars */
 $grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_STRING) : '';
@@ -73,7 +73,7 @@ if (!empty($grp)) {
 }
 
 /* Stop SVXLink service before attempting anything */
-serviceControl('rolink.service','stop');
+serviceControl('rolink.service', 'stop');
 
 /* If stuck in TX, force exit */
 unstick();
@@ -93,7 +93,7 @@ if (!empty($flt)) { // Filters
 }
 function writeToSerial($command, $tty = 1, $delay = 1) {
 	if (empty($command)) return 'Empty command. Exiting...';
-	shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /dev/ttyS' . $tty);
+	shell_exec('/usr/bin/sudo /usr/bin/chmod guo+rw /dev/ttyS'. $tty);
 	$serial = new phpSerial;
 	$serial->deviceSet("/dev/ttyS" . $tty);
 	$serial->deviceOpen('w+');
@@ -114,11 +114,11 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 
 /* Send feedback to user */
 $moduleReply = '<b>Response from SA818</b></br>';
-$moduleReply .= (isset($groupCmd)) ? 'Channel : ' . str_replace("+DMOSETGROUP:0", "Success!", $groupCmd) . '</br>' : '';
-$moduleReply .= (isset($volumeCmd)) ? 'Volume : ' . str_replace("+DMOSETVOLUME:0", "Success!", $volumeCmd) . '</br>' : '';
-$moduleReply .= (isset($filterCmd)) ? 'Filter : ' . str_replace("+DMOSETFILTER:0", "Success!", $filterCmd) . '</br>' : '';
+$moduleReply .= (isset($groupCmd)) ? 'Channel : '. str_replace("+DMOSETGROUP:0", "Success!", $groupCmd) .'</br>' : '';
+$moduleReply .= (isset($volumeCmd)) ? 'Volume : '. str_replace("+DMOSETVOLUME:0", "Success!", $volumeCmd) .'</br>' : '';
+$moduleReply .= (isset($filterCmd)) ? 'Filter : '. str_replace("+DMOSETFILTER:0", "Success!", $filterCmd) .'</br>' : '';
 echo $moduleReply;
 
 /* All done, start SVXLink service */
 toggleFS(false);
-serviceControl('rolink.service','start');
+serviceControl('rolink.service', 'start');

@@ -22,7 +22,7 @@
 * System reporting / actions module
 */
 
-include __DIR__ . "/../includes/functions.php";
+include __DIR__ .'/../includes/functions.php';
 
 $halt				= (isset($_POST['halt'])) ? filter_input(INPUT_POST, 'halt', FILTER_SANITIZE_NUMBER_INT) : '';
 $reboot				= (isset($_POST['reboot'])) ? filter_input(INPUT_POST, 'reboot', FILTER_SANITIZE_NUMBER_INT) : '';
@@ -58,7 +58,7 @@ if (isset($_POST)) {
 	}
 	if ($changed) {
 		toggleFS(true);
-		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) . ';' . PHP_EOL);
+		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) .';'. PHP_EOL);
 		echo 'Configuration saved!';
 		toggleFS(false);
 		exit(0);
@@ -67,13 +67,13 @@ if (isset($_POST)) {
 	/* Time Zone */
 	$currentTimezone = trim(file_get_contents('/etc/timezone'));
 	if (isset($timezone) && $timezone != $currentTimezone) {
-		serviceControl('rolink.service','stop');
+		serviceControl('rolink.service', 'stop');
 		toggleFS(true);
-		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone ' . $timezone);
+		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone '. $timezone);
 		toggleFS(false);
-		serviceControl('rolink.service','start');
-		serviceControl('rsyslog.service','restart');
-		echo 'Timezone changed to <br/><b>' . $timezone . '</b>';
+		serviceControl('rolink.service', 'start');
+		serviceControl('rsyslog.service', 'restart');
+		echo 'Timezone changed to <br/><b>'. $timezone .'</b>';
 		exit(0);
 	}
 
@@ -99,7 +99,7 @@ if (isset($_POST)) {
 		exec("/usr/bin/sudo /usr/bin/amixer set '$mixerControls[$mixerControl]' $mixerValue%");
 		exec("/usr/bin/sudo /usr/sbin/alsactl store");
 		toggleFS(false);
-		echo $mixerControls[$mixerControl] . ' / ' .$mixerValue;
+		echo $mixerControls[$mixerControl] .' / '. $mixerValue;
 		exit(0);
 	}
 }
@@ -126,7 +126,7 @@ function latencyCheck() {
 if ($endsvx == 1) echo stopSVXLink();
 function stopSVXLink() {
 	unstick();
-	serviceControl('rolink.service','stop');
+	serviceControl('rolink.service', 'stop');
 	return true;
 }
 
@@ -134,7 +134,7 @@ function stopSVXLink() {
 if ($resvx == 1) echo restartSVXLink();
 function restartSVXLink() {
 	unstick();
-	serviceControl('rolink.service','restart');
+	serviceControl('rolink.service', 'restart');
 	return true;
 }
 
@@ -174,7 +174,7 @@ function switchHostName() {
 		exec("/usr/bin/sudo /usr/bin/hostnamectl set-hostname $newHostName");
 		exec("/usr/bin/sudo /usr/bin/sed -i 's/$hostName/$newHostName/' /etc/hosts");
 		toggleFS(false);
-		return 'Hostname has been changed from <br/><b>' . $hostName . '</b> to <b>' . $newHostName . '</b><br/>You need to reboot to apply changes.';
+		return 'Hostname has been changed from <br/><b>'. $hostName .'</b> to <b>'. $newHostName .'</b><br/>You need to reboot to apply changes.';
 	} else {
 		return 'Nothing changed.<br/>New and old hostnames are the same.';
 	}

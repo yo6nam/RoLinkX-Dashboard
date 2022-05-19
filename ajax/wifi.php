@@ -22,7 +22,7 @@
 * Wi-Fi management module
 */
 
-include __DIR__ . "/../includes/functions.php";
+include __DIR__ .'/../includes/functions.php';
 $wpaFile = '/etc/wpa_supplicant/wpa_supplicant.conf';
 $wpaTemp = '/tmp/wpa_supplicant.tmp';
 $weHaveData = $fail = false;
@@ -115,14 +115,14 @@ $wpaData = 'ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 ap_scan=1
 fast_reauth=1
-country=RO' . PHP_EOL;
+country=RO'. PHP_EOL;
 if (!empty($networkA)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkA) .'
         psk='. json_encode($authKeyA) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
-}' . PHP_EOL;
+}'. PHP_EOL;
 }
 
 if (!empty($networkB)) {
@@ -131,7 +131,7 @@ if (!empty($networkB)) {
         psk='. json_encode($authKeyB) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
-}' . PHP_EOL;
+}'. PHP_EOL;
 }
 
 if (!empty($networkC)) {
@@ -140,7 +140,7 @@ if (!empty($networkC)) {
         psk='. json_encode($authKeyC) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
-}' . PHP_EOL;
+}'. PHP_EOL;
 }
 
 if (!empty($networkD)) {
@@ -149,7 +149,7 @@ if (!empty($networkD)) {
         psk='. json_encode($authKeyD) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
-}' . PHP_EOL;
+}'. PHP_EOL;
 }
 
 if ($weHaveData) {

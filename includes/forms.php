@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.1
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -57,8 +57,8 @@ function getSSIDs() {
 
 function scanWifi($ext = 0) {
 	$apList = null;
-	exec('sudo wpa_cli -i wlan0 scan');
-	exec('sudo wpa_cli -i wlan0 scan_results', $reply);
+	exec('/usr/bin/sudo wpa_cli -i wlan0 scan');
+	exec('/usr/bin/sudo wpa_cli -i wlan0 scan_results', $reply);
 	if (empty($reply)) return;
 	array_shift($reply);
 
@@ -163,14 +163,14 @@ function wifiForm() {
 	$apsList	= scanWifi();
 	exec('/sbin/iwgetid --raw', $con);
 	$wifiForm = '<h4 class="mt-2 alert alert-info fw-bold">Wi-Fi configuration</h4>';
-	$wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
+	$wifiForm .= '<div id="wifiScanner">'. $apsList .'</div>';
 	$wifiForm .= '<div class="card">
 		<div class="card-header">Add / Edit networks</div>
-		<div class="card-body">' . PHP_EOL;
+		<div class="card-body">'. PHP_EOL;
 	for ($i = 0; $i < 4; $i++) {
 		$active = (isset($con[0])) ? $con[0] : null;
 		$a = (isset($ssidList[0][$i]) && $active === $ssidList[0][$i]) ? true : false;
-		$n = (empty($ssidList[0][$i])) ? 'empty' : $ssidList[0][$i] . ' (saved)';
+		$n = (empty($ssidList[0][$i])) ? 'empty' : $ssidList[0][$i] .' (saved)';
 		$p = (empty($ssidList[1][$i])) ? 'empty' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);
 		$c = ($i + 1);
 		$b = ($a) ? ' bg-success text-white' : null;
@@ -182,7 +182,7 @@ function wifiForm() {
 		<div class="input-group input-group-sm mb-4">
 		  <span class="input-group-text" style="width: 7rem;">Key (Password)</span>
 		  <input id="wlan_authkey_'. $c .'" type="text" class="form-control" placeholder="'. $p .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
-		</div>' . PHP_EOL;
+		</div>'. PHP_EOL;
 	}
 	$wifiForm .= '<div class="row justify-content-center m-1">
 			<div class="col-auto alert alert-info m-2 p-1" role="alert">To delete a network use the - (dash) character as SSID</div>
@@ -193,12 +193,12 @@ function wifiForm() {
 			<button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
 		</div>
 		</div>
-	</div>' . PHP_EOL;
+	</div>'. PHP_EOL;
 	$wifiForm .= '<script>
 	var auto_refresh = setInterval( function () {
 		$("#updateList").load("includes/forms.php?scan");
 	}, 6000);
-	</script>' . PHP_EOL;
+	</script>'. PHP_EOL;
 	return $wifiForm;
 }
 
@@ -212,8 +212,8 @@ function svxForm() {
 
 	/* Convert pins to both states (normal/inverted) */
 	foreach ($pinsArray as $pin) {
-		$svxPinsArray[] = 'gpio' . $pin;
-		$svxPinsArray[] = '!gpio' . $pin;
+		$svxPinsArray[] = 'gpio'. $pin;
+		$svxPinsArray[] = '!gpio'. $pin;
 	}
 	$profileOption = null;
 	$voicesPath = '/opt/rolink/share/sounds';
@@ -222,19 +222,19 @@ function svxForm() {
 	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
 	/* Host / Reflector */
 	preg_match('/(HOST=)(\S+)/', $cfgFileData, $varReflector);
-	$reflectorValue = (isset($varReflector[2])) ? 'value=' . $varReflector[2] : '';
+	$reflectorValue = (isset($varReflector[2])) ? 'value='. $varReflector[2] : '';
 	/* Port */
 	preg_match('/(PORT=)(\d+)/', $cfgFileData, $varPort);
-	$portValue = (isset($varPort[2])) ? 'value=' . $varPort[2] : '';
+	$portValue = (isset($varPort[2])) ? 'value='. $varPort[2] : '';
 	/* Callsign for authentification */
 	preg_match('/(CALLSIGN=")(\S+)"/', $cfgFileData, $varCallSign);
-	$callSignValue = (isset($varCallSign[2])) ? 'value=' . $varCallSign[2] : '';
+	$callSignValue = (isset($varCallSign[2])) ? 'value='. $varCallSign[2] : '';
 	/* Key for authentification */
 	preg_match('/(AUTH_KEY=)"(\S+)"/', $cfgFileData, $varAuthKey);
-	$authKeyValue = (isset($varAuthKey[2])) ? 'value=' . $varAuthKey[2] : '';
+	$authKeyValue = (isset($varAuthKey[2])) ? 'value='. $varAuthKey[2] : '';
 	/* Callsign for beacons */
 	preg_match('/(CALLSIGN=)(\w\S+)/', $cfgFileData, $varBeacon);
-	$beaconValue = (isset($varBeacon[2])) ? 'value=' . $varBeacon[2] : '';
+	$beaconValue = (isset($varBeacon[2])) ? 'value='. $varBeacon[2] : '';
 	/* RX GPIO */
 	preg_match('/(GPIO_SQL_PIN=)(\S+)/', $cfgFileData, $varRxGPIO);
 	$rxGPIOValue = (isset($varRxGPIO[2])) ? $varRxGPIO[2] : '';
@@ -246,19 +246,19 @@ function svxForm() {
 	$rogerBeepValue = (isset($varRogerBeep[2])) ? $varRogerBeep[2] : '';
 	/* Squelch delay */
 	preg_match('/(SQL_DELAY=)(\d+)/', $cfgFileData, $varSquelchDelay);
-	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value=' . $varSquelchDelay[2] : '';
+	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value='. $varSquelchDelay[2] : '';
 	/* Monitor TGs*/
 	preg_match('/(MONITOR_TGS=)(\S+)/', $cfgFileData, $varMonitorTgs);
-	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value=' . $varMonitorTgs[2] : '';
+	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value='. $varMonitorTgs[2] : '';
 	/* TG Select Timeout */
 	preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $cfgFileData, $varTgSelTimeOut);
-	$tgSelTimeOutValue	= (isset($varTgSelTimeOut[2])) ? 'value=' . $varTgSelTimeOut[2] : '';
+	$tgSelTimeOutValue	= (isset($varTgSelTimeOut[2])) ? 'value='. $varTgSelTimeOut[2] : '';
 	/* Announce connection status interval */
 	preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $cfgFileData, $varAnnounceConnectionStatus);
-	$announceConnectionStatusValue	= (isset($varAnnounceConnectionStatus[2])) ? 'value=' . $varAnnounceConnectionStatus[2] : '';
+	$announceConnectionStatusValue	= (isset($varAnnounceConnectionStatus[2])) ? 'value='. $varAnnounceConnectionStatus[2] : '';
 	/* Opus codec bitrate */
 	preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $cfgFileData, $varCodecBitRate);
-	$bitrateValue		= (isset($varCodecBitRate[2])) ? 'value=' . $varCodecBitRate[2] : '';
+	$bitrateValue = (isset($varCodecBitRate[2])) ? 'value='. $varCodecBitRate[2] : '';
 	/* Voice Language */
 	preg_match('/(DEFAULT_LANG=)(\S+)/', $cfgFileData, $varVoicePack);
 	/* Short / Long Intervals */
@@ -266,10 +266,10 @@ function svxForm() {
 	preg_match('/(LONG_IDENT_INTERVAL=)(\d+)/', $cfgFileData, $varLongIdent);
 	/* TimeOut Timer (TX) */
 	preg_match('/(TIMEOUT=)(\d+)\nTX/', $cfgFileData, $varTxTimeout);
-	$txTimeOutValue	= (isset($varTxTimeout[2])) ? 'value=' . $varTxTimeout[2] : '';
+	$txTimeOutValue	= (isset($varTxTimeout[2])) ? 'value='. $varTxTimeout[2] : '';
 
 	/* Profiles section */
-	$profilesPath	= dirname(__FILE__) . '/../profiles/';
+	$profilesPath	= dirname(__FILE__) .'/../profiles/';
 	$proFiles		= array_slice(scandir($profilesPath), 2);
 
 	/* Configuration info sent to reflector ('tip' only) */
@@ -325,40 +325,40 @@ function svxForm() {
 		</div>';
 		/* Voice language detection/selection */
 		$svxForm .= '<div class="input-group input-group-sm mb-1">
-		<span class="input-group-text" style="width: 8rem;">Voice pack</span>' . PHP_EOL;
+		<span class="input-group-text" style="width: 8rem;">Voice pack</span>'. PHP_EOL;
 		if (is_dir($voicesPath)) {
-			$svxForm .= '<select id="svx_vop" class="form-select">' . PHP_EOL;
-			foreach(glob($voicesPath . '/*' , GLOB_ONLYDIR) as $voiceDir) {
-    			$availableVoicePacks = str_replace($voicesPath . '/', '', $voiceDir);
+			$svxForm .= '<select id="svx_vop" class="form-select">'. PHP_EOL;
+			foreach(glob($voicesPath .'/*' , GLOB_ONLYDIR) as $voiceDir) {
+    			$availableVoicePacks = str_replace($voicesPath .'/', '', $voiceDir);
     			$vsel = ($availableVoicePacks == $varVoicePack[2]) ? ' selected' : null;
-    			$svxForm .= '<option value="'. $availableVoicePacks .'"' . $vsel .'>'. $availableVoicePacks .'</option>' . PHP_EOL;
+    			$svxForm .= '<option value="'. $availableVoicePacks .'"'. $vsel .'>'. $availableVoicePacks .'</option>'. PHP_EOL;
 			}
 		} else {
 			$svxForm .= '<select disabled id="svx_vop" class="form-select">
-			<option value="" disabled selected>Unavailable</option>' . PHP_EOL;
+			<option value="" disabled selected>Unavailable</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>
-		</div>' . PHP_EOL;
+		</div>'. PHP_EOL;
 		$svxForm .= '
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
 		  <select id="svx_sid" class="form-select">
-			 <option value="0">Disabled</option>' . PHP_EOL;
+			 <option value="0">Disabled</option>'. PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($sid=5; $sid<=120; $sid+=5) {
 			$sel = ($sid == $varShortIdent[2]) ? ' selected' : null;
-			$svxForm .= '<option value="'. $sid .'"' . $sel .'>'. $sid .' minute</option>' . PHP_EOL;
+			$svxForm .= '<option value="'. $sid .'"'. $sel .'>'. $sid .' minutes</option>'. PHP_EOL;
 		}
 	$svxForm .= '</select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
 		  <select id="svx_lid" class="form-select">
-			 <option value="0">Disabled</option>' . PHP_EOL;
+			 <option value="0">Disabled</option>'. PHP_EOL;
 		/* Generate 5 minutes intervals up to 60 & identify stored value on file */
 		for ($lid=5; $lid<=300; $lid+=5) {
 			$sel = ($lid == $varLongIdent[2]) ? ' selected' : null;
-			$svxForm .= '<option value="'. $lid .'"' . $sel .'>'. $lid .' minute</option>' . PHP_EOL;
+			$svxForm .= '<option value="'. $lid .'"'. $sel .'>'. $lid .' minutes</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>
 		</div>
@@ -369,21 +369,21 @@ function svxForm() {
 		<div class="separator">Advanced</div>';
 		$svxForm .= '<div class="input-group input-group-sm mb-1">
 			<label class="input-group-text" for="svx_rxp" style="width: 8rem;">RX GPIO pin</label>
-			<select id="svx_rxp" class="form-select">' . PHP_EOL;
+			<select id="svx_rxp" class="form-select">'. PHP_EOL;
 		foreach ($svxPinsArray as $rxpin) {
 			$inverted = (strpos($rxpin, '!') !== false) ? ' (inverted)' : null;
 			$defaultRxPin = ($rxpin == 'gpio10') ? ' (default)' : null;
-			$svxForm .= '<option value="'. $rxpin . '"' . ($rxpin == $rxGPIOValue ? ' selected' : '') . '>'. (int) filter_var($rxpin, FILTER_SANITIZE_NUMBER_INT) . $defaultRxPin . $inverted .'</option>' . PHP_EOL;
+			$svxForm .= '<option value="'. $rxpin .'"'. ($rxpin == $rxGPIOValue ? ' selected' : '') .'>'. (int) filter_var($rxpin, FILTER_SANITIZE_NUMBER_INT) . $defaultRxPin . $inverted .'</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 			<label class="input-group-text" for="svx_txp" style="width: 8rem;">TX GPIO pin</label>
-			<select id="svx_txp" class="form-select">' . PHP_EOL;
+			<select id="svx_txp" class="form-select">'. PHP_EOL;
 		foreach ($svxPinsArray as $txpin) {
 			$inverted = (strpos($txpin, '!') !== false) ? ' (inverted)' : null;
 			$defaultTxPin = ($txpin == 'gpio7') ? ' (default)' : null;
-			$svxForm .= '<option value="'. $txpin . '"' . ($txpin == $txGPIOValue ? ' selected' : '') . '>'. (int) filter_var($txpin, FILTER_SANITIZE_NUMBER_INT) . $defaultTxPin . $inverted .'</option>' . PHP_EOL;
+			$svxForm .= '<option value="'. $txpin .'"'. ($txpin == $txGPIOValue ? ' selected' : '') .'>'. (int) filter_var($txpin, FILTER_SANITIZE_NUMBER_INT) . $defaultTxPin . $inverted .'</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>
 		</div>
@@ -409,16 +409,16 @@ function svxForm() {
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
-		  <select id="svx_cbr" class="form-select">' . PHP_EOL;
+		  <select id="svx_cbr" class="form-select">'. PHP_EOL;
 		if (isset($varCodecBitRate[2])) {
 			/* Generate codec bitrates */
 			for ($cbr=8000; $cbr<=32000; $cbr+=2000) {
 				$sel = ($cbr == $varCodecBitRate[2]) ? ' selected' : null;
 				$cbrSuffix = ($cbr == 20000) ? '(default)' : null;
-				$svxForm .= '<option value="'. $cbr .'"' . $sel .'>'. $cbr / 1000 .' kb/s '. $cbrSuffix .'</option>' . PHP_EOL;
+				$svxForm .= '<option value="'. $cbr .'"'. $sel .'>'. $cbr / 1000 .' kb/s '. $cbrSuffix .'</option>'. PHP_EOL;
 			}
 		} else {
-			$svxForm .= '<option value="" disabled selected>Unavailable</option>' . PHP_EOL;
+			$svxForm .= '<option value="" disabled selected>Unavailable</option>'. PHP_EOL;
 		}
 	$svxForm .= '
 		  </select>
@@ -427,7 +427,7 @@ function svxForm() {
 		<div class="d-flex justify-content-center mt-4">
 			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
 			<button id="restore" type="submit" class="btn btn-info btn-lg m-2">Restore defaults</button>
-			</div>' . PHP_EOL;
+			</div>'. PHP_EOL;
 	return $svxForm;
 }
 
@@ -454,10 +454,10 @@ function sa818Form() {
 						if (sprintf("%0.3f", $f) == '144.800') continue;
 						$freqFmt = str_replace('000', '00', sprintf("%0.4f", $f));
 						$freqFmt = (strlen($freqFmt) == 8) ? str_replace(',0','', preg_replace('/\d$/', ',$0', $freqFmt)) : $freqFmt;
-						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. $freqFmt .'</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. $freqFmt .'</option>'. PHP_EOL;
 					}
 					for ($f=431.900; $f<=436.925; $f+=0.025) {
-						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_grp">Frequency (MHz)</label>
@@ -476,7 +476,7 @@ function sa818Form() {
 					/* Build CTCSS selects */
 					foreach ($ctcssVars as $key => $val) {
 						$selected = ($key == 13) ? ' selected' : '';
-						$sa818Form .= '<option value="' . sprintf("%04d", $key) . '"'. $selected .'>' . $val . '</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. sprintf("%04d", $key) .'"'. $selected .'>'. $val .'</option>'. PHP_EOL;
 					}
 			$sa818Form .= '</select>
 			<label for="sa_tpl">CTCSS (Hz)</label>
@@ -487,7 +487,7 @@ function sa818Form() {
 					/* Generate squelch values */
 					for ($sq=1; $sq<=8; $sq+=1) {
 						$selected = ($sq == 4) ? ' selected' : '';
-						$sa818Form .= '<option value="'. $sq . '"'. $selected .'>'. $sq .'</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. $sq .'"'. $selected .'>'. $sq .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_sql">Squelch</label>
@@ -497,7 +497,7 @@ function sa818Form() {
 				<option value="" selected>No change</option>';
 					/* Generate volume values */
 					for ($vol=1; $vol<=8; $vol+=1) {
-						$sa818Form .= '<option value="'. $vol . '">'. $vol .'</option>' . PHP_EOL;
+						$sa818Form .= '<option value="'. $vol .'">'. $vol .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_vol">Volume</label>
@@ -518,8 +518,8 @@ function sa818Form() {
 		</div>
 		<div class="d-flex justify-content-center mt-4">
 			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
-		</div>' . PHP_EOL;
-	$sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>' . PHP_EOL;
+		</div>'. PHP_EOL;
+	$sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>'. PHP_EOL;
 	return $sa818Form;
 }
 
@@ -553,7 +553,7 @@ function logsForm() {
 /* Config */
 function cfgForm() {
 	global $pinsArray;
-	include __DIR__ . "/../includes/functions.php";
+	include __DIR__ .'/../includes/functions.php';
 	$ttysArray = array(1, 2, 3);
 	$statusPageItems = array(
 		'cfgHostname' => 'Hostname',
@@ -580,38 +580,38 @@ function cfgForm() {
 	<div class="card m-1">
 		<h4 class="m-2">Serial & GPIO</h4>
 		<div class="form-floating m-2">
-			<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
+			<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">'. PHP_EOL;
 		foreach ($pinsArray as $pin) {
-			$configData .= '<option value="'. $pin . '"' . ($pin == $config['cfgPttPin'] ? ' selected' : '') . '>'. $pin .'</option>' . PHP_EOL;
+			$configData .= '<option value="'. $pin .'"'. ($pin == $config['cfgPttPin'] ? ' selected' : '') .'>'. $pin .'</option>'. PHP_EOL;
 		}
 		$configData .= '</select>
 		<label for="cfgPttPin">GPIO Pin (PTT)</label>
-		</div>' . PHP_EOL;
+		</div>'. PHP_EOL;
 		$configData .= '<div class="form-floating m-2">
-				<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
+				<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">'. PHP_EOL;
 		foreach ($ttysArray as $tty) {
-			$configData .= '<option value="'. $tty . '"' . ($tty == $config['cfgTty'] ? ' selected' : '') . '>'. $tty .'</option>' . PHP_EOL;
+			$configData .= '<option value="'. $tty .'"'. ($tty == $config['cfgTty'] ? ' selected' : '') .'>'. $tty .'</option>'. PHP_EOL;
 		}
 		$configData .= '</select>
 		<label for="cfgTty">Serial Port (ttyS)</label>
 	</div>
 	<h4 class="m-2">System</h4>
 	<div class="form-floating m-2">
-		<select id="timezone" class="form-select" aria-label="Time Zone">' . PHP_EOL;
+		<select id="timezone" class="form-select" aria-label="Time Zone">'. PHP_EOL;
 		$tz = file('./assets/timezones.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		foreach ($tz as $timezone) {
-			$configData .= '<option value="'. $timezone . '"' . ($timezone == trim(file_get_contents('/etc/timezone')) ? ' selected' : '') . '>'. $timezone .'</option>' . PHP_EOL;
+			$configData .= '<option value="'. $timezone .'"'. ($timezone == trim(file_get_contents('/etc/timezone')) ? ' selected' : '') .'>'. $timezone .'</option>'. PHP_EOL;
 		}
 		$configData .= '</select>
 		<label for="timezone">Time Zone</label>
 	</div>
 	<h4 class="m-2">Status page content</h4>
-	<div class="row form-floating m-2">' . PHP_EOL;
+	<div class="row form-floating m-2">'. PHP_EOL;
 	foreach ($statusPageItems as $cfgName => $cfgTitle) {
 		$configData .= '<div class="form-check col col-lg-2 m-3">
 			<input class="form-check-input" type="checkbox" id="'. $cfgName .'"'. ($config[$cfgName] == 'true' ? ' checked' : '') .'>
 			<label class="form-check-label" for="'. $cfgName .'">'. $cfgTitle .'</label>
-		</div>' . PHP_EOL;
+		</div>'. PHP_EOL;
 	}
 	$configData .= '</div>
 <h4 class="m-2">Audio control</h4>
@@ -664,6 +664,6 @@ function cfgForm() {
 		if (!preg_match('/ro,ro/', file_get_contents('/etc/fstab'))) {
 			$configData .= '</div><div class="d-flex justify-content-center m-2"><button id="makeRO" type="button" class="btn btn-dark btn-lg">Make FS Read-Only</button>';
 		}
-	$configData .= '</div>' . PHP_EOL;
+	$configData .= '</div>'. PHP_EOL;
 	return $configData;
 }

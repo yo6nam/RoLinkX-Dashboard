@@ -22,11 +22,11 @@
 * SVXLink configuration module
 */
 
-include __DIR__ . "/../includes/functions.php";
+include __DIR__ .'/../includes/functions.php';
 $cfgFile		= '/opt/rolink/conf/rolink.conf';
 $restoreFile	= '/var/www/html/rolink/assets/rolink.conf';
 $newFile		= '/tmp/rolink.conf.tmp';
-$profilesPath	= dirname(__FILE__) . '/../profiles/';
+$profilesPath	= dirname(__FILE__) .'/../profiles/';
 $newProfile		= false;
 $changes		= 0;
 $msgOut			= null;
@@ -91,7 +91,7 @@ if (isset($_POST['restore'])) {
 	file_put_contents('/tmp/rolink.conf.tmp', file_get_contents($restoreFile));
 	exec("/usr/bin/sudo /usr/bin/cp /tmp/rolink.conf.tmp /opt/rolink/conf/rolink.conf");
 	toggleFS(false);
-	serviceControl('rolink.service','restart');
+	serviceControl('rolink.service', 'restart');
 	echo "RoLink configuration restored to defaults";
 	exit(0);
 }
@@ -172,23 +172,23 @@ if (preg_match('/svx\.ro/', $oldCfg)) {
 /* Temporary fix */
 $oldCfg = preg_replace('/(\#+)(\w)/', '#${2}', $oldCfg);
 if (!isset($acsValue)) {
-	$oldCfg = preg_replace('/(ANNOUNCE_REMOTE_MIN_INTERVAL=)(\d+)/', '${1}${2}' . "\nANNOUNCE_CONNECTION_STATUS=0", $oldCfg);
+	$oldCfg = preg_replace('/(ANNOUNCE_REMOTE_MIN_INTERVAL=)(\d+)/', '${1}${2}'."\nANNOUNCE_CONNECTION_STATUS=0", $oldCfg);
 }
 
 /* Process new values */
 $oldVar[0]	= '/(CALLSIGN=)(\w\S+)/';
-$newVar[0]	= '${1}' . $frmBeacon;
+$newVar[0]	= '${1}'. $frmBeacon;
 if ($beaconValue != $frmBeacon) {
 	++$changes;
 	$profiles['beacon'] = $frmBeacon;
 }
 
 $oldVar[1]	= '/(HOST=)(\S+)/';
-$newVar[1]	= '${1}' . $frmReflector;
+$newVar[1]	= '${1}'. $frmReflector;
 
 if ($localVersion[1] > '1.7.99.62' && empty($varRefHosts)) {
 	// Upgrade config file to new version
-	$newVar[1]	= '#${1}' . $frmReflector . PHP_EOL . 'HOSTS=' . $frmReflector . ':' . $frmPort;
+	$newVar[1]	= '#${1}'. $frmReflector . PHP_EOL .'HOSTS='. $frmReflector .':'. $frmPort;
 }
 if ($reflectorValue != $frmReflector) {
 	++$changes;
@@ -196,10 +196,10 @@ if ($reflectorValue != $frmReflector) {
 }
 
 $oldVar[2]	= '/(PORT=)(\d+)/';
-$newVar[2]	= '${1}' . $frmPort;
+$newVar[2]	= '${1}'. $frmPort;
 if ($localVersion[1] > '1.7.99.62' && empty($varPorts)) {
 	// Upgrade config file to new version
-	$newVar[2]	= '#${1}' . $frmPort . PHP_EOL . 'HOST_PORT=' . $frmPort;
+	$newVar[2]	= '#${1}'. $frmPort . PHP_EOL .'HOST_PORT='. $frmPort;
 }
 if ($portValue != $frmPort) {
 	if ($portsValue != $frmPort) ++$changes;
@@ -284,19 +284,19 @@ if ($sqlDelayValue != $frmSqlDelay) {
 }
 
 $oldVar[15]	= '/(TIMEOUT=)(\d+)\nTX/';
-$newVar[15]	= '${1}'. $frmTxTimeOut . PHP_EOL . 'TX';
+$newVar[15]	= '${1}'. $frmTxTimeOut . PHP_EOL .'TX';
 if ($txTimeOutValue != $frmTxTimeOut) {
 	++$changes;
 }
 
 $oldVar[16]	= '/(HOSTS=)(\S+)/';
-$newVar[16]	= '${1}' . $frmReflector . ':' . $frmPort;
+$newVar[16]	= '${1}'. $frmReflector .':'. $frmPort;
 
 $oldVar[17]	= '/(HOST_PORT=)(\d+)/';
-$newVar[17]	= '${1}' . $frmPort;
+$newVar[17]	= '${1}'. $frmPort;
 
 $oldVar[18]	= '/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/';
-$newVar[18]	= '${1}' . $frmACStatus;
+$newVar[18]	= '${1}'. $frmACStatus;
 if ($acsValue != (int)$frmACStatus) {
 	++$changes;
 	$profiles['connectionStatus'] = $frmACStatus;
@@ -311,7 +311,7 @@ if ($cfgRefData['tip'] != $frmType) {
 /* Create profile */
 if (!empty($frmProfile)) {
 	$profile = json_encode($profiles, JSON_PRETTY_PRINT);
-	$proFileName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', $frmProfile) . '.json';
+	$proFileName = preg_replace('/[^a-zA-Z0-9\-\.]/', '_', $frmProfile) .'.json';
 	toggleFS(true);
 	file_put_contents($profilesPath . $proFileName, $profile);
 	$newProfile = true;
@@ -338,7 +338,7 @@ if (!empty($frmDelProfile)) {
 // Compare current stored values vs new values from form
 if ($changes > 0) {
 	// Stop SVXLink service before attempting anything
-	serviceControl('rolink.service','stop');
+	serviceControl('rolink.service', 'stop');
 	$newCfg = preg_replace($oldVar, $newVar, $oldCfg);
 	toggleFS(true);
 	file_put_contents($newFile, $newCfg);
@@ -358,13 +358,13 @@ if ($changes > 0) {
 		exec("/usr/bin/sudo /usr/bin/cp $tmpRefFile $cfgRefFile");
 	}
 	$msgOut .= 'Configuration updated ('. $changes .' change(s) applied)<br/>Restarting RoLink service...';
-	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
+	$msgOut .= ($newProfile) ? '<br/>Profile saved as '. basename($proFileName, '.json') : '';
 
 	// All done, start SVXLink service
-	serviceControl('rolink.service','start');
+	serviceControl('rolink.service', 'start');
 } else {
 	$msgOut .= 'No new data to process.<br/>Keeping original configuration.';
-	$msgOut .= ($newProfile) ? '<br/>Profile saved as ' . basename($proFileName, '.json') : '';
+	$msgOut .= ($newProfile) ? '<br/>Profile saved as '. basename($proFileName, '.json') : '';
 }
 toggleFS(false);
 echo $msgOut;

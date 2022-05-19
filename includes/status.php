@@ -38,7 +38,7 @@ function networking() {
 		$returnData .= '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">LAN IP</span>
   		<input type="text" class="form-control" placeholder="'. $lanIp .'" readonly>
-	</div>' . PHP_EOL;
+	</div>'. PHP_EOL;
 	}
 	if (!empty($wlanIp)) {
 		$returnData .= '<div class="input-group mb-2">
@@ -69,7 +69,7 @@ function getUpTime() {
 
 /* CPU Load & Temp */
 function getCpuStats($ajax = 0) {
-	$config = include __DIR__ . '/../config.php';
+	$config = include __DIR__ .'/../config.php';
 	$avgLoad = $cpuTemp = '...';
 	$tempWarning = null;
 	if ($ajax) {
@@ -78,15 +78,15 @@ function getCpuStats($ajax = 0) {
 		exec("cat /etc/armbianmonitor/datasources/soctemp", $reply);
 		$tempOffset = ($config['cfgTempOffset'] == 'true') ? 28 : 0;
 		$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
-		$cpuTemp = $cpuTempVal . '℃';
+		$cpuTemp = $cpuTempVal .'℃';
 		$tempWarning = ($cpuTempVal > 60) ? 'bg-warning text-dark' : '';
 		$svxState = getSVXLinkStatus(1);
 		return json_encode(array($avgLoad, $cpuTemp, $tempWarning, $svxState));
 	}
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">CPU</span>
-  		<input id="cpuLoad" type="text" class="form-control text-center" placeholder="'.$avgLoad.'" readonly>
-  		<input id="cpuTemp" type="text" class="form-control text-center '. $tempWarning .'" placeholder="'.$cpuTemp.'" readonly>
+  		<input id="cpuLoad" type="text" class="form-control text-center" placeholder="'. $avgLoad .'" readonly>
+  		<input id="cpuTemp" type="text" class="form-control text-center '. $tempWarning .'" placeholder="'. $cpuTemp .'" readonly>
 	</div>';
 }
 
@@ -217,7 +217,7 @@ function getPublicIP() {
 function getSVXLinkStatus($ext = 0) {
 	exec("pgrep svxlink", $reply);
 	if ($ext == 1) return ((empty($reply)) ? false : true);
-	$config = include __DIR__ . '/../config.php';
+	$config = include __DIR__ .'/../config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
 	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button>' : NULL;
@@ -230,7 +230,7 @@ function getSVXLinkStatus($ext = 0) {
 
 /* Get Reflector address */
 function getReflector($ext = 0) {
-	$config = include __DIR__ . '/../config.php';
+	$config = include __DIR__ .'/../config.php';
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	$conStatus = $stateColor = $prevStatus = '';
 	if (is_file($cfgFile)) {
@@ -278,7 +278,7 @@ function getRefNodes() {
 			$typeBackground = 'danger';
 			if (strpos($node, '-P') !== false) $typeBackground = 'primary';
 			if (strpos($node, '-M') !== false) $typeBackground = 'warning';
-			$station .= '<div class="col col-lg-2 badge badge-'. $typeBackground .' m-1" style="font-weight: 400;">'. $node .'</div>' . PHP_EOL;
+			$station .= '<div class="col col-lg-2 badge badge-'. $typeBackground .' m-1" style="font-weight: 400;">'. $node .'</div>'. PHP_EOL;
 		}
 	}
 	$station .= '</div>
@@ -307,7 +307,7 @@ function getFreeSpace() {
 	$bytes = disk_free_space('/');
 	$suffix = array('B', 'KB', 'MB', 'GB');
 	$scale = min((int)log($bytes , 1024) , count($suffix) - 1);
-	$space = sprintf('%1.2f' , $bytes / pow(1024, $scale)) . ' ' . $suffix[$scale];
+	$space = sprintf('%1.2f' , $bytes / pow(1024, $scale)) .' '. $suffix[$scale];
 	if ($bytes < 104857600) {
 		$status = 'background:red;color:white';
 	} elseif ($bytes < 262144000) {
@@ -358,14 +358,14 @@ function getRemoteVersion() {
 	$localVersion	= explode('|', $localData);
 	$notify			= 'width: 6.5rem';
 	if (isset($_COOKIE["remote_version"])) {
-		$result = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
+		$result = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] .' ('. $localVersion[0] .')';
 		$notify = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
 	} else {
 		$remoteData = file_get_contents('https://svx.439100.ro/data/version');
 	}
 	if ($remoteData) {
 		$remoteVersion = explode('|', $remoteData);
-		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] . ' (' . $localVersion[0] . ')';
+		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] .' ('. $localVersion[0] .')';
 		$notify = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
 		setcookie("remote_version", $remoteVersion[0], time()+60*60*24);
 	} elseif (!isset($result)) {
@@ -373,7 +373,7 @@ function getRemoteVersion() {
 	}
 	return '<div class="input-group mb-2">
  		<span class="input-group-text" style="'. $notify .'">Version</span>
-  		<input type="text" class="form-control" placeholder="'. $result . '" readonly>
+  		<input type="text" class="form-control" placeholder="'. $result .'" readonly>
 	</div>';
 }
 
@@ -406,5 +406,5 @@ function dtmfSender() {
 			</div>
 		</div>
 	</div>
-</div>' . PHP_EOL;
+</div>'. PHP_EOL;
 }

@@ -67,8 +67,8 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
 	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
 	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
-	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? '<div id="svxStatus">' . getSVXLinkStatus() . '</div>' : null;
-	$htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
+	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? '<div id="svxStatus">'. getSVXLinkStatus() .'</div>' : null;
+	$htmlOutput .= '<div id="refContainer">'. getReflector() .'</div>';
 	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : null;
 	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
 	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;

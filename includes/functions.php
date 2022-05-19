@@ -23,7 +23,7 @@
 */
 
 // Static variables
-$config = include __DIR__ . '/../config.php';
+$config = include __DIR__ .'/../config.php';
 $cfgRefFile = '/opt/rolink/conf/rolink.json';
 $tmpRefFile = '/tmp/rolink.json.tmp';
 $cfgRefData = json_decode(file_get_contents($cfgRefFile), true);
