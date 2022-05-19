@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.1
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -300,13 +300,40 @@ function getCallSign() {
 	</div>';
 }
 
+/* Get free space */
+function getFreeSpace() {
+	$expand = null;
+	$status = 'background:lightgreen';
+	$bytes = disk_free_space('/');
+	$suffix = array('B', 'KB', 'MB', 'GB');
+	$scale = min((int)log($bytes , 1024) , count($suffix) - 1);
+	$space = sprintf('%1.2f' , $bytes / pow(1024, $scale)) . ' ' . $suffix[$scale];
+	if ($bytes < 104857600) {
+		$status = 'background:red;color:white';
+	} elseif ($bytes < 262144000) {
+		$status = 'background:orange;color:white';
+	}
+	/* Determine if it's an image based install */
+	exec('/usr/bin/df /', $drive);
+	preg_match('/mmcblk0p1\s+(\d+)/m', $drive[1], $size);
+	if ($size[1] < 2097152) {
+		$status = 'background:yellow;color:black';
+		$expand = '<button type="button" id="expandFS" class="btn btn-danger">&#8633;</button>';
+	}
+	return '<div class="input-group mb-2">
+  		<span class="input-group-text" style="width: 6.5rem;'. $status .'">Free Space</span>
+  		<input type="text" class="form-control" placeholder="'. $space .'" readonly>
+  		'. $expand .'
+	</div>';
+}
+
 /* Get kernel & release version */
 function getKernel() {
 	preg_match('/VERSION_CODENAME=(\S+)/', file_get_contents('/etc/os-release'), $reply);
 	$kernel = str_replace('-sunxi', '', posix_uname()['release']);
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Kernel</span>
-  		<input type="text" class="form-control" placeholder="' . $kernel . ' (' . $reply[1] . ')" readonly>
+  		<input type="text" class="form-control" placeholder="'. $kernel .' ('. $reply[1] .')" readonly>
 	</div>';
 }
 

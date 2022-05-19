@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.1
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,7 @@ $endsvx				= (isset($_POST['endsvx'])) ? filter_input(INPUT_POST, 'endsvx', FILT
 $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 'switchHostName', FILTER_SANITIZE_NUMBER_INT) : '';
 $latencyCheck		= (isset($_POST['latencyCheck'])) ? filter_input(INPUT_POST, 'latencyCheck', FILTER_SANITIZE_NUMBER_INT) : '';
 $changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_STRING) : null;
+$expandFS			= (isset($_POST['expandFS'])) ? filter_input(INPUT_POST, 'expandFS', FILTER_SANITIZE_STRING) : null;
 $updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
 $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
 $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILTER_SANITIZE_NUMBER_INT) : null;
@@ -73,6 +74,15 @@ if (isset($_POST)) {
 		serviceControl('rolink.service','start');
 		serviceControl('rsyslog.service','restart');
 		echo 'Timezone changed to <br/><b>' . $timezone . '</b>';
+		exit(0);
+	}
+
+	/* Expand File System */
+	if (isset($expandFS)) {
+		toggleFS(true);
+		exec('/usr/bin/sudo /usr/bin/systemctl start armbian-resize-filesystem.service');
+		toggleFS(false);
+		echo 'File system expanded!';
 		exit(0);
 	}
 

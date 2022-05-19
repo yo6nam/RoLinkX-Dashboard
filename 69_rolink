@@ -20,6 +20,7 @@ www-data ALL=(ALL) NOPASSWD:/bin/systemctl start rolink.service
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl stop rolink.service
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl restart rolink.service
 www-data ALL=(ALL) NOPASSWD:/bin/systemctl restart rsyslog.service
+www-data ALL=(ALL) NOPASSWD:/bin/systemctl start armbian-resize-filesystem.service
 www-data ALL=(ALL) NOPASSWD:/bin/cat /etc/wpa_supplicant/wpa_supplicant.conf
 www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan[0-9] scan_results
 www-data ALL=(ALL) NOPASSWD:/sbin/wpa_cli -i wlan[0-9] scan

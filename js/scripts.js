@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v2.0
+ *   RoLinkX Dashboard v2.1
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -451,6 +451,39 @@ $(document).ready(function () {
           setTimeout(function () {
             location.reload();
           }, 3200);
+        }
+      }
+    });
+  });
+
+  // Expand file system
+  $('#expandFS').click(function () {
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
+	$('#sysmsg').iziModal('destroy');
+    $('#sysmsg').iziModal({
+      title: 'Expanding file system!<br/>It might take a few minutes...',
+      width: '40vh',
+      icon: 'icon-warning',
+      headerColor: '#941919',
+      autoOpen: 5,
+      timeout: 90000,
+      timeoutProgressbar: true,
+      closeOnEscape: false,
+      closeButton: false,
+      overlayClose: false,
+      overlay: true,
+    });
+    $.ajax({
+      type: 'POST',
+      url: 'ajax/sys.php',
+      data: { expandFS: 1 },
+      success: function (data) {
+        if (data) {
+          $('#expandFS').prop('disabled', false).fadeTo('fast', 1);
+          $('#sysmsg').showNotice(data, 3000);
+          setTimeout(function () {
+          	location.reload();
+          }, 4000);
         }
       }
     });

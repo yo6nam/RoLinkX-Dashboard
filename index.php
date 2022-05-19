@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.1
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -72,14 +72,14 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : null;
 	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
 	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
+	$htmlOutput .= getFreeSpace();
 	$htmlOutput .= getFileSystem() . PHP_EOL;
 	$htmlOutput .= getRemoteVersion() . PHP_EOL;
 	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
-	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
-	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
-	<button id="rewifi" class="btn btn-info btn-lg">Restart Wi-Fi</button>
 	<button id="resvx" class="btn btn-warning btn-lg">'. $svxAction .' RoLink</button>
 	<button id="endsvx" class="btn btn-dark btn-lg">Stop RoLink</button>
+	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
+	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
 	</div>
 	</div>
 	</div>';
@@ -186,7 +186,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v2.0 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v2.1 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
