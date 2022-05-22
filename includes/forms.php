@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.1
+*   RoLinkX Dashboard v2.2
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -21,10 +21,6 @@
 /*
 * Forms module
 * Note : Some code borrowed from https://github.com/RaspAP/raspap-webgui
-*/
-
-/* ToDo :
-- Remember last SA818 programming parameters
 */
 
 if (isset($_GET['scan'])) echo scanWifi(1);
@@ -434,6 +430,7 @@ function svxForm() {
 /* SA818 radio */
 function sa818Form() {
 	$config = include 'config.php';
+	$historyFile = dirname(__FILE__) .'/../profiles/sa818pgm.log';
 	$ctcssVars = array(
 		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
@@ -515,11 +512,22 @@ function sa818Form() {
 				<option value="1,1,1">Enable All</option>
 			</select>
 			<label for="sa_flt">Filter</label>
-		</div>
-		<div class="d-flex justify-content-center mt-4">
+		</div>';
+		$sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>'. PHP_EOL;
+		$sa818Form .= '<div class="d-flex justify-content-center my-3">
 			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
 		</div>'. PHP_EOL;
-	$sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>'. PHP_EOL;
+	// Display last programmed data
+	if (is_file($historyFile)) {
+		$last = json_decode(file_get_contents($historyFile), true);
+		$sa818Form .= '<div class="d-flex justify-content-center"><small class="d-inline-flex px-2 py-2 text-muted border rounded-3">';
+		$sa818Form .= 'Last programmed : ' . date('d-M-Y H:i:s', $last['date']) ."<br/>";
+		$sa818Form .= 'Frequency : ' . $last['frequency'] ."<br/>";
+		$sa818Form .= 'Deviation : ' . $last['deviation'] ."<br/>";
+		$sa818Form .= 'CTCSS : ' . $last['ctcss'] ."<br/>";
+		$sa818Form .= 'Squelch : ' . $last['squelch'];
+		$sa818Form .= '</small></div>';
+	}
 	return $sa818Form;
 }
 

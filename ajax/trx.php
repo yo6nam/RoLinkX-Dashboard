@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.2
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 include __DIR__ .'/../includes/functions.php';
 include __DIR__ .'/../includes/php_serial.class.php';
+$historyFile = dirname(__FILE__) .'/../profiles/sa818pgm.log';
 
 /* Get POST vars */
 $grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_STRING) : '';
@@ -110,6 +111,17 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 	$reply = $serial->readPort();
 	$serial->deviceClose();
 	return $reply;
+}
+
+/* Write programmed data to log */
+$last = array();
+$last['date'] = time();
+$last['frequency'] = sprintf("%0.3f", $grp) . ' MHz';
+$last['deviation'] = ($dev === 0) ? '12.5 kHz' : '25 kHz';
+$last['ctcss'] = $ctcssVars[floatval($tpl)] . ' Hz';
+$last['squelch'] = $sql;
+if ($groupCmd != 'Could not connect!') {
+	file_put_contents($historyFile, json_encode($last));
 }
 
 /* Send feedback to user */

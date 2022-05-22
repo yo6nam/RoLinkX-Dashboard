@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.1
+*   RoLinkX Dashboard v2.2
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -120,7 +120,7 @@ switch ($page) {
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>RoLinkX Dashboard</title>
+        <title>RoLinkX Dashboard - <?php echo gethostname(); ?></title>
         <link rel="apple-touch-icon" sizes="57x57" href="assets/fav/apple-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="assets/fav/apple-icon-60x60.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="assets/fav/apple-icon-72x72.png">
@@ -186,7 +186,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v2.1 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v2.2 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
