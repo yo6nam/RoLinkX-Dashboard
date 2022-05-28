@@ -267,6 +267,7 @@ function svxForm() {
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
 	$proFiles		= array_slice(scandir($profilesPath), 2);
+	$skip			= array('sa818pgm.log', 'index.html');
 
 	/* Configuration info sent to reflector ('tip' only) */
 	$cfgRefFile = file_get_contents('/opt/rolink/conf/rolink.json');
@@ -276,9 +277,10 @@ function svxForm() {
 		$profileOption	= '<div class="input-group input-group-sm mb-3">
 			  <label class="input-group-text bg-info text-white" for="svx_spn" style="width: 8rem;">Select profile</label>
 			  <select id="svx_spn" class="form-select">
-				<option value="" selected disabled>Select a profile</option>';
+				<option value="" selected disabled>Select a profile</option>' . PHP_EOL;
 		foreach ($proFiles as $profile) {
-			$profileOption .= '<option value="'. $profile .'">'. basename($profile, '.json') .'</option>';
+			if (in_array($profile, $skip)) continue;
+			$profileOption .= '<option value="'. $profile .'">'. basename($profile, '.json') .'</option>' . PHP_EOL;
 		}
 		$profileOption .= '</select>
 		<button id="delsvxprofile" class="btn btn-outline-danger" type="button">Delete</button>
