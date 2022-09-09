@@ -270,8 +270,8 @@ function svxForm() {
 	preg_match('/(PREEMPHASIS=)(\d+)\n/', $cfgFileData, $varPreEmphasis);
 	$preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : '';
 	/* MasterGain (TX) */
-	preg_match('/(MASTER_GAIN=)(\d+)\n/', $cfgFileData, $varMasterGain);
-	$masterGainValue	= (isset($varMasterGain[2])) ? 'value='. $varMasterGain[2] : '';
+	preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $cfgFileData, $varMasterGain);
+	$masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -429,8 +429,12 @@ function svxForm() {
 		  </select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Master Gain (TX)</span>
-		  <input id="svx_mag" type="text" class="form-control" placeholder="180" aria-label="Master Gain (TX)" aria-describedby="inputGroup-sizing-sm" '. $masterGainValue .'>
+			<label class="input-group-text" for="svx_mag" style="width: 8rem;">Master Gain (TX)</label>
+			<select id="svx_mag" class="form-select">'. PHP_EOL;
+		for($gain=6; $gain>=-6; $gain-=1){
+			$svxForm .= '<option value="'. $gain .'"'. ($gain == $masterGainValue ? ' selected' : '') .'>'. (($gain > 0) ? '+'. $gain : $gain) .' dB</option>'. PHP_EOL;
+		}
+		$svxForm .= '</select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>

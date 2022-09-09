@@ -64,7 +64,7 @@ $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', 
 $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
 $frmDeEmphasis	= (empty($_POST['rxe'])) ? '0' : filter_input(INPUT_POST, 'rxe', FILTER_SANITIZE_NUMBER_INT);
 $frmPreEmphasis = (empty($_POST['txe'])) ? '0' : filter_input(INPUT_POST, 'txe', FILTER_SANITIZE_NUMBER_INT);
-$frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_INT);
+$frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_FLOAT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
@@ -125,7 +125,7 @@ preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $oldCfg, $announceConnectionS
 // Power Hotspot
 preg_match('/(DEEMPHASIS=)(\d+)\n/', $oldCfg, $varDeEmphasis);
 preg_match('/(PREEMPHASIS=)(\d+)\n/', $oldCfg, $varPreEmphasis);
-preg_match('/(MASTER_GAIN=)(\d+)\n/', $oldCfg, $varMasterGain);
+preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $oldCfg, $varMasterGain);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -324,7 +324,7 @@ if ($preEmphasisValue != (int)$frmPreEmphasis) {
 	++$changes;
 }
 
-$oldVar[21]	= '/(MASTER_GAIN=)(\d+)/';
+$oldVar[21]	= '/(MASTER_GAIN=)(-?\d+)/';
 $newVar[21]	= '${1}'. $frmMasterGain;
 if ($masterGainValue != (int)$frmMasterGain) {
 	++$changes;
