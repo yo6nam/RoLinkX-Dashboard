@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.2
+*   RoLinkX Dashboard v2.3
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -263,6 +263,15 @@ function svxForm() {
 	/* TimeOut Timer (TX) */
 	preg_match('/(TIMEOUT=)(\d+)\nTX/', $cfgFileData, $varTxTimeout);
 	$txTimeOutValue	= (isset($varTxTimeout[2])) ? 'value='. $varTxTimeout[2] : '';
+	/* DeEmphasis (RX) */
+	preg_match('/(DEEMPHASIS=)(\d+)\n/', $cfgFileData, $varDeEmphasis);
+	$deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : '';
+	/* PreEmphasis (TX) */
+	preg_match('/(PREEMPHASIS=)(\d+)\n/', $cfgFileData, $varPreEmphasis);
+	$preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : '';
+	/* MasterGain (TX) */
+	preg_match('/(MASTER_GAIN=)(\d+)\n/', $cfgFileData, $varMasterGain);
+	$masterGainValue	= (isset($varMasterGain[2])) ? 'value='. $varMasterGain[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -404,6 +413,24 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">TX Timeout</span>
 		  <input id="svx_txt" type="text" class="form-control" placeholder="180" aria-label="TX Timeout" aria-describedby="inputGroup-sizing-sm" '. $txTimeOutValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">De-Emphasis (RX)</span>
+		  <select id="svx_rxe" class="form-select">
+			<option value="0"'. (($deEmphasisValue == 0) ? ' selected' : '') .'>No</option>
+			<option value="1"'. (($deEmphasisValue == 1) ? ' selected' : '') .'>Yes</option>
+		  </select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Pre-Emphasis (TX)</span>
+		  <select id="svx_txe" class="form-select">
+			<option value="0"'. (($preEmphasisValue == 0) ? ' selected' : '') .'>No</option>
+			<option value="1"'. (($preEmphasisValue == 1) ? ' selected' : '') .'>Yes</option>
+		  </select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Master Gain (TX)</span>
+		  <input id="svx_mag" type="text" class="form-control" placeholder="180" aria-label="Master Gain (TX)" aria-describedby="inputGroup-sizing-sm" '. $masterGainValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>

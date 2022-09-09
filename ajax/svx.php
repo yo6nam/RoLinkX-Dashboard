@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.3
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -62,6 +62,9 @@ $frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp',
 $frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_STRING);
 $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
 $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
+$frmDeEmphasis	= (empty($_POST['rxe'])) ? '0' : filter_input(INPUT_POST, 'rxe', FILTER_SANITIZE_NUMBER_INT);
+$frmPreEmphasis = (empty($_POST['txe'])) ? '0' : filter_input(INPUT_POST, 'txe', FILTER_SANITIZE_NUMBER_INT);
+$frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
@@ -119,6 +122,10 @@ preg_match('/(HOSTS=)(\S+)/', $oldCfg, $varRefHosts);
 preg_match('/(HOST_PORT=)(\d+)/', $oldCfg, $varPorts);
 // Since 1.7.99.68-r2
 preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $oldCfg, $announceConnectionStatus);
+// Power Hotspot
+preg_match('/(DEEMPHASIS=)(\d+)\n/', $oldCfg, $varDeEmphasis);
+preg_match('/(PREEMPHASIS=)(\d+)\n/', $oldCfg, $varPreEmphasis);
+preg_match('/(MASTER_GAIN=)(\d+)\n/', $oldCfg, $varMasterGain);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -143,6 +150,9 @@ $tgSelectTOValue	= (isset($varTgSelTimeOut[2])) ? $varTgSelTimeOut[2] : '';
 $txTimeOutValue		= (isset($varTxTimeout[2])) ? $varTxTimeout[2] : '';
 $sqlDelayValue		= (isset($varSqlDelay[2])) ? $varSqlDelay[2] : '';
 $acsValue			= (isset($announceConnectionStatus[2])) ? $announceConnectionStatus[2] : null;
+$preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : 0;
+$deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : 0;
+$masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : 0;
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -300,6 +310,24 @@ $newVar[18]	= '${1}'. $frmACStatus;
 if ($acsValue != (int)$frmACStatus) {
 	++$changes;
 	$profiles['connectionStatus'] = $frmACStatus;
+}
+
+$oldVar[19]	= '/(DEEMPHASIS=)(\d+)/';
+$newVar[19]	= '${1}'. $frmDeEmphasis;
+if ($deEmphasisValue != (int)$frmDeEmphasis) {
+	++$changes;
+}
+
+$oldVar[20]	= '/(PREEMPHASIS=)(\d+)/';
+$newVar[20]	= '${1}'. $frmPreEmphasis;
+if ($preEmphasisValue != (int)$frmPreEmphasis) {
+	++$changes;
+}
+
+$oldVar[21]	= '/(MASTER_GAIN=)(\d+)/';
+$newVar[21]	= '${1}'. $frmMasterGain;
+if ($masterGainValue != (int)$frmMasterGain) {
+	++$changes;
 }
 
 /* Configuration info sent to reflector ('type' only) */
