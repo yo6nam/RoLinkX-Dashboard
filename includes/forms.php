@@ -676,7 +676,7 @@ function cfgForm() {
 	<div class="col-sm-3">
     	<div class="d-flex flex-column">
     		<label for="vac_mb">Mic1 Boost<span class="mx-2" id="vac_mbcv">('. $mixerGetMic1Boost[0] .'%)</span></label>
-    		<input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_mb" value="'. $mixerGetMic1Boost[0] .'">
+    		<input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_mb" value="'. $mixerGetMic1Boost[0] .'" disabled>
     	</div>
 	</div>
   	<div class="col-sm-3">
