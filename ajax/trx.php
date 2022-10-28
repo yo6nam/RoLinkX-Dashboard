@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.2
+*   RoLinkX Dashboard v2.5
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ $vol = (isset($_POST['vol'])) ? filter_input(INPUT_POST, 'vol', FILTER_SANITIZE_
 $flt = (isset($_POST['flt'])) ? filter_input(INPUT_POST, 'flt', FILTER_SANITIZE_STRING) : '';
 
 $ctcssVars = array(
-		"1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
+		"0" => "None", "1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
 		"11" => "97.4", "12" => "100.0", "13" => "103.5", "14" => "107.2",
 		"15" => "110.9", "16" => "114.8", "17" => "118.8", "18" => "123",
