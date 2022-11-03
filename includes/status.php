@@ -75,7 +75,7 @@ function getCpuStats($ajax = 0) {
 	if ($ajax) {
 		$cpuLoad = getServerLoad();
 		$avgLoad = (is_null($cpuLoad)) ? 'N/A' : number_format($cpuLoad, 2) . "%";
-		$thermalZone = file('/sys/devices/virtual/thermal/thermal_zone0/temp');
+		$thermalZone = file('/sys/devices/virtual/thermal/thermal_zone0/temp', FILE_IGNORE_NEW_LINES);
 		$rawTemp = ($config['cfgTempOffset'] == 'true') ? $thermalZone[0] + 38000 : $thermalZone[0];
 		$cpuTemp = substr($rawTemp, 0, -3);
 		$tempWarning = ($cpuTemp > 60) ? 'bg-warning text-dark' : '';
