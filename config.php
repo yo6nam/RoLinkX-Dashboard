@@ -13,5 +13,5 @@ return array (
   'cfgCallsign' => 'true',
   'cfgDTMF' => 'true',
   'cfgKernel' => 'true',
-  'cfgTempOffset' => 'true'
+  'cfgTempOffset' => 'false'
 );

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.1
+*   RoLinkX Dashboard v2.6
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@ if (isset($_GET['cpuData'])) echo getCpuStats(1);
 /* Get IP(s) */
 function networking() {
 	$returnData = '';
-	exec('ip addr show dev eth0 | grep \'inet\' | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $lanData);
-	exec('ip addr show dev wlan0 | grep \'inet\' | grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $wlanData);
+	exec('/usr/bin/ip addr show dev eth0 | /usr/bin/grep \'inet\' | /usr/bin/grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $lanData);
+	exec('/usr/bin/ip addr show dev wlan0 | /usr/bin/grep \'inet\' | /usr/bin/grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $wlanData);
 	if (empty($lanData) && empty($wlanData)) return false;
 	$lanIp	= (isset($lanData[0]) && preg_match('/^169\.254/', $lanData[0]) === 0) ? $lanData[0] : '' ;
 	$wlanIp = (isset($wlanData[0]) && preg_match('/^169\.254/', $wlanData[0]) === 0) ? $wlanData[0] : '' ;
@@ -59,7 +59,7 @@ function hostName() {
 
 /* Uptime */
 function getUpTime() {
-	exec("uptime -p", $reply);
+	exec("/usr/bin/uptime -p", $reply);
 	$result = (empty($reply)) ? 'Not available' : substr($reply[0],3);
     return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Uptime</span>
@@ -75,13 +75,12 @@ function getCpuStats($ajax = 0) {
 	if ($ajax) {
 		$cpuLoad = getServerLoad();
 		$avgLoad = (is_null($cpuLoad)) ? 'N/A' : number_format($cpuLoad, 2) . "%";
-		exec("cat /etc/armbianmonitor/datasources/soctemp", $reply);
-		$tempOffset = ($config['cfgTempOffset'] == 'true') ? 28 : 0;
-		$cpuTempVal = substr($reply[0], 0, -3) + $tempOffset;
-		$cpuTemp = $cpuTempVal .'℃';
-		$tempWarning = ($cpuTempVal > 60) ? 'bg-warning text-dark' : '';
+		$thermalZone = file('/sys/devices/virtual/thermal/thermal_zone0/temp');
+		$rawTemp = ($config['cfgTempOffset'] == 'true') ? $thermalZone[0] + 38000 : $thermalZone[0];
+		$cpuTemp = substr($rawTemp, 0, -3);
+		$tempWarning = ($cpuTemp > 60) ? 'bg-warning text-dark' : '';
 		$svxState = getSVXLinkStatus(1);
-		return json_encode(array($avgLoad, $cpuTemp, $tempWarning, $svxState));
+		return json_encode(array($avgLoad, $cpuTemp .'℃', $tempWarning, $svxState));
 	}
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">CPU</span>
@@ -155,7 +154,7 @@ function getPublicIP() {
 	$status = 'color:white;background:red';
 	$toggle = null;
 	// Method 1
-	exec("dig @resolver4.opendns.com myip.opendns.com +short", $getIP);
+	exec("/usr/bin/dig @resolver4.opendns.com myip.opendns.com +short", $getIP);
 	if (filter_var($getIP[0], FILTER_VALIDATE_IP) !== false) {
 		$ip		= $getIP[0];
 		$status = 'background:lightgreen';
@@ -215,7 +214,7 @@ function getPublicIP() {
 
 /* Get SVXLink status */
 function getSVXLinkStatus($ext = 0) {
-	exec("pgrep svxlink", $reply);
+	exec("/usr/bin/pgrep svxlink", $reply);
 	if ($ext == 1) return ((empty($reply)) ? false : true);
 	$config = include __DIR__ .'/../config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
