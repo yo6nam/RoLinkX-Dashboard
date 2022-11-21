@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.4
+*   RoLinkX Dashboard v2.7
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -152,7 +152,7 @@ $sqlDelayValue		= (isset($varSqlDelay[2])) ? $varSqlDelay[2] : '';
 $acsValue			= (isset($announceConnectionStatus[2])) ? $announceConnectionStatus[2] : null;
 $preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : 0;
 $deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : 0;
-$masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : 0;
+$masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : null;
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -179,10 +179,13 @@ if (preg_match('/svx\.ro/', $oldCfg)) {
 	$oldCfg = preg_replace($sCfg, $rCfg, $oldCfg);
 }
 
-/* Temporary fix */
+/* Temporary fix(es) */
 $oldCfg = preg_replace('/(\#+)(\w)/', '#${2}', $oldCfg);
 if (!isset($acsValue)) {
 	$oldCfg = preg_replace('/(ANNOUNCE_REMOTE_MIN_INTERVAL=)(\d+)/', '${1}${2}'."\nANNOUNCE_CONNECTION_STATUS=0", $oldCfg);
+}
+if (!isset($masterGainValue)) {
+	$oldCfg = preg_replace('/(PREEMPHASIS=)(\d+)/', '${1}${2}'."\nMASTER_GAIN=0", $oldCfg);
 }
 
 /* Process new values */
