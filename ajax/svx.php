@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.7
+*   RoLinkX Dashboard v2.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FI
 $frmDeEmphasis	= (empty($_POST['rxe'])) ? '0' : filter_input(INPUT_POST, 'rxe', FILTER_SANITIZE_NUMBER_INT);
 $frmPreEmphasis = (empty($_POST['txe'])) ? '0' : filter_input(INPUT_POST, 'txe', FILTER_SANITIZE_NUMBER_INT);
 $frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_FLOAT);
+$frmReconnectS	= (empty($_POST['res'])) ? '0' : filter_input(INPUT_POST, 'res', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
@@ -126,6 +127,7 @@ preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $oldCfg, $announceConnectionS
 preg_match('/(DEEMPHASIS=)(\d+)\n/', $oldCfg, $varDeEmphasis);
 preg_match('/(PREEMPHASIS=)(\d+)\n/', $oldCfg, $varPreEmphasis);
 preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $oldCfg, $varMasterGain);
+preg_match('/(RECONNECT_SECONDS=)(\d+)\n/', $oldCfg, $varReconnectSeconds);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -153,6 +155,7 @@ $acsValue			= (isset($announceConnectionStatus[2])) ? $announceConnectionStatus[
 $preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : 0;
 $deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : 0;
 $masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : null;
+$reconnectSValue	= (isset($varReconnectSeconds[2])) ? $varReconnectSeconds[2] : null;
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -186,6 +189,9 @@ if (!isset($acsValue)) {
 }
 if (!isset($masterGainValue)) {
 	$oldCfg = preg_replace('/(PREEMPHASIS=)(\d+)/', '${1}${2}'."\nMASTER_GAIN=0", $oldCfg);
+}
+if (!isset($reconnectSValue)) {
+	$oldCfg = preg_replace('/(MUTE_FIRST_TX_REM=)(\d+)/', '${1}${2}'."\nRECONNECT_SECONDS=0", $oldCfg);
 }
 
 /* Process new values */
@@ -330,6 +336,12 @@ if ($preEmphasisValue != (int)$frmPreEmphasis) {
 $oldVar[21]	= '/(MASTER_GAIN=)(-?\d+)/';
 $newVar[21]	= '${1}'. $frmMasterGain;
 if ($masterGainValue != (int)$frmMasterGain) {
+	++$changes;
+}
+
+$oldVar[22]	= '/(RECONNECT_SECONDS=)(\d+)/';
+$newVar[22]	= '${1}'. $frmReconnectS;
+if ($reconnectSValue != (int)$frmReconnectS) {
 	++$changes;
 }
 

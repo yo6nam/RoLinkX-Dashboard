@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.5
+*   RoLinkX Dashboard v2.8
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -272,6 +272,9 @@ function svxForm() {
 	/* MasterGain (TX) */
 	preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $cfgFileData, $varMasterGain);
 	$masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : '';
+	/* Reconnect seconds */
+	preg_match('/(RECONNECT_SECONDS=)(\d+)/', $cfgFileData, $varReconnectSeconds);
+	$reconnectSecondsValue	= (isset($varReconnectSeconds[2])) ? 'value='. $varReconnectSeconds[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -405,6 +408,10 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
 		  <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" '. $tgSelTimeOutValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Reconnect seconds</span>
+		  <input id="svx_res" type="text" class="form-control" placeholder="0" aria-label="Reconnect seconds" aria-describedby="inputGroup-sizing-sm" '. $reconnectSecondsValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Connection Status</span>
