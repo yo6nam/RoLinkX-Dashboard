@@ -117,7 +117,7 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 $last = array();
 $last['date'] = time();
 $last['frequency'] = sprintf("%0.3f", $grp) . ' MHz';
-$last['deviation'] = ($dev === 0) ? '12.5 kHz' : '25 kHz';
+$last['deviation'] = (($dev == "0") ? '12.5' : '25') . ' kHz';
 $last['ctcss'] = $ctcssVars[floatval($tpl)] . ' Hz';
 $last['squelch'] = $sql;
 if ($groupCmd != 'Could not connect!') {

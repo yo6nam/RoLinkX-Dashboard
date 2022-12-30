@@ -27,7 +27,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v2.8
+ *   RoLinkX Dashboard v2.9
  *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -98,6 +98,9 @@ $(document).ready(function () {
 		  $('#sysmsg').iziModal('destroy');
 		  $('#programm').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3500);
+          setTimeout(function () {
+            location.reload();
+          }, 10000);
         }
       }
     });
