@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.5
+*   RoLinkX Dashboard v2.9
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ serviceControl('rolink.service', 'stop');
 unstick();
 
 /* Build the AT commands */
-if (!empty($dev) &&  !empty($grp) && !empty($tpl) && !empty($sql)) { // Frequency, Deviation, CTCSS, SQL
+if (!empty($grp) && isset($dev) && !empty($tpl) && !empty($sql)) { // Frequency, Deviation, CTCSS, SQL
 	$pgmGroup = 'AT+DMOSETGROUP='. $dev .','. $grp .','. $grp .','. $tpl .','. $sql .','. $tpl;
 	$groupCmd = writeToSerial($pgmGroup, $config['cfgTty'], 2);
 }
