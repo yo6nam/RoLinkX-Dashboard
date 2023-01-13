@@ -28,7 +28,7 @@ Requirements (software):<br>
 
 ## How to install RoLink
 ```
-bash <(curl -s https://svx.439100.ro/install.sh)
+bash <(curl -s https://rolink.network/install.sh)
 ```
 
 ## Steps to install RoLinkX Dashboard
