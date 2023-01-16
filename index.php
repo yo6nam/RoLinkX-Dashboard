@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.9
+*   RoLinkX Dashboard v2.91
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,8 @@ if (in_array($page, $pages)) {
 	include __DIR__ . '/includes/status.php';
 }
 
+$rolink = (is_file('/opt/rolink/conf/rolink.conf')) ? true : false;
+
 switch ($page) {
   case "wifi":
 	$htmlOutput = wifiForm();
@@ -61,28 +63,28 @@ switch ($page) {
 	$htmlOutput = '<h4 class="m-2 mt-2 alert alert-success fw-bold">Status</h4>
 	<div class="card m-2">
 	<div class="card-body">';
-	$htmlOutput .= ($config['cfgHostname'] == 'true') ? hostName() : null;
+	$htmlOutput .= ($config['cfgHostname'] == 'true' && $rolink) ? hostName() : null;
 	$htmlOutput .= ($config['cfgUptime'] == 'true') ? getUpTime() : null;
 	$htmlOutput .= ($config['cfgCpuStats'] == 'true') ? getCpuStats() : null;
 	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
 	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
 	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
-	$htmlOutput .= ($config['cfgSvxStatus'] == 'true') ? '<div id="svxStatus">'. getSVXLinkStatus() .'</div>' : null;
+	$htmlOutput .= ($config['cfgSvxStatus'] == 'true' && $rolink) ? '<div id="svxStatus">'. getSVXLinkStatus() .'</div>' : null;
 	$htmlOutput .= '<div id="refContainer">'. getReflector() .'</div>';
-	$htmlOutput .= ($config['cfgRefNodes'] == 'true') ? getRefNodes() : null;
-	$htmlOutput .= ($config['cfgCallsign'] == 'true') ? getCallSign() . PHP_EOL : null;
+	$htmlOutput .= ($config['cfgRefNodes'] == 'true' && $rolink) ? getRefNodes() : null;
+	$htmlOutput .= ($config['cfgCallsign'] == 'true' && $rolink) ? getCallSign() . PHP_EOL : null;
 	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
 	$htmlOutput .= getFreeSpace();
-	$htmlOutput .= getFileSystem() . PHP_EOL;
-	$htmlOutput .= getRemoteVersion() . PHP_EOL;
-	$htmlOutput .= '<div class="d-grid gap-2 col-7 mx-auto">
+	$htmlOutput .= ($rolink) ? getFileSystem() . PHP_EOL : null;
+	$htmlOutput .= ($rolink) ? getRemoteVersion() . PHP_EOL : null;
+	$htmlOutput .= ($rolink) ? '<div class="d-grid gap-2 col-7 mx-auto">
 	<button id="resvx" class="btn btn-warning btn-lg">'. $svxAction .' RoLink</button>
 	<button id="endsvx" class="btn btn-dark btn-lg">Stop RoLink</button>
 	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
 	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
 	</div>
 	</div>
-	</div>';
+	</div>' : null;
 	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
 	$ajax = ($config['cfgCpuStats'] == 'true') ? "<script>
 	cpuData();
@@ -186,7 +188,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v2.9 © 2022 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v2.91 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>

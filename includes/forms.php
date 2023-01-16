@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.8
+*   RoLinkX Dashboard v2.91
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -200,11 +200,11 @@ function wifiForm() {
 
 /* SVXLink form */
 function svxForm() {
-	global $pinsArray;
-	$svxPinsArray = array();
-
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
+
+	global $pinsArray;
+	$svxPinsArray = array();
 
 	/* Convert pins to both states (normal/inverted) */
 	foreach ($pinsArray as $pin) {
@@ -469,6 +469,8 @@ function svxForm() {
 
 /* SA818 radio */
 function sa818Form() {
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
 	$config = include 'config.php';
 	$historyFile = dirname(__FILE__) .'/../profiles/sa818pgm.log';
 	$ctcssVars = array(
@@ -573,6 +575,8 @@ function sa818Form() {
 
 /* Logs */
 function logsForm() {
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
 	$logData = '<h4 class="mt-2 alert alert-dark fw-bold">Logs</h4>';
 	$logData .= '<div class="container">
 	<div class="row justify-content-center">
@@ -600,6 +604,8 @@ function logsForm() {
 
 /* Config */
 function cfgForm() {
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
 	global $pinsArray;
 	include __DIR__ .'/../includes/functions.php';
 	$ttysArray = array(1, 2, 3);
