@@ -341,9 +341,9 @@ function svxForm() {
 			foreach(glob($voicesPath .'/*' , GLOB_ONLYDIR) as $voiceDir) {
     			$availableVoicePacks = str_replace($voicesPath .'/', '', $voiceDir);
     			$vsel = ($availableVoicePacks == $varVoicePack[2]) ? ' selected' : null;
-    			$svxForm .= '<option value="'. $availableVoicePacks .'"'. $vsel .'>'. $availableVoicePacks .'</option>
-    			</select>'. PHP_EOL;
+    			$svxForm .= '<option value="'. $availableVoicePacks .'"'. $vsel .'>'. $availableVoicePacks .'</option>'. PHP_EOL;
 			}
+			$svxForm .= '</select>'. PHP_EOL;
 		} else {
 			$svxForm .= '<button type="button" id="getVoices" class="btn btn-primary btn-lg btn-block">Download &amp; install voices</button>'. PHP_EOL;
 		}
