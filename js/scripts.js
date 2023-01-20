@@ -27,8 +27,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v2.91
- *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v2.92
+ *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -513,6 +513,38 @@ $(document).ready(function () {
 				location.reload();
 			}, 4000);
 		}
+      }
+    });
+  });
+
+  // Download voices
+  $('#getVoices').click(function () {
+    $('#sysmsg').iziModal('destroy');
+    $('#sysmsg').iziModal({
+      title: 'Downloading, please wait!<br/>It might take a few minutes...',
+      width: '40vh',
+      icon: 'icon-warning',
+      headerColor: '#941919',
+      autoOpen: 5,
+      timeout: 90000,
+      timeoutProgressbar: true,
+      closeOnEscape: false,
+      closeButton: false,
+      overlayClose: false,
+      overlay: true,
+    });
+
+    $.ajax({
+      type: 'POST',
+      url: 'ajax/sys.php',
+      data: { getVoices: 1 },
+      success: function (data) {
+        if (data) {
+			$('#sysmsg').showNotice(data, 3000)
+			setTimeout(function () {
+				location.reload(true);
+			}, 5000);
+        }
       }
     });
   });

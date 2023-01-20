@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.91
-*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v2.92
+*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -341,14 +341,13 @@ function svxForm() {
 			foreach(glob($voicesPath .'/*' , GLOB_ONLYDIR) as $voiceDir) {
     			$availableVoicePacks = str_replace($voicesPath .'/', '', $voiceDir);
     			$vsel = ($availableVoicePacks == $varVoicePack[2]) ? ' selected' : null;
-    			$svxForm .= '<option value="'. $availableVoicePacks .'"'. $vsel .'>'. $availableVoicePacks .'</option>'. PHP_EOL;
+    			$svxForm .= '<option value="'. $availableVoicePacks .'"'. $vsel .'>'. $availableVoicePacks .'</option>
+    			</select>'. PHP_EOL;
 			}
 		} else {
-			$svxForm .= '<select disabled id="svx_vop" class="form-select">
-			<option value="" disabled selected>Unavailable</option>'. PHP_EOL;
+			$svxForm .= '<button type="button" id="getVoices" class="btn btn-primary btn-lg btn-block">Download &amp; install voices</button>'. PHP_EOL;
 		}
-		$svxForm .= '</select>
-		</div>'. PHP_EOL;
+		$svxForm .= '</div>'. PHP_EOL;
 		$svxForm .= '
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>

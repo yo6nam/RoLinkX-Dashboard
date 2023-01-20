@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.1
-*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v2.92
+*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ $changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS',
 $expandFS			= (isset($_POST['expandFS'])) ? filter_input(INPUT_POST, 'expandFS', FILTER_SANITIZE_STRING) : null;
 $updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
 $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
+$getVoices			= (isset($_POST['getVoices'])) ? filter_input(INPUT_POST, 'getVoices', FILTER_SANITIZE_NUMBER_INT) : null;
 $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILTER_SANITIZE_NUMBER_INT) : null;
 $timezone			= (isset($_POST['timezone'])) ? filter_input(INPUT_POST, 'timezone', FILTER_SANITIZE_STRING) : null;
 
@@ -204,6 +205,15 @@ if ($updateRoLink == 1) echo updateRoLink();
 function updateRoLink() {
 	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
+	toggleFS(false);
+	return $reply[0];
+}
+
+/* Download & install voice pack */
+if ($getVoices == 1) echo getVoices();
+function getVoices() {
+	toggleFS(true);
+	exec("/usr/bin/sudo /opt/rolink/scripts/init get_sounds", $reply);
 	toggleFS(false);
 	return $reply[0];
 }
