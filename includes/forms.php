@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.92
+*   RoLinkX Dashboard v2.93
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -344,6 +344,7 @@ function svxForm() {
     			$svxForm .= '<option value="'. $availableVoicePacks .'"'. $vsel .'>'. $availableVoicePacks .'</option>'. PHP_EOL;
 			}
 			$svxForm .= '</select>'. PHP_EOL;
+			$svxForm .= '<button type="button" id="getVoices" class="btn btn-light btn-lg btn-block">&#128260;</button>'. PHP_EOL;
 		} else {
 			$svxForm .= '<button type="button" id="getVoices" class="btn btn-primary btn-lg btn-block">Download &amp; install voices</button>'. PHP_EOL;
 		}
