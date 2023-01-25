@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.6
-*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v2.94
+*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -360,7 +360,7 @@ function getRemoteVersion() {
 		$result = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] .' ('. $localVersion[0] .')';
 		$notify = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
 	} else {
-		$remoteData = file_get_contents('https://svx.439100.ro/data/version');
+		$remoteData = file_get_contents('https://rolink.network/data/version');
 	}
 	if ($remoteData) {
 		$remoteVersion = explode('|', $remoteData);

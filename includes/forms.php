@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.93
+*   RoLinkX Dashboard v2.94
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -182,7 +182,7 @@ function wifiForm() {
 	}
 	$wifiForm .= '<div class="row justify-content-center m-1">
 			<div class="col-auto alert alert-info m-2 p-1" role="alert">To delete a network use the - (dash) character as SSID</div>
-			<div class="col-auto alert alert-warning m-2 p-1" role="alert">Note : Open networks (no key) are not suppored</div>
+			<div class="col-auto alert alert-warning m-2 p-1" role="alert">Note : Open networks (no key) are not supported</div>
 		</div>
 		<div class="d-flex justify-content-center mt-2">
 			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Save</button>
@@ -308,7 +308,7 @@ function svxForm() {
 		</div>';
 	$svxForm .= '<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
-		  <input id="svx_ref" type="text" class="form-control" placeholder="svx.439100.ro" aria-label="Server address" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
+		  <input id="svx_ref" type="text" class="form-control" placeholder="rolink.network" aria-label="Server address" aria-describedby="inputGroup-sizing-sm" '. $reflectorValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Port</span>
@@ -488,14 +488,13 @@ function sa818Form() {
 		<div class="form-floating mb-1">
 			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
 				<option selected disabled>Select a value</option>';
-					/* Generate frequency list (2m & 70cm, no APRS or repeater inputs/outputs) */
-					for ($f=144.000; $f<=145.5875; $f+=0.0125) {
+					for ($f=144.000; $f<=148.000; $f+=0.0125) {
 						if (sprintf("%0.3f", $f) == '144.800') continue;
 						$freqFmt = str_replace('000', '00', sprintf("%0.4f", $f));
 						$freqFmt = (strlen($freqFmt) == 8) ? str_replace(',0','', preg_replace('/\d$/', ',$0', $freqFmt)) : $freqFmt;
 						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. $freqFmt .'</option>'. PHP_EOL;
 					}
-					for ($f=431.900; $f<=436.925; $f+=0.025) {
+					for ($f=420.000; $f<=450.000; $f+=0.025) {
 						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>

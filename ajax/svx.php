@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.8
+*   RoLinkX Dashboard v2.94
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,7 @@ $frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_
 
 // Retrieve POST vars (defaults if empty values to avoid locking the config file)
 $frmProfile		= (isset($_POST['prn'])) ? filter_input(INPUT_POST, 'prn', FILTER_SANITIZE_STRING) : '';
-$frmReflector	= (empty($_POST['ref'])) ? 'svx.439100.ro' : preg_replace('/^(http(s)?:\/\/)?(www.)?|(\/)/i', '', filter_input(INPUT_POST, 'ref', FILTER_SANITIZE_STRING));
+$frmReflector	= (empty($_POST['ref'])) ? 'rolink.network' : preg_replace('/^(http(s)?:\/\/)?(www.)?|(\/)/i', '', filter_input(INPUT_POST, 'ref', FILTER_SANITIZE_STRING));
 $frmPort		= (empty($_POST['prt'])) ? '1234' : filter_input(INPUT_POST, 'prt', FILTER_SANITIZE_NUMBER_INT);
 $frmCallsign	= (empty($_POST['cal'])) ? 'YO1XYZ-P' : preg_replace('/[^\w-]/', '', filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_STRING));
 $frmAuthKey		= (empty($_POST['key'])) ? 'password' : trim(filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING));
