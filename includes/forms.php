@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.94
+*   RoLinkX Dashboard v2.95
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -620,6 +620,7 @@ function cfgForm() {
 		'cfgCallsign' => 'Callsign',
 		'cfgDTMF' => 'DTMF Sender',
 		'cfgKernel' => 'Kernel version',
+		'cfgDetectSa' => 'Detect SA818',
 		'cfgTempOffset' => 'CPU Temp Offset'
 	);
 

@@ -647,6 +647,7 @@ $(document).ready(function () {
         cfgCallsign: $('#cfgCallsign').prop('checked'),
         cfgDTMF: $('#cfgDTMF').prop('checked'),
         cfgKernel: $('#cfgKernel').prop('checked'),
+        cfgDetectSa: $('#cfgDetectSa').prop('checked'),
         cfgTempOffset: $('#cfgTempOffset').prop('checked'),
         timezone: $('#timezone').val(),
       },
