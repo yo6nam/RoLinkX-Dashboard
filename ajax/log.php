@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
+*   RoLinkX Dashboard v2.96
 *   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,11 @@ switch ($logFile) {
 	break;
 	case '2' :
 		$logfile = '/tmp/svxlink.log';
+		if (!is_file($logfile)) {
+			echo json_encode(['count'=>'0','loglines'=>['The log file for RoLink (SVXLink) is missing. This might be due to a crash of the application. Check syslog.']]);
+			sleep(3);
+			exit(1);
+		}
 	break;
 	default :
 		$logfile = '/var/log/syslog';

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.95
+*   RoLinkX Dashboard v2.96
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -51,22 +51,22 @@ function networking() {
 
 /* Detect SA818 port & return firmware */
 function sa818Detect() {
-  # Feature available since RoLink 1.7.99.75-6
-  $localData = file_get_contents('/opt/rolink/version');
-  $localVersion = explode('|', $localData);
-  # Using an older version?
-  if ((int)$localVersion[0] < 20230126) return;
-  $sa818 = 'Not detected';
-  $toggle = 'class="input-group-text"';
-  $detected = false;
-  $sysReply = shell_exec('sudo /opt/rolink/scripts/init sa_detect');
-  if (!empty($sysReply)) {
-    $status = 'background:lightgreen';
-    $toggle = 'class="input-group-text collapsed dropdown-toggle" role="button"';
-    $detected = true;
-    $sa818 = 'Detected';
-    $sysData = explode('|', $sysReply);
-  }
+	# Feature available since RoLink 1.7.99.75-6
+	$localData = file_get_contents('/opt/rolink/version');
+	$localVersion = explode('|', $localData);
+	# Using an older version?
+	if ((int)$localVersion[0] < 20230126) return;
+	$sa818 = 'Not detected';
+	$toggle = 'class="input-group-text"';
+	$detected = false;
+	$sysReply = shell_exec('/usr/bin/sudo /opt/rolink/scripts/init sa_detect');
+	if (!empty($sysReply)) {
+	  $status = 'background:lightgreen';
+	  $toggle = 'class="input-group-text collapsed dropdown-toggle" role="button"';
+	  $detected = true;
+	  $sa818 = 'Detected';
+	  $sysData = explode('|', $sysReply);
+	}
 	$data ='<div class="input-group mb-2">
     	<span '. $toggle .' data-bs-toggle="collapse" data-bs-target="#sa818" aria-expanded="false" aria-controls="sa818" style="width: 6.5rem;'. $status .'">SA818</span>
   		<input type="text" class="form-control" placeholder="'. $sa818 .'" readonly>
@@ -74,10 +74,12 @@ function sa818Detect() {
 	$data .= ($detected) ? '<div id="sa818" class="accordion-collapse collapse">
 		<div class="accordion-body">
 			<div class="input-group mb-1">
-  				<span class="input-group-text" style="width: 14rem;">Serial Port : '. $sysData[0] .'</span>
+  				<span class="input-group-text" style="width: 6rem;">Serial Port</span>
+  				<span class="input-group-text" style="width: 8rem;">'. $sysData[0] .'</span>
 			</div>
 			<div class="input-group mb-1">
-  				<span class="input-group-text" style="width: 14rem;">Firmware : '. str_replace("+VERSION:", "", $sysData[1]) .'</span>
+				<span class="input-group-text" style="width: 6rem;">Firmware</span>
+  				<span class="input-group-text" style="width: 8rem;">'. str_replace("+VERSION:", "", trim($sysData[1])) .'</span>
 			</div>
 		</div>
 	</div>' : null;
