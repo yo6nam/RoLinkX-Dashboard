@@ -1,5 +1,5 @@
 #!/bin/bash
-# RoLinkX Dashboard v2.0
+# RoLinkX Dashboard v2.97
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -13,20 +13,25 @@ if grep "bullseye" /etc/os-release >/dev/null;then
 	phpVersion=7.4
 fi
 
+if grep "jammy" /etc/os-release >/dev/null;then
+        nmService=NetworkManager
+        phpVersion=8.1
+fi
+
 # Check if we should modify network
 if systemctl is-enabled $nmService | grep enabled >/dev/null; then
 	printf 'Network Manager is enabled. We must disable it\n'
 	# Setup eth0
-	if cat /etc/network/interfaces | grep 'auto eth0' >/dev/null;then
+	if cat /etc/network/interfaces | grep 'allow-hotplug eth0' >/dev/null;then
 		printf 'LAN interface already configured\n';
 	else
-		printf '\nauto eth0\nallow-hotplug eth0\niface eth0 inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
+		printf '\nallow-hotplug eth0\niface eth0 inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
 	fi
 	# Setup wlan0
-	if cat /etc/network/interfaces | grep 'auto wlan0' >/dev/null;then
+	if cat /etc/network/interfaces | grep 'allow-hotplug wlan0' >/dev/null;then
 		printf 'WLAN interface already configured\n';
 	else
-		printf '\nauto wlan0\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
+		printf '\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
 	fi
 	# Now it's safe to disable NM
 	systemctl stop $nmService
