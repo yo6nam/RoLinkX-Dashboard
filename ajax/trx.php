@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.9
+*   RoLinkX Dashboard v2.97
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -116,10 +116,12 @@ function writeToSerial($command, $tty = 1, $delay = 1) {
 /* Write programmed data to log */
 $last = array();
 $last['date'] = time();
-$last['frequency'] = sprintf("%0.3f", $grp) . ' MHz';
-$last['deviation'] = (($dev == "0") ? '12.5' : '25') . ' kHz';
-$last['ctcss'] = $ctcssVars[floatval($tpl)] . ' Hz';
+$last['frequency'] = $grp;
+$last['deviation'] = $dev;
+$last['ctcss'] = $tpl;
 $last['squelch'] = $sql;
+$last['volume'] = $vol;
+$last['filter'] = $flt;
 if ($groupCmd != 'Could not connect!') {
 	file_put_contents($historyFile, json_encode($last));
 }
