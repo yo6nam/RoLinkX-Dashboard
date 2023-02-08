@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.96
+*   RoLinkX Dashboard v2.97
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgRefNodes'] == 'true' && $rolink) ? getRefNodes() : null;
 	$htmlOutput .= ($config['cfgCallsign'] == 'true' && $rolink) ? getCallSign() . PHP_EOL : null;
 	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
-	$htmlOutput .= getFreeSpace();
+	$htmlOutput .= ($config['cfgFreeSpace'] == 'true') ? getFreeSpace() : null;
 	$htmlOutput .= ($rolink) ? getFileSystem() . PHP_EOL : null;
 	$htmlOutput .= ($rolink) ? getRemoteVersion() . PHP_EOL : null;
 	$htmlOutput .= ($rolink) ? '<div class="d-grid gap-2 col-7 mx-auto">
@@ -189,7 +189,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v2.96 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v2.97 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>

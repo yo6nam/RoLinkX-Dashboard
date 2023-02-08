@@ -8,6 +8,11 @@
 //
 
 window.addEventListener('DOMContentLoaded', (event) => {
+  // Enable Tooltips
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+  })
   // Toggle the side navigation
   const sidebarToggle = document.body.querySelector('#sidebarToggle');
   if (sidebarToggle) {
@@ -27,7 +32,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v2.92
+ *   RoLinkX Dashboard v2.97
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -648,6 +653,7 @@ $(document).ready(function () {
         cfgDTMF: $('#cfgDTMF').prop('checked'),
         cfgKernel: $('#cfgKernel').prop('checked'),
         cfgDetectSa: $('#cfgDetectSa').prop('checked'),
+        cfgFreeSpace: $('#cfgFreeSpace').prop('checked'),
         cfgTempOffset: $('#cfgTempOffset').prop('checked'),
         timezone: $('#timezone').val(),
       },

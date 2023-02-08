@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.96
+*   RoLinkX Dashboard v2.97
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ function sa818Detect() {
 /* Get Hostname */
 function hostName() {
 	return '<div class="input-group mb-2">
-  		<button class="btn btn-dark" style="width: 6.5rem;" type="button" id="switchHostName">Host Name</button>
+  		<button data-bs-toggle="tooltip" title="Click to change the current hostname to the value declared on SVXLink page as <b>Callsign (Beacon)</b>" data-bs-html="true" class="btn btn-dark" style="width: 6.5rem;" type="button" id="switchHostName">Host Name</button>
   		<input type="text" class="form-control" placeholder="'. gethostname() .'" readonly>
 	</div>';
 }
@@ -209,7 +209,9 @@ function getPublicIP() {
 		}
 	}
 	$data ='<div class="input-group mb-2">
-    	<span '. $toggle .' data-bs-toggle="collapse" data-bs-target="#netPerf" aria-expanded="false" aria-controls="netPerf" style="width: 6.5rem;'. $status .'">External IP</span>
+    	<span data-bs-toggle="tooltip" title="Click to reveal the <b>Network Performance</b> tool" data-bs-html="true">
+    		<span '. $toggle .' data-bs-toggle="collapse" data-bs-target="#netPerf" aria-expanded="false" aria-controls="netPerf" style="width: 6.5rem;'. $status .'">External IP</span>
+    	</span>
   		<input type="text" class="form-control" placeholder="'. $ip .'" readonly>
 	</div>';
 	$data .= ($gotIP) ? '<div id="netPerf" class="accordion-collapse collapse">
@@ -256,7 +258,7 @@ function getSVXLinkStatus($ext = 0) {
 	$config = include __DIR__ .'/../config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
-	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button>' : NULL;
+	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<span data-bs-toggle="tooltip" title="Click to display the <b>DTMF Sender Tool</b> and send commands to the SVXLink application. Usefull when you don\'t have a radio with the DTMF feature." data-bs-html="true"><button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button></span>' : NULL;
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="'. $status .'">SVXLink</span>
   		<input id="svxStatus" type="text" class="form-control" placeholder="'. $result .'" readonly>'
@@ -380,7 +382,7 @@ function getFileSystem() {
 	$stateFS		= ($fileSystemStatus[0] == 'rw') ? 'Read/Write' : 'Read-only';
 	$stateFSColor	= ($fileSystemStatus[0] == 'rw') ? 'background:red;color: white;' : 'background:lightgreen;';
     return '<div class="input-group mb-2">
-    	<button class="btn" style="'. $stateFSColor .'width: 6.5rem;" value="'. $fileSystemStatus[0] .'" type="button" id="changeFS">File system</button>
+    	<button data-bs-toggle="tooltip" title="Click to toggle between <b>Read-Only</b> and <b>Read/Write</b> state" data-bs-html="true" class="btn" style="'. $stateFSColor .'width: 6.5rem;" value="'. $fileSystemStatus[0] .'" type="button" id="changeFS">File system</button>
   		<input type="text" class="form-control" placeholder="'. $stateFS .'" readonly>
 	</div>';
 }
@@ -424,21 +426,21 @@ function dtmfSender() {
 			</div>
 			<div class="modal-body">
 				<div class="input-group flex-nowrap">
-					<span class="input-group-text" id="addon-wrapping">Command:</span>
+					<span data-bs-toggle="tooltip" title="DTMF commands to be sent to SVXLink application." data-bs-html="true" class="input-group-text" id="addon-wrapping">Command:</span>
 					<input type="tel" id="dtmfCommand" class="form-control" aria-label="Command" aria-describedby="addon-wrapping">
 				</div>
 				<div class="alert alert-success m-1" id="dtmfConsole" role="alert" style="display:none;"></div>
 			</div>
 			<div class="modal-footer">
 				<div class="col">
-					<button id="sendDTMF_EnableLink" type="button" class="btn btn-info mb-1" value="551#">Enable &#128279;</button>
-					<button id="sendDTMF_DisableLink" type="button" class="btn btn-info mb-1" value="55#">Disable &#128279;</button>
-					<button id="sendDTMF_TG9" type="button" class="btn btn-info mb-1" value="5519#">TG#9</button>
-					<button id="sendDTMF_TG226" type="button" class="btn btn-info mb-1" value="551226#">TG#226</button>
-					<button id="sendDTMF_ParrotOn" type="button" class="btn btn-info mb-1" value="1#">Parrot On</button>
-					<button id="sendDTMF_ParrotOff" type="button" class="btn btn-info mb-1" value="#">Parrot Off</button>
+					<button data-bs-toggle="tooltip" title="Enable the link and pass the audio to and from the reflector you are connected to." data-bs-html="true" id="sendDTMF_EnableLink" type="button" class="btn btn-info mb-1" value="551#">Enable &#128279;</button>
+					<button data-bs-toggle="tooltip" title="Disable the link and stop audio to and from the reflector you are connected to." data-bs-html="true" id="sendDTMF_DisableLink" type="button" class="btn btn-info mb-1" value="55#">Disable &#128279;</button>
+					<button data-bs-toggle="tooltip" title="Switch to Talk Group 9" data-bs-html="true" id="sendDTMF_TG9" type="button" class="btn btn-info mb-1" value="5519#">TG#9</button>
+					<button data-bs-toggle="tooltip" title="Switch to Talk Group 226" data-bs-html="true" id="sendDTMF_TG226" type="button" class="btn btn-info mb-1" value="551226#">TG#226</button>
+					<button data-bs-toggle="tooltip" title="Enable the parrot and test your audio. <em>Note : After 60 seconds of inactivity the parrot will be disabled and audio will resume the normal flow." data-bs-html="true" id="sendDTMF_ParrotOn" type="button" class="btn btn-info mb-1" value="1#">Parrot On</button>
+					<button data-bs-toggle="tooltip" title="Disable the parrot module (if already active)" data-bs-html="true" id="sendDTMF_ParrotOff" type="button" class="btn btn-info mb-1" value="#">Parrot Off</button>
 				</div>
-				<button id="sendDTMF" type="button" class="btn btn-danger btn-lg">Send</button>
+				<button data-bs-toggle="tooltip" title="Click to send the data from the <b>Command</b> input field" data-bs-html="true" data-bs-placement="bottom" id="sendDTMF" type="button" class="btn btn-danger btn-lg">Send</button>
 			</div>
 		</div>
 	</div>

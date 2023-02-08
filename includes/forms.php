@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.96
+*   RoLinkX Dashboard v2.97
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -473,6 +473,19 @@ function sa818Form() {
 	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
 	$config = include 'config.php';
 	$historyFile = dirname(__FILE__) .'/../profiles/sa818pgm.log';
+	// Last programmed details
+	$lastPgmData = array(
+		"date" => null,
+		"frequency" => null,
+		"deviation" => null,
+		"ctcss" => null,
+		"squelch" => null,
+		"volume" => null,
+		"filter" => null
+		);
+	if (is_file($historyFile)) {
+		$lastPgmData = json_decode(file_get_contents($historyFile), true);
+	}
 	$ctcssVars = array(
 		"0" => "None", "1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
@@ -485,17 +498,20 @@ function sa818Form() {
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
 		);
 	$sa818Form = '<h4 class="mt-2 alert alert-danger fw-bold">SA818 programmer</h4>
-		<div class="form-floating mb-1">
-			<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
+	<div class="card mb-2">
+		<h4 class="card-header fs-5">Channel</h4>
+		<div class="card-body">
+			<div class="form-floating mb-1">
+				<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
 				<option selected disabled>Select a value</option>';
 					for ($f=144.000; $f<=148.000; $f+=0.0125) {
 						if (sprintf("%0.3f", $f) == '144.800') continue;
 						$freqFmt = str_replace('000', '00', sprintf("%0.4f", $f));
 						$freqFmt = (strlen($freqFmt) == 8) ? str_replace(',0','', preg_replace('/\d$/', ',$0', $freqFmt)) : $freqFmt;
-						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. $freqFmt .'</option>'. PHP_EOL;
+						$sa818Form .= '<option '. (($lastPgmData['frequency'] == sprintf("%0.4f", $f)) ? 'selected' : null) .' value="'. sprintf("%0.4f", $f) .'">'. $freqFmt .'</option>'. PHP_EOL;
 					}
 					for ($f=420.000; $f<=450.000; $f+=0.025) {
-						$sa818Form .= '<option value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>'. PHP_EOL;
+						$sa818Form .= '<option '. (($lastPgmData['frequency'] == sprintf("%0.4f", $f)) ? 'selected' : null) .' value="'. sprintf("%0.4f", $f) .'">'. sprintf("%0.3f",$f) .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_grp">Frequency (MHz)</label>
@@ -503,8 +519,8 @@ function sa818Form() {
 		<div class="form-floating mb-1">
 			<select id="sa_dev" class="form-select" aria-label="Deviation (kHz)">
 				<option selected disabled>Select a value</option>
-				<option value="0">12.5</option>
-				<option value="1" selected>25</option>
+				<option '. ((isset($lastPgmData['deviation']) && $lastPgmData['deviation'] == 0) ? 'selected' : null) .' value="0">12.5</option>
+				<option '. (($lastPgmData['deviation'] == 1) ? 'selected' : null) .' value="1">25</option>
 			</select>
 			<label for="sa_dev">Deviation (kHz)</label>
 		</div>
@@ -513,7 +529,7 @@ function sa818Form() {
 				<option selected disabled>Select a value</option>';
 					/* Build CTCSS selects */
 					foreach ($ctcssVars as $key => $val) {
-						$selected = ($key == 13) ? ' selected' : '';
+						$selected = ($lastPgmData['ctcss'] == sprintf("%04d", $key)) ? 'selected' : null;
 						$sa818Form .= '<option value="'. sprintf("%04d", $key) .'"'. $selected .'>'. $val .'</option>'. PHP_EOL;
 					}
 			$sa818Form .= '</select>
@@ -524,51 +540,55 @@ function sa818Form() {
 				<option selected disabled>Select a value</option>';
 					/* Generate squelch values */
 					for ($sq=1; $sq<=8; $sq+=1) {
-						$selected = ($sq == 4) ? ' selected' : '';
+						$selected = ($lastPgmData['squelch'] == $sq) ? ' selected' : '';
 						$sa818Form .= '<option value="'. $sq .'"'. $selected .'>'. $sq .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_sql">Squelch</label>
 		</div>
-		<div class="form-floating mb-1">
+		</div>
+		</div>
+		<div class="card mb-2">
+		<h4 class="card-header fs-5">Volume</h4>
+		<div class="card-body">
+		<div class="form-floating">
 			<select id="sa_vol" class="form-select" aria-label="Volume">
 				<option value="" selected>No change</option>';
 					/* Generate volume values */
 					for ($vol=1; $vol<=8; $vol+=1) {
-						$sa818Form .= '<option value="'. $vol .'">'. $vol .'</option>'. PHP_EOL;
+						$sa818Form .= '<option '. (isset($lastPgmData['volume']) && ($lastPgmData['volume'] == $vol) ? 'selected' : null) .' value="'. $vol .'">'. $vol .'</option>'. PHP_EOL;
 					}
 	$sa818Form .= '</select>
 			<label for="sa_vol">Volume</label>
 		</div>
-		<div class="form-floating mb-1">
+		</div>
+		</div>
+		<div class="card mb-2">
+		<h4 class="card-header fs-5">Filter</h4>
+		<div class="card-body">
+		<div class="form-floating">
 			<select id="sa_flt" class="form-select" aria-label="Filter">
 				<option value="" selected>No change</option>
-				<option value="0,0,0">Disable All</option>
-				<option value="1,0,0">Enable Pre/De-Emphasis</option>
-				<option value="0,1,0">Enable High Pass</option>
-				<option value="0,0,1">Enable Low Pass</option>
-				<option value="0,1,1">Enable Low Pass & High Pass</option>
-				<option value="1,1,0">Enable Pre/De-Emphasis & High Pass</option>
-				<option value="1,0,1">Enable Pre/De-Emphasis & Low Pass</option>
-				<option value="1,1,1">Enable All</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,0,0') ? 'selected' : null) .' value="0,0,0">Disable All</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,0,0') ? 'selected' : null) .' value="1,0,0">Enable Pre/De-Emphasis</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,1,0') ? 'selected' : null) .' value="0,1,0">Enable High Pass</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,0,1') ? 'selected' : null) .' value="0,0,1">Enable Low Pass</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,1,1') ? 'selected' : null) .' value="0,1,1">Enable Low Pass & High Pass</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,1,0') ? 'selected' : null) .' value="1,1,0">Enable Pre/De-Emphasis & High Pass</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,0,1') ? 'selected' : null) .' value="1,0,1">Enable Pre/De-Emphasis & Low Pass</option>
+				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,1,1') ? 'selected' : null) .' value="1,1,1">Enable All</option>
 			</select>
 			<label for="sa_flt">Filter</label>
+		</div>
+		</div>
 		</div>';
 		$sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS'. $config['cfgTty'] .'</b> and <b>GPIO'. $config['cfgPttPin'] .'</b> for PTT. You can change these using the config page.</div>'. PHP_EOL;
 		$sa818Form .= '<div class="d-flex justify-content-center my-3">
 			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
 		</div>'. PHP_EOL;
-	// Display last programmed data
-	if (is_file($historyFile)) {
-		$last = json_decode(file_get_contents($historyFile), true);
-		$sa818Form .= '<div class="d-flex justify-content-center"><small class="d-inline-flex px-2 py-2 text-muted border rounded-3">';
-		$sa818Form .= 'Last programmed : ' . date('d-M-Y H:i:s', $last['date']) ."<br/>";
-		$sa818Form .= 'Frequency : ' . $last['frequency'] ."<br/>";
-		$sa818Form .= 'Deviation : ' . $last['deviation'] ."<br/>";
-		$sa818Form .= 'CTCSS : ' . ((preg_match('/None/',$last['ctcss'])) ? 'Open / None' : $last['ctcss']) ."<br/>";
-		$sa818Form .= 'Squelch : ' . $last['squelch'];
+		$sa818Form .= '<div class="d-flex justify-content-center"><small class="d-inline-flex px-1 py-1 text-muted border rounded-3">';
+		$sa818Form .= 'Last programmed : '. ((isset($lastPgmData['date'])) ? date('d-M-Y H:i:s', $lastPgmData['date']) : 'Never');
 		$sa818Form .= '</small></div>';
-	}
 	return $sa818Form;
 }
 
@@ -636,6 +656,7 @@ function cfgForm() {
 		'cfgDTMF' => 'DTMF Sender',
 		'cfgKernel' => 'Kernel version',
 		'cfgDetectSa' => 'Detect SA818',
+		'cfgFreeSpace' => 'Free Space',
 		'cfgTempOffset' => 'CPU Temp Offset'
 	);
 

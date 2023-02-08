@@ -14,5 +14,6 @@ return array (
   'cfgDTMF' => 'true',
   'cfgKernel' => 'true',
   'cfgDetectSa' => 'true',
+  'cfgFreeSpace' => 'true',
   'cfgTempOffset' => 'false'
 );
