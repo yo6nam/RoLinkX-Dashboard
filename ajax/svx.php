@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.94
-*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v2.98
+*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -42,24 +42,24 @@ if (is_file('/opt/rolink/version')) {
 }
 
 // Populate profile from GET vars
-$frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_STRING) : '';
+$frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_ADD_SLASHES) : '';
 
 // Retrieve POST vars (defaults if empty values to avoid locking the config file)
-$frmProfile		= (isset($_POST['prn'])) ? filter_input(INPUT_POST, 'prn', FILTER_SANITIZE_STRING) : '';
-$frmReflector	= (empty($_POST['ref'])) ? 'rolink.network' : preg_replace('/^(http(s)?:\/\/)?(www.)?|(\/)/i', '', filter_input(INPUT_POST, 'ref', FILTER_SANITIZE_STRING));
+$frmProfile		= (isset($_POST['prn'])) ? filter_input(INPUT_POST, 'prn', FILTER_SANITIZE_ADD_SLASHES) : '';
+$frmReflector	= (empty($_POST['ref'])) ? 'rolink.network' : preg_replace('/^(http(s)?:\/\/)?(www.)?|(\/)/i', '', filter_input(INPUT_POST, 'ref', FILTER_SANITIZE_ADD_SLASHES));
 $frmPort		= (empty($_POST['prt'])) ? '1234' : filter_input(INPUT_POST, 'prt', FILTER_SANITIZE_NUMBER_INT);
-$frmCallsign	= (empty($_POST['cal'])) ? 'YO1XYZ-P' : preg_replace('/[^\w-]/', '', filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_STRING));
-$frmAuthKey		= (empty($_POST['key'])) ? 'password' : trim(filter_input(INPUT_POST, 'key', FILTER_SANITIZE_STRING));
-$frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : preg_replace('/[^\w-]/', '', filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_STRING));
-$frmVoice		= (empty($_POST['vop'])) ? 'en_US' : filter_input(INPUT_POST, 'vop', FILTER_SANITIZE_STRING);
-$frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_STRING);
-$frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_STRING);
-$frmType		= (empty($_POST['tip'])) ? 'nod portabil' : filter_input(INPUT_POST, 'tip', FILTER_SANITIZE_STRING);
-$frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_STRING);
+$frmCallsign	= (empty($_POST['cal'])) ? 'YO1XYZ-P' : preg_replace('/[^\w-]/', '', filter_input(INPUT_POST, 'cal', FILTER_SANITIZE_ADD_SLASHES));
+$frmAuthKey		= (empty($_POST['key'])) ? 'password' : trim(filter_input(INPUT_POST, 'key', FILTER_SANITIZE_ADD_SLASHES));
+$frmBeacon		= (empty($_POST['clb'])) ? 'YO1XYZ' : preg_replace('/[^\w-]/', '', filter_input(INPUT_POST, 'clb', FILTER_SANITIZE_ADD_SLASHES));
+$frmVoice		= (empty($_POST['vop'])) ? 'en_US' : filter_input(INPUT_POST, 'vop', FILTER_SANITIZE_ADD_SLASHES);
+$frmShortId		= (empty($_POST['sid'])) ? '0' : filter_input(INPUT_POST, 'sid', FILTER_SANITIZE_ADD_SLASHES);
+$frmLongId		= (empty($_POST['lid'])) ? '0' : filter_input(INPUT_POST, 'lid', FILTER_SANITIZE_ADD_SLASHES);
+$frmType		= (empty($_POST['tip'])) ? 'nod portabil' : filter_input(INPUT_POST, 'tip', FILTER_SANITIZE_ADD_SLASHES);
+$frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr', FILTER_SANITIZE_ADD_SLASHES);
 $frmRogerBeep	= (empty($_POST['rgr'])) ? '0' : filter_input(INPUT_POST, 'rgr', FILTER_SANITIZE_NUMBER_INT);
-$frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp', FILTER_SANITIZE_STRING);
-$frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_STRING);
-$frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_STRING);
+$frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp', FILTER_SANITIZE_ADD_SLASHES);
+$frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_ADD_SLASHES);
+$frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_ADD_SLASHES);
 $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
 $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
 $frmDeEmphasis	= (empty($_POST['rxe'])) ? '0' : filter_input(INPUT_POST, 'rxe', FILTER_SANITIZE_NUMBER_INT);
@@ -68,11 +68,11 @@ $frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', 
 $frmReconnectS	= (empty($_POST['res'])) ? '0' : filter_input(INPUT_POST, 'res', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
-$frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_STRING);
+$frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_ADD_SLASHES);
 
 /* Process DTMF commands */
 if (isset($_POST['dtmfCommand'])) {
-	$dtmfCommand = (!empty($_POST['dtmfCommand'])) ? filter_input(INPUT_POST, 'dtmfCommand', FILTER_SANITIZE_STRING) : null;
+	$dtmfCommand = (!empty($_POST['dtmfCommand'])) ? filter_input(INPUT_POST, 'dtmfCommand', FILTER_SANITIZE_ADD_SLASHES) : null;
 	if (!is_link('/tmp/dtmf')) {
 		echo "RoLink is not running!";
 		return false;

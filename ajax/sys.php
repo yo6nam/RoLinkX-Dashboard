@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.92
+*   RoLinkX Dashboard v2.98
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -31,16 +31,16 @@ $resvx				= (isset($_POST['resvx'])) ? filter_input(INPUT_POST, 'resvx', FILTER_
 $endsvx				= (isset($_POST['endsvx'])) ? filter_input(INPUT_POST, 'endsvx', FILTER_SANITIZE_NUMBER_INT) : '';
 $switchHostName		= (isset($_POST['switchHostName'])) ? filter_input(INPUT_POST, 'switchHostName', FILTER_SANITIZE_NUMBER_INT) : '';
 $latencyCheck		= (isset($_POST['latencyCheck'])) ? filter_input(INPUT_POST, 'latencyCheck', FILTER_SANITIZE_NUMBER_INT) : '';
-$changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_STRING) : null;
-$expandFS			= (isset($_POST['expandFS'])) ? filter_input(INPUT_POST, 'expandFS', FILTER_SANITIZE_STRING) : null;
+$changeFS			= (isset($_POST['changeFS'])) ? filter_input(INPUT_POST, 'changeFS', FILTER_SANITIZE_ADD_SLASHES) : null;
+$expandFS			= (isset($_POST['expandFS'])) ? filter_input(INPUT_POST, 'expandFS', FILTER_SANITIZE_ADD_SLASHES) : null;
 $updateDash			= (isset($_POST['updateDash'])) ? filter_input(INPUT_POST, 'updateDash', FILTER_SANITIZE_NUMBER_INT) : null;
 $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'updateRoLink', FILTER_SANITIZE_NUMBER_INT) : null;
 $getVoices			= (isset($_POST['getVoices'])) ? filter_input(INPUT_POST, 'getVoices', FILTER_SANITIZE_NUMBER_INT) : null;
 $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILTER_SANITIZE_NUMBER_INT) : null;
-$timezone			= (isset($_POST['timezone'])) ? filter_input(INPUT_POST, 'timezone', FILTER_SANITIZE_STRING) : null;
+$timezone			= (isset($_POST['timezone'])) ? filter_input(INPUT_POST, 'timezone', FILTER_SANITIZE_ADD_SLASHES) : null;
 
 // Mixer control
-$mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_STRING) : '';
+$mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_ADD_SLASHES) : '';
 $mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER_SANITIZE_NUMBER_INT) : '';
 
 /* Configuration */

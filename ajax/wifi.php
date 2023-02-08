@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.6
+*   RoLinkX Dashboard v2.98
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -28,14 +28,14 @@ $wpaTemp = '/tmp/wpa_supplicant.tmp';
 $weHaveData = $fail = false;
 
 /* Get POST vars */
-$wnA = (isset($_POST['wn1'])) ? filter_input(INPUT_POST, 'wn1', FILTER_SANITIZE_STRING) : '';
-$wkA = (isset($_POST['wk1'])) ? filter_input(INPUT_POST, 'wk1', FILTER_SANITIZE_STRING) : '';
-$wnB = (isset($_POST['wn2'])) ? filter_input(INPUT_POST, 'wn2', FILTER_SANITIZE_STRING) : '';
-$wkB = (isset($_POST['wk2'])) ? filter_input(INPUT_POST, 'wk2', FILTER_SANITIZE_STRING) : '';
-$wnC = (isset($_POST['wn3'])) ? filter_input(INPUT_POST, 'wn3', FILTER_SANITIZE_STRING) : '';
-$wkC = (isset($_POST['wk3'])) ? filter_input(INPUT_POST, 'wk3', FILTER_SANITIZE_STRING) : '';
-$wnD = (isset($_POST['wn4'])) ? filter_input(INPUT_POST, 'wn4', FILTER_SANITIZE_STRING) : '';
-$wkD = (isset($_POST['wk4'])) ? filter_input(INPUT_POST, 'wk4', FILTER_SANITIZE_STRING) : '';
+$wnA = (isset($_POST['wn1'])) ? filter_input(INPUT_POST, 'wn1', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wkA = (isset($_POST['wk1'])) ? filter_input(INPUT_POST, 'wk1', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wnB = (isset($_POST['wn2'])) ? filter_input(INPUT_POST, 'wn2', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wkB = (isset($_POST['wk2'])) ? filter_input(INPUT_POST, 'wk2', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wnC = (isset($_POST['wn3'])) ? filter_input(INPUT_POST, 'wn3', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wkC = (isset($_POST['wk3'])) ? filter_input(INPUT_POST, 'wk3', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wnD = (isset($_POST['wn4'])) ? filter_input(INPUT_POST, 'wn4', FILTER_SANITIZE_ADD_SLASHES) : '';
+$wkD = (isset($_POST['wk4'])) ? filter_input(INPUT_POST, 'wk4', FILTER_SANITIZE_ADD_SLASHES) : '';
 
 function getSSIDs() {
 	global $wpaFile;

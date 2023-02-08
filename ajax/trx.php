@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.97
+*   RoLinkX Dashboard v2.98
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -27,12 +27,12 @@ include __DIR__ .'/../includes/php_serial.class.php';
 $historyFile = dirname(__FILE__) .'/../profiles/sa818pgm.log';
 
 /* Get POST vars */
-$grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_STRING) : '';
-$dev = (isset($_POST['dev'])) ? filter_input(INPUT_POST, 'dev', FILTER_SANITIZE_STRING) : '';
-$tpl = (isset($_POST['tpl'])) ? filter_input(INPUT_POST, 'tpl', FILTER_SANITIZE_STRING) : '';
-$sql = (isset($_POST['sql'])) ? filter_input(INPUT_POST, 'sql', FILTER_SANITIZE_STRING) : '';
-$vol = (isset($_POST['vol'])) ? filter_input(INPUT_POST, 'vol', FILTER_SANITIZE_STRING) : '';
-$flt = (isset($_POST['flt'])) ? filter_input(INPUT_POST, 'flt', FILTER_SANITIZE_STRING) : '';
+$grp = (isset($_POST['grp'])) ? filter_input(INPUT_POST, 'grp', FILTER_SANITIZE_ADD_SLASHES) : '';
+$dev = (isset($_POST['dev'])) ? filter_input(INPUT_POST, 'dev', FILTER_SANITIZE_ADD_SLASHES) : '';
+$tpl = (isset($_POST['tpl'])) ? filter_input(INPUT_POST, 'tpl', FILTER_SANITIZE_ADD_SLASHES) : '';
+$sql = (isset($_POST['sql'])) ? filter_input(INPUT_POST, 'sql', FILTER_SANITIZE_ADD_SLASHES) : '';
+$vol = (isset($_POST['vol'])) ? filter_input(INPUT_POST, 'vol', FILTER_SANITIZE_ADD_SLASHES) : '';
+$flt = (isset($_POST['flt'])) ? filter_input(INPUT_POST, 'flt', FILTER_SANITIZE_ADD_SLASHES) : '';
 
 $ctcssVars = array(
 		"0" => "None", "1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
