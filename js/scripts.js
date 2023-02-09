@@ -675,7 +675,7 @@ $(document).ready(function () {
         cfgDetectSa: $('#cfgDetectSa').prop('checked'),
         cfgFreeSpace: $('#cfgFreeSpace').prop('checked'),
         cfgTempOffset: $('#cfgTempOffset').prop('checked'),
-        cfgAutoConnect: $('#cfgAutoConnect').prop('checked'),
+        cfgAutoConnect: $('#cfgAutoConnect').val(),
         timezone: $('#timezone').val(),
       },
       success: function (data) {
