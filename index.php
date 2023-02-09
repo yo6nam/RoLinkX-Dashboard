@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.98
+*   RoLinkX Dashboard v2.99
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -142,6 +142,8 @@ switch ($page) {
 		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
         <link href="css/styles.css?_=<?php echo cacheBuster('css/styles.css'); ?>" rel="stylesheet" />
+		<link href="css/select2.min.css" rel="stylesheet" />
+    	<link href="css/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
     </head>
@@ -189,11 +191,12 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v2.98 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v2.99 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
+        <script src="js/select2.min.js"></script>
         <script src="js/scripts.js?_=<?php echo cacheBuster('js/scripts.js'); ?>"></script>
     	<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>

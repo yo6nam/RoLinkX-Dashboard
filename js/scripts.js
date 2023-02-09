@@ -9,10 +9,13 @@
 
 window.addEventListener('DOMContentLoaded', (event) => {
   // Enable Tooltips
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl)
-  })
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+  var tooltipList = tooltipTriggerList.map( function(tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl, {
+      trigger : 'hover',
+      html : true
+    });
+  });
   // Toggle the side navigation
   const sidebarToggle = document.body.querySelector('#sidebarToggle');
   if (sidebarToggle) {
@@ -32,7 +35,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v2.97
+ *   RoLinkX Dashboard v2.99
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -55,6 +58,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
  */
 
 $(document).ready(function () {
+  $('[data-bs-toggle="tooltip"').on("click", function () {
+    $(this).tooltip("hide");
+  });
   $.fn.showNotice = function (data, timeOutVal) {
     $(this).iziModal('destroy');
     $(this).iziModal({
@@ -73,7 +79,11 @@ $(document).ready(function () {
   };
 
   // SA818 Programming
-  $('#programm').click(function () {
+	$("#sa_grp").select2({ theme: "bootstrap-5" });
+	$('#sa_grp').parent('div').children('span').children('span').children('span').css('height', ' calc(3.5rem + 2px)');
+	$('#sa_grp').parent('div').children('span').children('span').children('span').children('span').css('margin-top', '18px');
+	$('#sa_grp').parent('div').find('label').css('z-index', '1');
+	$('#programm').click(function () {
 	$(this).prop('disabled', true).fadeTo('fast', 0.15);
     $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
