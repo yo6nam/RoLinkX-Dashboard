@@ -15,5 +15,6 @@ return array (
   'cfgKernel' => 'true',
   'cfgDetectSa' => 'true',
   'cfgFreeSpace' => 'true',
-  'cfgTempOffset' => 'false'
+  'cfgTempOffset' => 'false',
+  'cfgAutoConnect' => 'false'
 );

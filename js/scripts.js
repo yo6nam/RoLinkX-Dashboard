@@ -210,6 +210,7 @@ $(document).ready(function () {
         data: { lpn: selection },
         success: function (data) {
           if (data) {
+			var autoConnect = $('#autoConnect').val();
             var profile = jQuery.parseJSON(data);
             $('#svx_prn').val(selection.split('.').slice(0,-1).join());
             $('#svx_ref').val(profile.reflector);
@@ -233,10 +234,19 @@ $(document).ready(function () {
             if (typeof profile.connectionStatus !== 'undefined') {
             	$('#svx_acs').val(profile.connectionStatus)
             }
+            if (autoConnect === 'true') {
+				$('#sysmsg').showNotice(
+              		'Profile loaded!<br/>Auto connection started...',
+              		3000
+            	);
+            	$('#savesvxcfg').trigger('click');
+            	return true;
+            }
             $('#sysmsg').showNotice(
               'Profile loaded!<br/>Click <b>Save</b> button to apply',
               3000
             );
+
           }
         }
       });
@@ -665,6 +675,7 @@ $(document).ready(function () {
         cfgDetectSa: $('#cfgDetectSa').prop('checked'),
         cfgFreeSpace: $('#cfgFreeSpace').prop('checked'),
         cfgTempOffset: $('#cfgTempOffset').prop('checked'),
+        cfgAutoConnect: $('#cfgAutoConnect').prop('checked'),
         timezone: $('#timezone').val(),
       },
       success: function (data) {

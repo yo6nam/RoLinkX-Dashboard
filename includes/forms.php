@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.97
+*   RoLinkX Dashboard v2.99
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -202,7 +202,7 @@ function wifiForm() {
 function svxForm() {
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
 	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
-
+	$config = include 'config.php';
 	global $pinsArray;
 	$svxPinsArray = array();
 
@@ -458,7 +458,8 @@ function svxForm() {
 		}
 	$svxForm .= '
 		  </select>
-		</div>';
+		</div>
+		<input type="hidden" id="autoConnect" name="autoConnect" value="'. $config['cfgAutoConnect'] .'" />';
 		$svxForm .= '
 		<div class="d-flex justify-content-center mt-4">
 			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
@@ -505,7 +506,6 @@ function sa818Form() {
 				<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
 				<option selected disabled>Select a value</option>';
 					for ($f=144.000; $f<=148.000; $f+=0.0125) {
-						if (sprintf("%0.3f", $f) == '144.800') continue;
 						$freqFmt = str_replace('000', '00', sprintf("%0.4f", $f));
 						$freqFmt = (strlen($freqFmt) == 8) ? str_replace(',0','', preg_replace('/\d$/', ',$0', $freqFmt)) : $freqFmt;
 						$sa818Form .= '<option '. (($lastPgmData['frequency'] == sprintf("%0.4f", $f)) ? 'selected' : null) .' value="'. sprintf("%0.4f", $f) .'">'. $freqFmt .'</option>'. PHP_EOL;
@@ -698,6 +698,13 @@ function cfgForm() {
 		}
 		$configData .= '</select>
 		<label for="timezone">Time Zone</label>
+	</div>
+	<div class="form-floating m-2">
+		<select id="cfgAutoConnect" name="cfgAutoConnect" class="form-select" aria-label="Auto connect">'. PHP_EOL;
+		$configData .= '<option '. (($config['cfgAutoConnect'] == 'true') ? 'selected' : null) .' value="true">Yes</option>
+						<option '. (($config['cfgAutoConnect'] == 'false') ? 'selected' : null) .' value="false">No</option>';
+		$configData .= '</select>
+		<label for="cfgAutoConnect">Auto connect on profile change</label>
 	</div>
 	<h4 class="m-2">Status page content</h4>
 	<div class="row form-floating m-2">'. PHP_EOL;
