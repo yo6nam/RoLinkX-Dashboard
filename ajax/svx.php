@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.98
+*   RoLinkX Dashboard v2.99b
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -65,6 +65,7 @@ $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FI
 $frmDeEmphasis	= (empty($_POST['rxe'])) ? '0' : filter_input(INPUT_POST, 'rxe', FILTER_SANITIZE_NUMBER_INT);
 $frmPreEmphasis = (empty($_POST['txe'])) ? '0' : filter_input(INPUT_POST, 'txe', FILTER_SANITIZE_NUMBER_INT);
 $frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_FLOAT);
+$frmLimiter		= (empty($_POST['lim'])) ? '0' : filter_input(INPUT_POST, 'lim', FILTER_SANITIZE_NUMBER_FLOAT);
 $frmReconnectS	= (empty($_POST['res'])) ? '0' : filter_input(INPUT_POST, 'res', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
@@ -127,6 +128,7 @@ preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $oldCfg, $announceConnectionS
 preg_match('/(DEEMPHASIS=)(\d+)\n/', $oldCfg, $varDeEmphasis);
 preg_match('/(PREEMPHASIS=)(\d+)\n/', $oldCfg, $varPreEmphasis);
 preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $oldCfg, $varMasterGain);
+preg_match('/(LIMITER_THRESH=)(-?\d+)\n/', $oldCfg, $varLimiter);
 preg_match('/(RECONNECT_SECONDS=)(\d+)\n/', $oldCfg, $varReconnectSeconds);
 
 // Safe category values
@@ -155,6 +157,7 @@ $acsValue			= (isset($announceConnectionStatus[2])) ? $announceConnectionStatus[
 $preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : 0;
 $deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : 0;
 $masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : null;
+$limiterValue		= (isset($varLimiter[2])) ? $varLimiter[2] : null;
 $reconnectSValue	= (isset($varReconnectSeconds[2])) ? $varReconnectSeconds[2] : null;
 
 /* Profile defaults */
@@ -339,8 +342,14 @@ if ($masterGainValue != (int)$frmMasterGain) {
 	++$changes;
 }
 
-$oldVar[22]	= '/(RECONNECT_SECONDS=)(\d+)/';
-$newVar[22]	= '${1}'. $frmReconnectS;
+$oldVar[22]	= '/(LIMITER_THRESH=)(-?\d+)/';
+$newVar[22]	= '${1}'. $frmLimiter;
+if ($limiterValue != (int)$frmLimiter) {
+	++$changes;
+}
+
+$oldVar[23]	= '/(RECONNECT_SECONDS=)(\d+)/';
+$newVar[23]	= '${1}'. $frmReconnectS;
 if ($reconnectSValue != (int)$frmReconnectS) {
 	++$changes;
 }

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.99
+*   RoLinkX Dashboard v2.99b
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -275,6 +275,9 @@ function svxForm() {
 	/* Reconnect seconds */
 	preg_match('/(RECONNECT_SECONDS=)(\d+)/', $cfgFileData, $varReconnectSeconds);
 	$reconnectSecondsValue	= (isset($varReconnectSeconds[2])) ? 'value='. $varReconnectSeconds[2] : '';
+	/* Limiter */
+	preg_match('/(LIMITER_THRESH=)(-?\d+)\n/', $cfgFileData, $varLimiter);
+	$limiterValue	= (isset($varLimiter[2])) ? $varLimiter[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -442,6 +445,13 @@ function svxForm() {
 			$svxForm .= '<option value="'. $gain .'"'. ($gain == $masterGainValue ? ' selected' : '') .'>'. (($gain > 0) ? '+'. $gain : $gain) .' dB</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Audio Compressor</span>
+		  <select id="svx_lim" class="form-select">
+			<option value="-6"'. (($limiterValue != 0) ? ' selected' : '') .'>Normal</option>
+			<option value="0"'. (($limiterValue == 0) ? ' selected' : '') .'>Enhanced</option>
+		  </select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
