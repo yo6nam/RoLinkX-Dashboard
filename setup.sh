@@ -33,9 +33,10 @@ if systemctl is-enabled $nmService | grep enabled >/dev/null; then
 	else
 		printf '\nallow-hotplug wlan0\niface wlan0 inet dhcp\nwpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\niface default inet dhcp\n' | tee -a /etc/network/interfaces >/dev/null
 	fi
-	# Now it's safe to disable NM
+	# It's now safe to disable & mask NM
 	systemctl stop $nmService
 	systemctl disable $nmService
+	systemctl mask $nmService
 fi
 
 # Fix possible DNS issues
