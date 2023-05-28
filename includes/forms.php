@@ -244,7 +244,7 @@ function svxForm() {
 	preg_match('/(SQL_DELAY=)(\d+)/', $cfgFileData, $varSquelchDelay);
 	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value='. $varSquelchDelay[2] : '';
 	/* Monitor TGs*/
-	preg_match('/(MONITOR_TGS=)(\S+)/', $cfgFileData, $varMonitorTgs);
+	preg_match('/(MONITOR_TGS=)(.+)/', $cfgFileData, $varMonitorTgs);
 	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value='. $varMonitorTgs[2] : '';
 	/* TG Select Timeout */
 	preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $cfgFileData, $varTgSelTimeOut);
@@ -319,15 +319,16 @@ function svxForm() {
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Callsign</span>
-		  <input id="svx_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $callSignValue .'>
+		  <input id="svx_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" '. $callSignValue .'>
 		</div>
-		<div class="input-group input-group-sm mb-1">
+		<div id="auth_key" class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Auth Key</span>
-		  <input id="svx_key" type="text" class="form-control" placeholder="nod_portabil" aria-label="Adresa server" aria-describedby="inputGroup-sizing-sm" '. $authKeyValue .'>
+		  <input id="svx_key" type="password" class="form-control" placeholder="nod_portabil" aria-label="Auth Key" aria-describedby="inputGroup-sizing-sm" '. $authKeyValue .'>
+		  <button id="show_hide" class="input-group-text" role="button"><i class="icon-visibility" aria-hidden="true"></i></button>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Callsign (beacon)</span>
-		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Call sign" aria-describedby="inputGroup-sizing-sm" '. $beaconValue .'>
+		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" '. $beaconValue .'>
 		</div>';
 	$svxForm .= '<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Roger Beep</span>

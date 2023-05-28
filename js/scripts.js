@@ -254,6 +254,19 @@ $(document).ready(function () {
     }
   });
 
+  // SVXLink Show/Hide password
+  $("#show_hide").on('click', function(event) {
+    var svxKey = $('#svx_key');
+    var svxKeyType = svxKey.attr("type");
+    if (svxKeyType === "text") {
+      svxKey.attr('type', 'password');
+      $('#show_hide i').toggleClass("icon-visibility icon-visibility_off");
+    } else if (svxKeyType === "password") {
+      svxKey.attr('type', 'text');
+      $('#show_hide i').toggleClass("icon-visibility icon-visibility_off");
+    }
+  });
+
   // WiFi config
   $('#savewifi').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);

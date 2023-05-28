@@ -115,7 +115,7 @@ preg_match('/(OPUS_ENC_BITRATE=)(\d+)/', $oldCfg, $varCodecBitRate);
 preg_match('/(RGR_SOUND_ALWAYS=)(\d+)/', $oldCfg, $varRogerBeep);
 preg_match('/(GPIO_SQL_PIN=)(\S+)/', $oldCfg, $varRxGPIO);
 preg_match('/(PTT_PIN=)(\S+)/', $oldCfg, $varTxGPIO);
-preg_match('/(MONITOR_TGS=)(\S+)/', $oldCfg, $varMonitorTgs);
+preg_match('/(MONITOR_TGS=)(.+)/', $oldCfg, $varMonitorTgs);
 preg_match('/(TG_SELECT_TIMEOUT=)(\d+)/', $oldCfg, $varTgSelTimeOut);
 preg_match('/(SQL_DELAY=)(\d+)/', $oldCfg, $varSqlDelay);
 preg_match('/(TIMEOUT=)(\d+)\nTX/', $oldCfg, $varTxTimeout);
@@ -288,7 +288,9 @@ if ($txGPIOValue != $frmTxGPIO) {
 	++$changes;
 }
 
-$oldVar[12]	= '/(MONITOR_TGS=)(\S+)/';
+$oldVar[12]	= '/(MONITOR_TGS=)(.+)/';
+$frmMonitorTgs = preg_replace('/\s{1,}/', ',', $frmMonitorTgs);
+$frmMonitorTgs = preg_replace('/,{1,}/', ',', $frmMonitorTgs);
 $newVar[12]	= '${1}'. $frmMonitorTgs;
 if ($monitorTgsValue != $frmMonitorTgs) {
 	++$changes;
