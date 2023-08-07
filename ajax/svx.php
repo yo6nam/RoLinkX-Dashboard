@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.99b
+*   RoLinkX Dashboard v2.99d
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,7 @@ $frmReconnectS	= (empty($_POST['res'])) ? '0' : filter_input(INPUT_POST, 'res', 
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_ADD_SLASHES);
+$frmFanStart	= (empty($_POST['fan'])) ? '0' : filter_input(INPUT_POST, 'fan', FILTER_SANITIZE_NUMBER_INT);
 
 /* Process DTMF commands */
 if (isset($_POST['dtmfCommand'])) {
@@ -130,6 +131,8 @@ preg_match('/(PREEMPHASIS=)(\d+)\n/', $oldCfg, $varPreEmphasis);
 preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $oldCfg, $varMasterGain);
 preg_match('/(LIMITER_THRESH=)(-?\d+)\n/', $oldCfg, $varLimiter);
 preg_match('/(RECONNECT_SECONDS=)(\d+)\n/', $oldCfg, $varReconnectSeconds);
+// Since 1.7.99.86-2
+preg_match('/(FAN_START=)(\d+)/', $oldCfg, $varFanStart);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -159,6 +162,8 @@ $deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : 0;
 $masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : null;
 $limiterValue		= (isset($varLimiter[2])) ? $varLimiter[2] : null;
 $reconnectSValue	= (isset($varReconnectSeconds[2])) ? $varReconnectSeconds[2] : null;
+// Since 1.7.99.86-2
+$fanStartValue		= (isset($varFanStart[2])) ? $varFanStart[2] : 0;
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -353,6 +358,12 @@ if ($limiterValue != (int)$frmLimiter) {
 $oldVar[23]	= '/(RECONNECT_SECONDS=)(\d+)/';
 $newVar[23]	= '${1}'. $frmReconnectS;
 if ($reconnectSValue != (int)$frmReconnectS) {
+	++$changes;
+}
+
+$oldVar[24]	= '/(FAN_START=)(\d+)/';
+$newVar[24]	= '${1}'. $frmFanStart;
+if ($fanStartValue != (int)$frmFanStart) {
 	++$changes;
 }
 

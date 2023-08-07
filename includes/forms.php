@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.99b
+*   RoLinkX Dashboard v2.99d
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -278,6 +278,10 @@ function svxForm() {
 	/* Limiter */
 	preg_match('/(LIMITER_THRESH=)(-?\d+)\n/', $cfgFileData, $varLimiter);
 	$limiterValue	= (isset($varLimiter[2])) ? $varLimiter[2] : '';
+	/* Fan control */
+	preg_match('/(FAN_START=)(\d+)/', $cfgFileData, $varFanStart);
+	$fanStartValue	= (isset($varFanStart[2])) ? 'value='. $varFanStart[2] : '';
+
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -469,6 +473,10 @@ function svxForm() {
 		}
 	$svxForm .= '
 		  </select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Fan Start</span>
+		  <input id="svx_fan" type="text" class="form-control" placeholder="180" aria-label="Fan Start after" aria-describedby="inputGroup-sizing-sm" '. $fanStartValue .'>
 		</div>
 		<input type="hidden" id="autoConnect" name="autoConnect" value="'. $config['cfgAutoConnect'] .'" />';
 		$svxForm .= '
