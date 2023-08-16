@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.99d
+*   RoLinkX Dashboard v3.0
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -638,6 +638,25 @@ function logsForm() {
 	</div>
 </div>';
 	return $logData;
+}
+
+/* Terminal */
+function ttyForm() {
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
+	$ttydService = '/lib/systemd/system/ttyd.service';
+	if (!is_file($ttydService)) return '<div class="alert alert-danger text-center" role="alert">ttyd package not installed</div>';
+	$ttyFrame = '<h4 class="mt-2 alert alert-primary fw-bold">Terminal</h4>';
+	$ttyFrame .= '<div class="row">
+	<div class="col-lg-12">
+		<div class="card bg-light shadow border-0">
+			<div class="card-body px-lg-3 py-lg-2">
+				<iframe style="height:65vh;overflow:auto" class="col-lg-12 col-md-12 col-sm-12 embed-responsive-item" src="http://'. $_SERVER[HTTP_HOST] .':8080"></iframe>
+			</div>
+		</div>
+	</div>
+</div>';
+	return $ttyFrame;
 }
 
 /* Config */
