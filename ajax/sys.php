@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.98
+*   RoLinkX Dashboard v3.1
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@ $updateRoLink		= (isset($_POST['updateRoLink'])) ? filter_input(INPUT_POST, 'upd
 $getVoices			= (isset($_POST['getVoices'])) ? filter_input(INPUT_POST, 'getVoices', FILTER_SANITIZE_NUMBER_INT) : null;
 $makeRO				= (isset($_POST['makeRO'])) ? filter_input(INPUT_POST, 'makeRO', FILTER_SANITIZE_NUMBER_INT) : null;
 $timezone			= (isset($_POST['timezone'])) ? filter_input(INPUT_POST, 'timezone', FILTER_SANITIZE_ADD_SLASHES) : null;
+$accessPassword		= (isset($_POST['accessPassword'])) ? filter_input(INPUT_POST, 'accessPassword', FILTER_SANITIZE_ADD_SLASHES) : null;
 
 // Mixer control
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_ADD_SLASHES) : '';
@@ -75,6 +76,22 @@ if (isset($_POST)) {
 		serviceControl('rolink.service', 'start');
 		serviceControl('rsyslog.service', 'restart');
 		echo 'Timezone changed to <br/><b>'. $timezone .'</b>';
+		exit(0);
+	}
+
+	/* Dashboard Password */
+	if (isset($accessPassword)) {
+		$passwordFile = __DIR__ . '/../assets/pwd';
+		if (is_file($passwordFile)) {
+			$password = file_get_contents(__DIR__ . '/../assets/pwd');
+			if ($password != $accessPassword) {
+				file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
+				echo (empty($accessPassword) ? 'Password deleted' : 'The password has been changed');
+				exit(0);
+			}
+		}
+		file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
+		echo 'The password has been set';
 		exit(0);
 	}
 

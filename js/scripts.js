@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v2.99d
+ *   RoLinkX Dashboard v3.1
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -691,6 +691,7 @@ $(document).ready(function () {
         cfgFreeSpace: $('#cfgFreeSpace').prop('checked'),
         cfgTempOffset: $('#cfgTempOffset').prop('checked'),
         cfgAutoConnect: $('#cfgAutoConnect').val(),
+        accessPassword: $('#accessPassword').val(),
         timezone: $('#timezone').val(),
       },
       success: function (data) {

@@ -1,7 +1,6 @@
 <?php
-
 /*
-*   RoLinkX Dashboard v3.0
+*   RoLinkX Dashboard v3.1
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +22,14 @@
 * Index page
 */
 
+// Password protection
+if (is_file(__DIR__ . '/assets/pwd')){
+	$password = file_get_contents(__DIR__ . '/assets/pwd');
+	$hash = md5($password);
+	if (!isset($_COOKIE[$hash]) && !empty($password)) {
+		require_once(__DIR__ . '/includes/access.php');
+	}
+}
 $pages = array("wifi", "svx", "sa", "log", "tty", "cfg");
 $page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
@@ -197,7 +204,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v3.0 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v3.1 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
