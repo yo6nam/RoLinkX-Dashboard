@@ -82,15 +82,18 @@ if (isset($_POST)) {
 	/* Dashboard Password */
 	if (isset($accessPassword)) {
 		$passwordFile = __DIR__ . '/../assets/pwd';
+		toggleFS(true);
 		if (is_file($passwordFile)) {
 			$password = file_get_contents(__DIR__ . '/../assets/pwd');
 			if ($password != $accessPassword) {
 				file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
+				toggleFS(false);
 				echo (empty($accessPassword) ? 'Password deleted' : 'The password has been changed');
 				exit(0);
 			}
 		}
 		file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
+		toggleFS(false);
 		echo 'The password has been set';
 		exit(0);
 	}
