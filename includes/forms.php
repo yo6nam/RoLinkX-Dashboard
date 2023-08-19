@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.2
+*   RoLinkX Dashboard v3.3
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -281,7 +281,9 @@ function svxForm() {
 	/* Fan control */
 	preg_match('/(FAN_START=)(\d+)/', $cfgFileData, $varFanStart);
 	$fanStartValue	= (isset($varFanStart[2])) ? 'value='. $varFanStart[2] : '';
-
+	/* Modules */
+	preg_match('/(#?)(MODULES=)(\S+)/', $cfgFileData, $varModules);
+	$modulesValue	= (isset($varModules[1])) ? $varModules[1] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -404,6 +406,13 @@ function svxForm() {
 			$svxForm .= '<option value="'. $txpin .'"'. ($txpin == $txGPIOValue ? ' selected' : '') .'>'. (int) filter_var($txpin, FILTER_SANITIZE_NUMBER_INT) . $defaultTxPin . $inverted .'</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Modules</span>
+		  <select id="svx_mod" class="form-select">
+			<option value="0"'. (($modulesValue == '#') ? ' selected' : '') .'>No</option>
+			<option value="1"'. ((empty($modulesValue)) ? ' selected' : '') .'>Yes</option>
+		  </select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
@@ -745,18 +754,18 @@ function cfgForm() {
 		<label for="cfgAutoConnect">Auto connect on profile change</label>
 	</div>
 	<div class="form-floating m-2">
-		<input id="accessPassword" type="text" class="form-control" aria-label="Password" ';
+		<input id="accessPassword" type="text" class="form-control" aria-label="Password"';
 		$password = $label = null;
 		if (is_file(__DIR__ . '/../assets/pwd')){
 			$password = file_get_contents(__DIR__ . '/../assets/pwd');
 		}
 		if (empty($password)) {
-			$configData .= 'placeholder=""';
+			$configData .= ' placeholder=""';
 			$label = ' (not set)';
 		} else {
-			$configData .= 'value="'. $password .'"';
+			$configData .= ' value="'. $password .'"';
 		}
-		$configData .= '">
+		$configData .= '>
 		<label for="accessPassword">Dashboard password'. $label .'</label>
 	</div>
 	<h4 class="m-2">Status page content</h4>

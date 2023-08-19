@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.99d
+*   RoLinkX Dashboard v3.3
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,7 @@ $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt',
 $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', FILTER_SANITIZE_NUMBER_INT);
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_ADD_SLASHES);
 $frmFanStart	= (empty($_POST['fan'])) ? '0' : filter_input(INPUT_POST, 'fan', FILTER_SANITIZE_NUMBER_INT);
+$frmModules  	= (empty($_POST['mod'])) ? '0' : filter_input(INPUT_POST, 'mod', FILTER_SANITIZE_NUMBER_INT);
 
 /* Process DTMF commands */
 if (isset($_POST['dtmfCommand'])) {
@@ -133,6 +134,8 @@ preg_match('/(LIMITER_THRESH=)(-?\d+)\n/', $oldCfg, $varLimiter);
 preg_match('/(RECONNECT_SECONDS=)(\d+)\n/', $oldCfg, $varReconnectSeconds);
 // Since 1.7.99.86-2
 preg_match('/(FAN_START=)(\d+)/', $oldCfg, $varFanStart);
+// Since 1.7.99.88-2
+preg_match('/(#?)(MODULES=)(\S+)/', $oldCfg, $varModules);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -164,6 +167,8 @@ $limiterValue		= (isset($varLimiter[2])) ? $varLimiter[2] : null;
 $reconnectSValue	= (isset($varReconnectSeconds[2])) ? $varReconnectSeconds[2] : null;
 // Since 1.7.99.86-2
 $fanStartValue		= (isset($varFanStart[2])) ? $varFanStart[2] : 0;
+// Since 1.7.99.88-2
+$modulesValue		= (isset($varModules[1]) && $varModules[1] == '#') ? 0 : 1;
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -364,6 +369,12 @@ if ($reconnectSValue != (int)$frmReconnectS) {
 $oldVar[24]	= '/(FAN_START=)(\d+)/';
 $newVar[24]	= '${1}'. $frmFanStart;
 if ($fanStartValue != (int)$frmFanStart) {
+	++$changes;
+}
+
+$oldVar[25]	= '/(#?)(MODULES=)(\S+)/';
+$newVar[25]	= ($frmModules == '0' ? '#' : '') . '${2}${3}';
+if ($modulesValue != $frmModules) {
 	++$changes;
 }
 
