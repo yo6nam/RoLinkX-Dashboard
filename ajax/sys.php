@@ -121,7 +121,7 @@ if (isset($_POST)) {
 	foreach ($messages as $message) {
 		$reply .= $message . '<br>';
 	}
-	echo (empty($reply) ? 'Nothing changed' : $reply);
+	echo (empty($reply) ? '' : $reply);
 }
 
 // Check details about connection (TCP Bandwidth / Latency & UDP Latency)
