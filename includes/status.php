@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.99
+*   RoLinkX Dashboard v3.2
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@ function networking() {
 
 /* Detect SA818 port & return firmware */
 function sa818Detect() {
+	$status = null;
 	# Feature available since RoLink 1.7.99.75-6
 	$localData = file_get_contents('/opt/rolink/version');
 	$localVersion = explode('|', $localData);

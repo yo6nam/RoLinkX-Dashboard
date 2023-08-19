@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.1
+*   RoLinkX Dashboard v3.2
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -745,12 +745,19 @@ function cfgForm() {
 		<label for="cfgAutoConnect">Auto connect on profile change</label>
 	</div>
 	<div class="form-floating m-2">
-		<input id="accessPassword" type="text" class="form-control" aria-label="Password" value="';
+		<input id="accessPassword" type="text" class="form-control" aria-label="Password" ';
+		$password = $label = null;
 		if (is_file(__DIR__ . '/../assets/pwd')){
-			$configData .= file_get_contents(__DIR__ . '/../assets/pwd');
+			$password = file_get_contents(__DIR__ . '/../assets/pwd');
+		}
+		if (empty($password)) {
+			$configData .= 'placeholder=""';
+			$label = ' (not set)';
+		} else {
+			$configData .= 'value="'. $password .'"';
 		}
 		$configData .= '">
-		<label for="accessPassword">Dashboard password</label>
+		<label for="accessPassword">Dashboard password'. $label .'</label>
 	</div>
 	<h4 class="m-2">Status page content</h4>
 	<div class="row form-floating m-2">'. PHP_EOL;

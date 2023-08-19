@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.1
+*   RoLinkX Dashboard v3.2
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -46,58 +46,6 @@ $mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER
 
 /* Configuration */
 if (isset($_POST)) {
-	$changed = false;
-	$config = include '../config.php';
-	foreach ($config as $cfgItem => $cfgItemValue) {
-		if (isset($_POST[$cfgItem])) {
-			$oldValue = $config[$cfgItem];
-			$newValue = $_POST[$cfgItem];
-			if ($oldValue != $newValue) {
-				$config[$cfgItem] = $newValue;
-				$changed = true;
-			}
-		}
-	}
-	if ($changed) {
-		toggleFS(true);
-		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) .';'. PHP_EOL);
-		echo 'Configuration saved!';
-		toggleFS(false);
-		exit(0);
-	}
-
-	/* Time Zone */
-	$currentTimezone = trim(file_get_contents('/etc/timezone'));
-	if (isset($timezone) && $timezone != $currentTimezone) {
-		serviceControl('rolink.service', 'stop');
-		toggleFS(true);
-		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone '. $timezone);
-		toggleFS(false);
-		serviceControl('rolink.service', 'start');
-		serviceControl('rsyslog.service', 'restart');
-		echo 'Timezone changed to <br/><b>'. $timezone .'</b>';
-		exit(0);
-	}
-
-	/* Dashboard Password */
-	if (isset($accessPassword)) {
-		$passwordFile = __DIR__ . '/../assets/pwd';
-		toggleFS(true);
-		if (is_file($passwordFile)) {
-			$password = file_get_contents(__DIR__ . '/../assets/pwd');
-			if ($password != $accessPassword) {
-				file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
-				toggleFS(false);
-				echo (empty($accessPassword) ? 'Password deleted' : 'The password has been changed');
-				exit(0);
-			}
-		}
-		file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
-		toggleFS(false);
-		echo 'The password has been set';
-		exit(0);
-	}
-
 	/* Expand File System */
 	if (isset($expandFS)) {
 		toggleFS(true);
@@ -123,6 +71,57 @@ if (isset($_POST)) {
 		echo $mixerControls[$mixerControl] .' / '. $mixerValue;
 		exit(0);
 	}
+
+	/* Process config options */
+	toggleFS(true);
+	$changed = false;
+	$messages = [];
+	$reply = '';
+	$config = include '../config.php';
+	foreach ($config as $cfgItem => $cfgItemValue) {
+		if (isset($_POST[$cfgItem])) {
+			$oldValue = $config[$cfgItem];
+			$newValue = $_POST[$cfgItem];
+			if ($oldValue != $newValue) {
+				$config[$cfgItem] = $newValue;
+				$changed = true;
+			}
+		}
+	}
+	if ($changed) {
+		file_put_contents('../config.php', '<?php'. PHP_EOL .'return '. var_export($config, true) .';'. PHP_EOL);
+		$messages[] = 'Configuration saved';
+	}
+
+	/* Time Zone */
+	$currentTimezone = trim(file_get_contents('/etc/timezone'));
+	if (isset($timezone) && $timezone != $currentTimezone) {
+		serviceControl('rolink.service', 'stop');
+		exec('/usr/bin/sudo /usr/bin/timedatectl set-timezone '. $timezone);
+		serviceControl('rolink.service', 'start');
+		serviceControl('rsyslog.service', 'restart');
+		$messages[] = 'New timezone : <b>'. $timezone .'</b>';
+	}
+
+	/* Dashboard Password */
+	if (isset($accessPassword)) {
+		$passwordFile = __DIR__ . '/../assets/pwd';
+		if (is_file($passwordFile)) {
+			$password = file_get_contents(__DIR__ . '/../assets/pwd');
+			if ($password != $accessPassword) {
+				file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
+				$messages[] = (empty($accessPassword) ? 'Password deleted' : 'The password has been changed');
+			}
+		} else {
+			file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
+			$messages[] = 'The password has been set';
+		}
+	}
+	toggleFS(false);
+	foreach ($messages as $message) {
+		$reply .= $message . '<br>';
+	}
+	echo (empty($reply) ? 'Nothing changed' : $reply);
 }
 
 // Check details about connection (TCP Bandwidth / Latency & UDP Latency)
