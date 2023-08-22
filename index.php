@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.3
+*   RoLinkX Dashboard v3.4
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,7 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
 	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
 	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
+	$htmlOutput .= gpioStatus();
  	$htmlOutput .= ($config['cfgDetectSa'] == 'true') ? sa818Detect() : null;
 	$htmlOutput .= ($config['cfgSvxStatus'] == 'true' && $rolink) ? '<div id="svxStatus">'. getSVXLinkStatus() .'</div>' : null;
 	$htmlOutput .= '<div id="refContainer">'. getReflector() .'</div>';
@@ -100,6 +101,7 @@ switch ($page) {
 	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
 	$ajax = ($config['cfgCpuStats'] == 'true') ? "<script>
 	cpuData();
+	gpioStatus();
 	function cpuData() {
 		$.ajax({
 			type: 'GET',
@@ -121,8 +123,31 @@ switch ($page) {
 			}
 		});
 	}
+	function gpioStatus() {
+		$.ajax({
+			type: 'GET',
+			dataType: 'json',
+			url: 'includes/status.php?gpio',
+		success: function (data) {
+		    $('#gpioRx')
+		        .attr('placeholder', data['rx'] === '0' ? 'RX Idle' : 'RX On')
+		        .val('')
+		        .css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
+		    $('#gpioTx')
+		        .attr('placeholder', data['tx'] === '0' ? 'TX Idle' : '')
+		        .val(data['tx'] === '0' ? '' : 'TX On')
+		        .css('background', data['tx'] === '0' ? 'none' : 'red')
+		    	.css('color', data['tx'] === '0' ? '' : 'white');
+		    $('#gpioFan')
+		        .attr('placeholder', data['fan'] === '0' ? 'Fan Off' : 'Fan On')
+		        .val('')
+		        .css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+			}
+		});
+	}
 	var auto_refresh = setInterval( function () {
 		cpuData()
+		gpioStatus()
 	}, 3000);
 	</script>" : null;
 }
@@ -204,7 +229,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v3.3 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v3.4 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.2
+*   RoLinkX Dashboard v3.4
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,31 @@
 if (isset($_GET['svxStatus'])) echo getSVXLinkStatus();
 if (isset($_GET['svxReflector'])) echo getReflector(1);
 if (isset($_GET['cpuData'])) echo getCpuStats(1);
+if (isset($_GET['gpio'])) echo gpioStatus(1);
+
+/* GPIO Status(es)*/
+function gpioStatus($ajax = 0) {
+	$gpioPaths = array(
+	    'rx' => '/sys/class/gpio/gpio10/value',
+	    'tx' => '/sys/class/gpio/gpio7/value',
+	    'fan' => '/sys/class/gpio/gpio6/value'
+	);
+	$data = array();
+	foreach ($gpioPaths as $key => $path) {
+	    $value = trim(exec('/usr/bin/cat ' . $path));
+	    $data[$key] = ($value === '0' || $value === '1') ? $value : '0';
+	}
+	$jsonData = json_encode($data);
+	if ($ajax) {
+		return $jsonData;
+	}
+	return '<div class="input-group mb-2">
+  		<span class="input-group-text" style="width: 6.5rem;">GPIO Status</span>
+  		<input id="gpioRx" type="text" class="form-control text-center" placeholder="..." readonly>
+  		<input id="gpioTx" type="text" class="form-control text-center" placeholder="..." readonly>
+  		<input id="gpioFan" type="text" class="form-control text-center" placeholder="..." readonly>
+	</div>';
+}
 
 /* Get IP(s) */
 function networking() {
