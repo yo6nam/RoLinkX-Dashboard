@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.3
+*   RoLinkX Dashboard v3.4
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -270,7 +270,7 @@ function svxForm() {
 	preg_match('/(PREEMPHASIS=)(\d+)\n/', $cfgFileData, $varPreEmphasis);
 	$preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : '';
 	/* MasterGain (TX) */
-	preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $cfgFileData, $varMasterGain);
+	preg_match('/(MASTER_GAIN=)(-?\d+(\.\d{1,2})?)\n/', $cfgFileData, $varMasterGain);
 	$masterGainValue	= (isset($varMasterGain[2])) ? $varMasterGain[2] : '';
 	/* Reconnect seconds */
 	preg_match('/(RECONNECT_SECONDS=)(\d+)/', $cfgFileData, $varReconnectSeconds);
@@ -455,7 +455,7 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 			<label class="input-group-text" for="svx_mag" style="width: 8rem;">Master Gain (TX)</label>
 			<select id="svx_mag" class="form-select">'. PHP_EOL;
-		for($gain=6; $gain>=-6; $gain-=1){
+		for($gain=6; $gain>=-6; $gain-=.25){
 			$svxForm .= '<option value="'. $gain .'"'. ($gain == $masterGainValue ? ' selected' : '') .'>'. (($gain > 0) ? '+'. $gain : $gain) .' dB</option>'. PHP_EOL;
 		}
 		$svxForm .= '</select>

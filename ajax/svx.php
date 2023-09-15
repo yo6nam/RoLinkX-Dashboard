@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.3
+*   RoLinkX Dashboard v3.4
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', 
 $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
 $frmDeEmphasis	= (empty($_POST['rxe'])) ? '0' : filter_input(INPUT_POST, 'rxe', FILTER_SANITIZE_NUMBER_INT);
 $frmPreEmphasis = (empty($_POST['txe'])) ? '0' : filter_input(INPUT_POST, 'txe', FILTER_SANITIZE_NUMBER_INT);
-$frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_FLOAT);
+$frmMasterGain	= (empty($_POST['mag'])) ? '0' : filter_input(INPUT_POST, 'mag', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 $frmLimiter		= (empty($_POST['lim'])) ? '0' : filter_input(INPUT_POST, 'lim', FILTER_SANITIZE_NUMBER_FLOAT);
 $frmReconnectS	= (empty($_POST['res'])) ? '0' : filter_input(INPUT_POST, 'res', FILTER_SANITIZE_NUMBER_INT);
 $frmTxTimeOut	= (empty($_POST['txt'])) ? '180' : filter_input(INPUT_POST, 'txt', FILTER_SANITIZE_NUMBER_INT);
@@ -129,7 +129,7 @@ preg_match('/(ANNOUNCE_CONNECTION_STATUS=)(\d+)/', $oldCfg, $announceConnectionS
 // Power Hotspot
 preg_match('/(DEEMPHASIS=)(\d+)\n/', $oldCfg, $varDeEmphasis);
 preg_match('/(PREEMPHASIS=)(\d+)\n/', $oldCfg, $varPreEmphasis);
-preg_match('/(MASTER_GAIN=)(-?\d+)\n/', $oldCfg, $varMasterGain);
+preg_match('/(MASTER_GAIN=)(-?\d+(\.\d{1,2})?)\n/', $oldCfg, $varMasterGain);
 preg_match('/(LIMITER_THRESH=)(-?\d+)\n/', $oldCfg, $varLimiter);
 preg_match('/(RECONNECT_SECONDS=)(\d+)\n/', $oldCfg, $varReconnectSeconds);
 // Since 1.7.99.86-2
@@ -348,7 +348,7 @@ if ($preEmphasisValue != (int)$frmPreEmphasis) {
 	++$changes;
 }
 
-$oldVar[21]	= '/(MASTER_GAIN=)(-?\d+)/';
+$oldVar[21]	= '/(MASTER_GAIN=)(-?\d+(\.\d{1,2})?)/';
 $newVar[21]	= '${1}'. $frmMasterGain;
 if ($masterGainValue != (int)$frmMasterGain) {
 	++$changes;
