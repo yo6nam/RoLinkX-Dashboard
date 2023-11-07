@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.4
+*   RoLinkX Dashboard v3.5
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ if (is_file(__DIR__ . '/assets/pwd')){
 		require_once(__DIR__ . '/includes/access.php');
 	}
 }
-$pages = array("wifi", "svx", "sa", "log", "tty", "cfg");
+$pages = array("wifi", "svx", "sa", "log", "aprs", "tty", "cfg");
 $page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
 // Handle JS/CSS changes
@@ -60,6 +60,11 @@ switch ($page) {
   case "sa":
     $htmlOutput = sa818Form();
     break;
+  case "aprs":
+    $htmlOutput = aprsForm();
+    $extraResource	= '<link href="https://cdn.jsdelivr.net/npm/ol@v8.1.0/ol.css" rel="stylesheet">
+    	<script src="https://cdn.jsdelivr.net/npm/ol@v8.1.0/dist/ol.js"></script>';
+    break;
   case "log":
     $htmlOutput = logsForm();
     break;
@@ -86,6 +91,7 @@ switch ($page) {
 	$htmlOutput .= '<div id="refContainer">'. getReflector() .'</div>';
 	$htmlOutput .= ($config['cfgRefNodes'] == 'true' && $rolink) ? getRefNodes() : null;
 	$htmlOutput .= ($config['cfgCallsign'] == 'true' && $rolink) ? getCallSign() . PHP_EOL : null;
+	$htmlOutput .= ($rolink) ? getGPSDongle() . PHP_EOL : null;
 	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
 	$htmlOutput .= ($config['cfgFreeSpace'] == 'true') ? getFreeSpace() : null;
 	$htmlOutput .= ($rolink) ? getFileSystem() . PHP_EOL : null;
@@ -182,6 +188,7 @@ switch ($page) {
     	<link href="css/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     	<link href="css/jquery.toast.min.css" rel="stylesheet" />
     	<link href="css/iziModal.min.css" rel="stylesheet" />
+    	<?php echo (isset($extraResource)) ? $extraResource . PHP_EOL : null; ?>
     </head>
 	<body>
 		<div class="d-flex" id="wrapper">
@@ -196,6 +203,7 @@ switch ($page) {
 					<a class="<?php echo ($page == 'wifi') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=wifi">WiFi</a>
 					<a class="<?php echo ($page == 'svx') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=svx">SVXLink</a>
 					<a class="<?php echo ($page == 'sa') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=sa">SA818</a>
+					<a class="<?php echo ($page == 'aprs') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=aprs">APRS</a>
 					<a class="<?php echo ($page == 'log') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=log">Logs</a>
 					<a class="<?php echo ($page == 'tty') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=tty">Terminal</a>
 					<a class="<?php echo ($page == 'cfg') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=cfg">Config</a>
@@ -215,6 +223,7 @@ switch ($page) {
 								<li class="nav-item"><a class="<?php echo ($page == 'wifi') ? 'active p-2' : ''; ?> nav-link" href="./?p=wifi">WiFi</a></li>
 								<li class="nav-item"><a class="<?php echo ($page == 'svx') ? 'active p-2' : ''; ?> nav-link" href="./?p=svx">SVXLink</a></li>
 								<li class="nav-item"><a class="<?php echo ($page == 'sa') ? 'active p-2' : ''; ?> nav-link" href="./?p=sa">SA818</a></li>
+								<li class="nav-item"><a class="<?php echo ($page == 'aprs') ? 'active p-2' : ''; ?> nav-link" href="./?p=aprs">APRS</a></li>
 								<li class="nav-item"><a class="<?php echo ($page == 'log') ? 'active p-2' : ''; ?> nav-link" href="./?p=log">Logs</a></li>
 								<li class="nav-item"><a class="<?php echo ($page == 'tty') ? 'active p-2' : ''; ?> nav-link" href="./?p=tty">Terminal</a></li>
 								<li class="nav-item"><a class="<?php echo ($page == 'cfg') ? 'active p-2' : ''; ?> nav-link" href="./?p=cfg">Config</a></li>
@@ -229,13 +238,13 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v3.4 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v3.5 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
         <script src="js/select2.min.js"></script>
         <script src="js/scripts.js?_=<?php echo cacheBuster('js/scripts.js'); ?>"></script>
-    	<?php echo (isset($ajax)) ? $ajax : null; ?>
+		<?php echo (isset($ajax)) ? $ajax : null; ?>
     </body>
 </html>

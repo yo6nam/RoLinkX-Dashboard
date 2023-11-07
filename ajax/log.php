@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.96
-*   Copyright (C) 2021 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v3.5
+*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -40,6 +40,14 @@ switch ($logFile) {
 		$logfile = '/tmp/svxlink.log';
 		if (!is_file($logfile)) {
 			echo json_encode(['count'=>'0','loglines'=>['The log file for RoLink (SVXLink) is missing. This might be due to a crash of the application. Check syslog.']]);
+			sleep(3);
+			exit(1);
+		}
+	break;
+	case '3' :
+		$logfile = '/var/log/direwolf.log';
+		if (!is_file($logfile)) {
+			echo json_encode(['count'=>'0','loglines'=>['The log file for Direwolf is missing. This might be due to a crash of the application. Check syslog.']]);
 			sleep(3);
 			exit(1);
 		}

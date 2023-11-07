@@ -1,7 +1,7 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.0
-*   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+*   RoLinkX Dashboard v3.5
+*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
 *   it under the terms of the GNU General Public License as published by
@@ -52,4 +52,33 @@ function unstick(){
 	global $config;
 	$pinPath = '/sys/class/gpio/gpio'. $config['cfgPttPin'] .'/value';
 	exec('/usr/bin/sudo /usr/bin/chmod guo+rw '. $pinPath .'; /usr/bin/echo 0 > '. $pinPath);
+}
+
+/* GPSD */
+function gpsd() {
+	$gpsdSock = fsockopen('localhost', 2947, $errno, $errstr, 2);
+	$device = shell_exec('/usr/bin/sudo /opt/rolink/scripts/init aprs');
+	if (!$gpsdSock) {
+		return '{"class":"ERROR","message":"'. $errstr .'"}';
+	}
+	$request = "?WATCH={\"enable\":true,\"json\":true,\"scaled\":true}\n";
+	fwrite($gpsdSock, $request);
+	usleep(750);
+	$request = "?POLL;\n";
+	fwrite($gpsdSock, $request);
+	usleep(750);
+	$response = '';
+	for ($tries = 0; $tries < 10; $tries++) {
+	    $line = fgets($gpsdSock, 20000);
+	    if (preg_match('/{"class":"POLL".+}/i', $line, $m)) {
+	        $response = $m[0];
+	        break;
+	    }
+	}
+	fclose($gpsdSock);
+	if (!empty($device)) $response = $device;
+	if (!$response) {
+	    $response = '{"class":"ERROR","message":"no response from GPS daemon"}';
+	}
+	return $response;
 }

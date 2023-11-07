@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v3.3
+ *   RoLinkX Dashboard v3.5
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -267,6 +267,33 @@ $(document).ready(function () {
       svxKey.attr('type', 'text');
       $('#show_hide i').toggleClass("icon-visibility icon-visibility_off");
     }
+  });
+
+  // APRS/Direwolf config
+  $('#saveaprscfg').click(function () {
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
+    $.ajax({
+      type: 'POST',
+      url: 'ajax/aprs.php',
+      data: {
+		service: $('#aprs_service').val(),
+		callsign: $('#aprs_callsign').val(),
+		comment: $('#aprs_comment').val(),
+		temp: $('#aprs_temp').val(),
+		symbol: $('#aprs_symbol').val(),
+		server: $('#aprs_server').val(),
+		report: $('#aprs_report').val(),
+      },
+      success: function (data) {
+        if (data) {
+          $('#saveaprscfg').prop('disabled', false).fadeTo('fast', 1);
+          $('#sysmsg').showNotice(data, 3000);
+          setTimeout(function () {
+            location.reload(true);
+          }, 5000);
+        }
+      }
+    });
   });
 
   // WiFi config

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.4
+*   RoLinkX Dashboard v3.5
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,45 @@ if (isset($_GET['svxStatus'])) echo getSVXLinkStatus();
 if (isset($_GET['svxReflector'])) echo getReflector(1);
 if (isset($_GET['cpuData'])) echo getCpuStats(1);
 if (isset($_GET['gpio'])) echo gpioStatus(1);
+
+/* GPS dongle */
+function getGPSDongle() {
+	$vidPidList = array("1546:01a7");
+	$usbDevices = shell_exec('lsusb');
+	$usbDevicesArray = explode("\n", $usbDevices);
+	$detected = false;
+	$status = null;
+	$gps = 'No dongle';
+	$toggle = 'class="input-group-text"';
+	foreach ($vidPidList as $vidPid) {
+		foreach ($usbDevicesArray as $line) {
+		    if (strpos($line, $vidPid) !== false) {
+		        if (preg_match('/' . preg_quote($vidPid, '/') . ' (.+)/', $line, $matches)) {
+		        	$detected = true;
+		        	$gpsName = trim($matches[1]);
+		        }
+		    }
+		}
+	}
+	if ($detected) {
+		$status = 'background:lightgreen';
+		$toggle = 'class="input-group-text collapsed dropdown-toggle" role="button"';
+		$gps = 'Connected';
+	}
+	$data ='<div class="input-group mb-2">
+		<span '. $toggle .' data-bs-toggle="collapse" data-bs-target="#gps" aria-expanded="false" aria-controls="gps" style="width: 6.5rem;'. $status .'">GPS</span>
+		<input type="text" class="form-control" placeholder="'. $gps .'" readonly>
+	</div>';
+	$data .= ($detected) ? '<div id="gps" class="accordion-collapse collapse">
+			<div class="accordion-body">
+				<div class="input-group mb-1">
+				<span class="input-group-text">Device</span>
+				<span class="input-group-text">'. $gpsName .'</span>
+			</div>
+		</div>
+	</div>' : null;
+	return $data;
+}
 
 /* GPIO Status(es)*/
 function gpioStatus($ajax = 0) {

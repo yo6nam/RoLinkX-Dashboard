@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.4
+*   RoLinkX Dashboard v3.5
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 */
 
 if (isset($_GET['scan'])) echo scanWifi(1);
+if (isset($_GET['gpsStatus'])) echo aprsForm(1);
 
 $pinsArray = array(2, 3, 6, 7, 10, 18, 19);
 
@@ -620,6 +621,227 @@ function sa818Form() {
 	return $sa818Form;
 }
 
+/* APRS */
+function aprsForm($ajax = false) {
+	$cfgFiles = array(
+		'/opt/rolink/conf/rolink.conf' => 'RoLink',
+		'/etc/direwolf.conf' => 'DireWolf'
+		);
+	foreach ($cfgFiles as $path => $name) {
+		if (!is_file($path)) return '<div class="alert alert-danger text-center" role="alert">'. $name .' not installed!</div>';
+	}
+	$aprsForm = '<h4 class="mt-2 alert alert-primary fw-bold">APRS</h4>';
+	include __DIR__ .'/../includes/functions.php';
+	$data = json_decode(gpsd(), true);
+	if ($data['class'] == 'ERROR') {
+		$aprsForm .= '<div class="alert alert-danger text-center" role="alert">'. $data['message'] .'</div>';
+		return $aprsForm;
+	};
+
+	$svcDirewolf	= trim(shell_exec("systemctl is-active direwolf"));
+	$svcGPSD		= trim(shell_exec("systemctl is-active gpsd"));
+
+	$aprsForm .= '<div class="accordion mb-3" id="gpsdata">
+   <div class="accordion-item">
+      <h3 class="accordion-header" id="heading">
+         <button class="bg-'. (($svcDirewolf == 'active' && $svcGPSD == 'active') ? 'success' : 'danger') .' text-white accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#position" aria-expanded="true" aria-controls="position">Status</button>
+      </h3>
+      <div id="position" class="accordion-collapse collapse show" aria-labelledby="heading" data-bs-parent="#gpsdata">
+	<div id="dynamicData" class="accordion-body">';
+
+	$dynamicData = '<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 6.5rem;">Direwolf</span>
+			<input type="text" class="form-control '.(($svcDirewolf == 'active') ? 'text-success' : 'text-danger').'" value="'. $svcDirewolf .'" readonly>
+		</div>
+	<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 6.5rem;">GPSD</span>
+			<input type="text" class="form-control '.(($svcGPSD == 'active') ? 'text-success' : 'text-danger').'" value="'. $svcGPSD .'" readonly>
+	</div>';
+
+	if ($svcGPSD == 'active' && isset($data['tpv'][0])) {
+		$fixDescriptions = [0 => "unknown", 1 => "no fix", 2 => "2D", 3 => "3D"];
+    	$gpsData = $data['tpv'][0];
+    	if ($gpsData['mode'] == 0) {
+    		$aprsForm .= '<meta http-equiv="refresh" content="3"><div class="alert alert-warning text-center" role="alert">Status unknown. Reloading...</div>';
+    		return $aprsForm;
+    	}
+
+    	$fixMode		= $fixDescriptions[$gpsData['mode']];
+    	$coordinates	= number_format($gpsData['lat'], 5) .', '. number_format($gpsData['lon'], 5);
+    	$altitude		= (($gpsData['mode'] == 3) ? round($gpsData['alt']) . ' m': 'N/A');
+    	$speed			= (($gpsData['mode'] == 3) ? round($gpsData['speed'] * 3.6) . ' km/h' : 'N/A');
+		// Convert reported time to selected timezone (Config page)
+		$utcTime = new DateTime($gpsData['time'], new DateTimeZone("UTC"));
+		$timezone = trim(file_get_contents('/etc/timezone'));
+		$eetTimeZone = new DateTimeZone($timezone);
+		$utcTime->setTimezone($eetTimeZone);
+		$time = $utcTime->format("H:i:s d/m/Y");
+
+    	$dynamicData .= '<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 6.5rem;">Fix mode</span>
+			<input type="text" class="form-control" value="'. $fixMode .'" readonly>
+		</div>';
+    	$dynamicData .= ($gpsData['mode'] < 2) ? null : '<div class="input-group input-group-sm mb-1">
+  			<div class="input-group-prepend input-group-sm">
+    			<span class="input-group-text" style="width: 6.5rem;">Lat / Lon</span>
+  			</div>
+  			<input type="text" class="form-control" value="'. $coordinates .'" readonly>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 6.5rem;">Altitude</span>
+			<input type="text" class="form-control" value="'. $altitude .'" readonly>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 6.5rem;">Speed</span>
+			<input type="text" class="form-control" value="'. $speed .'" readonly>
+		</div>';
+    	$dynamicData .= '<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 6.5rem;">Time</span>
+			<input type="text" class="form-control" value="'. $time .'" readonly>
+		</div>';
+    	$dynamicData .= ($gpsData['mode'] < 2) ? null : '<div class="col-auto fill">
+			<div class="map" id="map"></div>
+		</div>
+		<script>
+			var LonLat = ol.proj.fromLonLat(['. $gpsData['lon'] .','. $gpsData['lat'] .'])
+			var stroke = new ol.style.Stroke({color: "red", width: 2});
+			var feature = new ol.Feature(new ol.geom.Point(LonLat))
+			var x = new ol.style.Style({
+				image: new ol.style.Icon({
+				anchor: [0.5, 1],
+				crossOrigin: "anonymous",
+				src: "assets/img/pin.png",
+				})
+			})
+			feature.setStyle(x)
+			var source = new ol.source.Vector({
+			    features: [feature]
+			});
+			var vectorLayer = new ol.layer.Vector({
+			  source: source
+			});
+			var map = new ol.Map({
+			  target: "map",
+			  layers: [
+			    new ol.layer.Tile({
+			      source: new ol.source.OSM()
+			    }),
+			    vectorLayer
+			  ],
+			  view: new ol.View({
+			    center: LonLat,
+			    zoom: 10
+			  })
+			});
+		</script>' . PHP_EOL;
+	}
+	/* Return updates only */
+	if ($ajax) return $dynamicData;
+	/* Read config*/
+	$aprsConfig = file('/etc/direwolf.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	$callsign = $comment = $server = '';
+	$report = 0;
+	foreach ($aprsConfig as $line) {
+		if (preg_match('/IGLOGIN (\S+)/', $line, $matches)) {
+			$callsign = $matches[1];
+		} elseif (preg_match('/IGSERVER (\S+)/', $line, $matches)) {
+			$server = $matches[1];
+		} elseif (preg_match('/TBEACON.*symbol="([^"]+)".*comment="([^"]+)"(?:.*commentcmd="([^"]*)")?/', $line, $matches)) {
+			$symbol = $matches[1];
+			$comment = $matches[2];
+			$temp = (isset($matches[3])) ? $matches[3] : '';
+		} elseif (preg_match('/KISSCOPY (\S+)/', $line, $matches)) {
+			$report = $matches[1];
+		}
+	}
+	$aprsForm .= $dynamicData;
+	$aprsForm .= '</div>
+      </div>
+   </div>
+</div>
+<div class="card mb-2">
+	<h4 class="card-header fs-5">Configuration</h4>
+	<div class="card-body">
+		<div class="input-group input-group-sm mb-1">
+			<span data-bs-toggle="tooltip" title="Manage the Direwolf service which handles sending GPS data to APRS-IS" class="input-group-text" style="width: 8rem;">Direwolf</span>
+			<select id="aprs_service" class="form-select">
+				<option value="0"'. (($svcDirewolf == 'inactive') ? ' selected' : null).'>Disabled</option>
+				<option value="1"'. (($svcDirewolf == 'active') ? ' selected' : null).'>Enabled</option>
+			</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span data-bs-toggle="tooltip" title="Use a valid callsign with a proper suffix. The password will be generated automatically" class="input-group-text" style="width: 8rem;">Callsign</span>
+			<input id="aprs_callsign" type="text" class="form-control" placeholder="YO1XYZ-15" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value="'. $callsign .'">
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span data-bs-toggle="tooltip" title="A short comment about the device or status" class="input-group-text" style="width: 8rem;">Comment</span>
+			<input id="aprs_comment" type="text" class="form-control" placeholder="Nod rolink" aria-label="Comment" aria-describedby="inputGroup-sizing-sm" value="'. $comment .'">
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span data-bs-toggle="tooltip" title="Choose whether to include the CPU temperature reading at the end of your comment above." class="input-group-text" style="width: 8rem;">CPU Temp</span>
+			<select id="aprs_temp" class="form-select">
+				<option value="0"'. ((!$temp) ? ' selected' : null) .'>No</option>
+				<option value="1"'. (($temp) ? ' selected' : null) .'>Yes</option>
+			</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 8rem;">Symbol</span>
+			<select id="aprs_symbol" class="form-select">';
+	$symbols = array(
+	    'rolink' => 'RoLink',
+	    '/[' => 'Person',
+	    '\b' => 'Bike',
+	    '/<' => 'Motorcycle',
+	    '/>' => 'Car',
+	    '/k' => 'Truck',
+	    '\k' => 'SUV',
+	    '\j' => 'Jeep',
+	    '/-' => 'House',
+	);
+	foreach ($symbols as $sym => $name) {
+	    $selected = ($symbol == $sym) ? 'selected' : '';
+	    $aprsForm .= "<option value=\"$sym\" $selected>$name</option>" . PHP_EOL;
+	}
+	$aprsForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span class="input-group-text" style="width: 8rem;">Server</span>
+			<select id="aprs_server" class="form-select">';
+	$servers = array(
+	    'Worldwide' => 'rotate.aprs2.net',
+	    'Europe / Africa' => 'euro.aprs2.net',
+	    'North America' => 'noam.aprs2.net',
+	    'South America' => 'soam.aprs2.net',
+	    'Asia' => 'asia.aprs2.net',
+	    'Oceania' => 'aunz.aprs2.net',
+	    'Romania' => 'aprs.439100.ro',
+	);
+	foreach ($servers as $label => $value) {
+	    $selected = ($server == $value) ? 'selected' : '';
+	    $aprsForm .= "<option value=\"$value\" $selected>$label</option>" . PHP_EOL;
+	}
+	$aprsForm .= '</select>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+			<span data-bs-toggle="tooltip" title="Specify if you want to notify the server (reflector) about your usage of GPS service." class="input-group-text" style="width: 8rem;">Report position</span>
+			<select id="aprs_report" class="form-select">
+				<option value="0"'. ((!$report) ? ' selected' : null) .'>No</option>
+				<option value="1"'. (($report) ? ' selected' : null) .'>Yes</option>
+			</select>
+		</div>
+		<div class="d-flex justify-content-center mx-2">
+			<button id="saveaprscfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
+		</div>
+	</div>
+</div>';
+	$aprsForm .= '<script>
+	var auto_refresh = setInterval( function () {
+		$("#dynamicData").load("includes/forms.php?gpsStatus");
+	}, 30000);
+	</script>'. PHP_EOL;
+	return $aprsForm;
+}
+
 /* Logs */
 function logsForm() {
 	$cfgFile = '/opt/rolink/conf/rolink.conf';
@@ -636,6 +858,7 @@ function logsForm() {
 							<option value="" disabled>-Log file-</option>
 							<option value="1" selected>Syslog</option>
 							<option value="2">RoLink</option>
+							<option value="3">Direwolf</option>
 						</select>
 					</div>
 				</div>
@@ -655,16 +878,18 @@ function ttyForm() {
 	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
 	$ttydService = '/lib/systemd/system/ttyd.service';
 	if (!is_file($ttydService)) return '<div class="alert alert-danger text-center" role="alert">ttyd package not installed</div>';
+	$host = parse_url($_SERVER['HTTP_HOST']);
+	$host = (empty($host['host']) ? $_SERVER['HTTP_HOST'] : $host['host']);
 	$ttyFrame = '<h4 class="mt-2 alert alert-primary fw-bold">Terminal</h4>';
 	$ttyFrame .= '<div class="row">
-	<div class="col-lg-12">
-		<div class="card bg-light shadow border-0">
-			<div class="card-body px-lg-3 py-lg-2">
-				<iframe style="height:65vh;overflow:auto" class="col-lg-12 col-md-12 col-sm-12 embed-responsive-item" src="http://'. $_SERVER['HTTP_HOST'] .':8080"></iframe>
-			</div>
-		</div>
-	</div>
-</div>';
+	    <div class="col-lg-12">
+	        <div class="card bg-light shadow border-0">
+	            <div class="card-body px-lg-3 py-lg-2">
+	                <iframe style="height:65vh;overflow:auto" class="col-lg-12 col-md-12 col-sm-12 embed-responsive-item" src="//' . $host . ':8080"></iframe>
+	            </div>
+	        </div>
+	    </div>
+	</div>';
 	return $ttyFrame;
 }
 
