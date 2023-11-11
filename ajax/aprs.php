@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.5
+*   RoLinkX Dashboard v3.51
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 include __DIR__ .'/../includes/functions.php';
 $cfgFile = '/etc/direwolf.conf';
 $newFile = '/tmp/direwolf.conf.tmp';
-$overlay = '';
+$overlay = $command = '';
 $msgOut = 'Configuration saved';
 
 $frmService		= filter_input(INPUT_POST, 'service', FILTER_SANITIZE_NUMBER_INT);
@@ -58,7 +58,12 @@ if ($cfgBeacon) {
 		$overlay = 'R';
 		$frmSymbol = 'V0';
 	}
-	$command = ($frmTemp == 1) ? 'commentcmd="/opt/rolink/scripts/aprs temp"' : null;
+	if ($frmTemp == 1) {
+		$command = 'commentcmd="/opt/rolink/scripts/aprs temp"';
+	} elseif ($frmTemp == 2) {
+		// We need to compensate the temperature for H2+ SoC
+		$command = 'commentcmd="/opt/rolink/scripts/aprs tempc"';
+	}
     $cfgData = preg_replace('/TBEACON.*symbol="([^"]*)".*overlay="([^"]*)".*comment="([^"]*)"(?:.*commentcmd="([^"]*)")?/',
     'TBEACON sendto=IG altitude=1 symbol="' . stripslashes($frmSymbol) . '" overlay="' . $overlay . '" comment="' . $frmComment . '" '. $command, $cfgData);
 }

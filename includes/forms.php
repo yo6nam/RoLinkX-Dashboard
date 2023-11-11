@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.5
+*   RoLinkX Dashboard v3.51
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,9 @@
 
 /*
 * Forms module
-* Note : Some code borrowed from https://github.com/RaspAP/raspap-webgui
+* Note : Some code borrowed from
+* https://github.com/RaspAP/raspap-webgui
+* https://gist.github.com/magicbug/bf27fc2c9908eb114b4a
 */
 
 if (isset($_GET['scan'])) echo scanWifi(1);
@@ -670,12 +672,25 @@ function aprsForm($ajax = false) {
     	$coordinates	= number_format($gpsData['lat'], 5) .', '. number_format($gpsData['lon'], 5);
     	$altitude		= (($gpsData['mode'] == 3) ? round($gpsData['alt']) . ' m': 'N/A');
     	$speed			= (($gpsData['mode'] == 3) ? round($gpsData['speed'] * 3.6) . ' km/h' : 'N/A');
+
 		// Convert reported time to selected timezone (Config page)
 		$utcTime = new DateTime($gpsData['time'], new DateTimeZone("UTC"));
 		$timezone = trim(file_get_contents('/etc/timezone'));
 		$eetTimeZone = new DateTimeZone($timezone);
 		$utcTime->setTimezone($eetTimeZone);
 		$time = $utcTime->format("H:i:s d/m/Y");
+
+		// Maidenhead Locator
+		$longitude = $gpsData['lon'] + 180;
+		$latitude = $gpsData['lat'] + 90;
+		$letterA = ord('A');
+		$numberZero = ord('0');
+		$locator = chr($letterA + intval($longitude / 20));
+		$locator .= chr($letterA + intval($latitude / 10));
+		$locator .= chr($numberZero + intval(($longitude % 20) / 2));
+		$locator .= chr($numberZero + intval($latitude % 10));
+		$locator .= chr($letterA + intval(($longitude - intval($longitude / 2) * 2) / (2 / 24)));
+		$locator .= chr($letterA + intval(($latitude - intval($latitude / 1) * 1 ) / (1 / 24)));
 
     	$dynamicData .= '<div class="input-group input-group-sm mb-1">
 			<span class="input-group-text" style="width: 6.5rem;">Fix mode</span>
@@ -686,6 +701,12 @@ function aprsForm($ajax = false) {
     			<span class="input-group-text" style="width: 6.5rem;">Lat / Lon</span>
   			</div>
   			<input type="text" class="form-control" value="'. $coordinates .'" readonly>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+  			<div class="input-group-prepend input-group-sm">
+    			<span class="input-group-text" style="width: 6.5rem;">Grid Square</span>
+  			</div>
+  			<input type="text" class="form-control" value="'. $locator .'" readonly>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 			<span class="input-group-text" style="width: 6.5rem;">Altitude</span>
@@ -749,7 +770,7 @@ function aprsForm($ajax = false) {
 		} elseif (preg_match('/TBEACON.*symbol="([^"]+)".*comment="([^"]+)"(?:.*commentcmd="([^"]*)")?/', $line, $matches)) {
 			$symbol = $matches[1];
 			$comment = $matches[2];
-			$temp = (isset($matches[3])) ? $matches[3] : '';
+			$temp = (isset($matches[3])) ? (preg_match('/tempc/', $matches[3]) ? 2 : 1) : 0;
 		} elseif (preg_match('/KISSCOPY (\S+)/', $line, $matches)) {
 			$report = $matches[1];
 		}
@@ -778,10 +799,11 @@ function aprsForm($ajax = false) {
 			<input id="aprs_comment" type="text" class="form-control" placeholder="Nod rolink" aria-label="Comment" aria-describedby="inputGroup-sizing-sm" value="'. $comment .'">
 		</div>
 		<div class="input-group input-group-sm mb-1">
-			<span data-bs-toggle="tooltip" title="Choose whether to include the CPU temperature reading at the end of your comment above." class="input-group-text" style="width: 8rem;">CPU Temp</span>
+			<span data-bs-toggle="tooltip" title="Choose whether to include the CPU temperature reading at the end of your comment. Selecting <b>Yes (compensated)</b> will add +38°C to the result, which is required for H2+ SoC-based Orange Pi Zero." class="input-group-text" style="width: 8rem;">CPU Temp</span>
 			<select id="aprs_temp" class="form-select">
-				<option value="0"'. ((!$temp) ? ' selected' : null) .'>No</option>
-				<option value="1"'. (($temp) ? ' selected' : null) .'>Yes</option>
+				<option value="0"'. (($temp == 0) ? ' selected' : null) .'>No</option>
+				<option value="1"'. (($temp == 1) ? ' selected' : null) .'>Yes</option>
+				<option value="2"'. (($temp == 2) ? ' selected' : null) .'>Yes (compensated)</option>
 			</select>
 		</div>
 		<div class="input-group input-group-sm mb-1">
