@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v3.5
+ *   RoLinkX Dashboard v3.52
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -161,6 +161,7 @@ $(document).ready(function () {
         rgr: $('#svx_rgr').val(),
         rxp: $('#svx_rxp').val(),
         txp: $('#svx_txp').val(),
+        dtg: $('#svx_dtg').val(),
         mtg: $('#svx_mtg').val(),
         tgt: $('#svx_tgt').val(),
         sqd: $('#svx_sqd').val(),
@@ -236,6 +237,9 @@ $(document).ready(function () {
             }
             if (typeof profile.connectionStatus !== 'undefined') {
             	$('#svx_acs').val(profile.connectionStatus)
+            }
+            if (typeof profile.connectionStatus !== 'undefined') {
+            	$('#svx_dtg').val(profile.defaultTg)
             }
             if (autoConnect === 'true') {
 				$('#sysmsg').showNotice(

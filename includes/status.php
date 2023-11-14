@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.5
+*   RoLinkX Dashboard v3.52
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -433,7 +433,7 @@ function getFreeSpace() {
 /* Get kernel & release version */
 function getKernel() {
 	preg_match('/VERSION_CODENAME=(\S+)/', file_get_contents('/etc/os-release'), $reply);
-	$kernel = str_replace('-sunxi', '', posix_uname()['release']);
+	$kernel = str_replace(['-sunxi', '-current'], '', posix_uname()['release']);
 	return '<div class="input-group mb-2">
   		<span class="input-group-text" style="width: 6.5rem;">Kernel</span>
   		<input type="text" class="form-control" placeholder="'. $kernel .' ('. $reply[1] .')" readonly>

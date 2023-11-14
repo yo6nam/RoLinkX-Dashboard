@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.4
+*   RoLinkX Dashboard v3.52
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,7 @@ $frmBitrate		= (empty($_POST['cbr'])) ? '20000' : filter_input(INPUT_POST, 'cbr'
 $frmRogerBeep	= (empty($_POST['rgr'])) ? '0' : filter_input(INPUT_POST, 'rgr', FILTER_SANITIZE_NUMBER_INT);
 $frmRxGPIO		= (empty($_POST['rxp'])) ? 'gpio10' : filter_input(INPUT_POST, 'rxp', FILTER_SANITIZE_ADD_SLASHES);
 $frmTxGPIO		= (empty($_POST['txp'])) ? 'gpio7' : filter_input(INPUT_POST, 'txp', FILTER_SANITIZE_ADD_SLASHES);
+$frmDefaultTg	= (empty($_POST['dtg'])) ? '226' : trim(filter_input(INPUT_POST, 'dtg', FILTER_SANITIZE_NUMBER_INT));
 $frmMonitorTgs	= (empty($_POST['mtg'])) ? '226++' : filter_input(INPUT_POST, 'mtg', FILTER_SANITIZE_ADD_SLASHES);
 $frmTgTimeOut	= (empty($_POST['tgt'])) ? '30' : filter_input(INPUT_POST, 'tgt', FILTER_SANITIZE_NUMBER_INT);
 $frmACStatus	= (empty($_POST['acs'])) ? '0' : filter_input(INPUT_POST, 'acs', FILTER_SANITIZE_NUMBER_INT);
@@ -136,6 +137,9 @@ preg_match('/(RECONNECT_SECONDS=)(\d+)\n/', $oldCfg, $varReconnectSeconds);
 preg_match('/(FAN_START=)(\d+)/', $oldCfg, $varFanStart);
 // Since 1.7.99.88-2
 preg_match('/(#?)(MODULES=)(\S+)/', $oldCfg, $varModules);
+// Since 1.7.99.91-4
+preg_match('/(DEFAULT_TG=)(.+)/', $oldCfg, $varDefaultTg);
+$frmDefaultTg = (empty($frmDefaultTg)) ? '226' : $frmDefaultTg;
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -169,6 +173,8 @@ $reconnectSValue	= (isset($varReconnectSeconds[2])) ? $varReconnectSeconds[2] : 
 $fanStartValue		= (isset($varFanStart[2])) ? $varFanStart[2] : 0;
 // Since 1.7.99.88-2
 $modulesValue		= (isset($varModules[1]) && $varModules[1] == '#') ? 0 : 1;
+// Since 1.7.99.91-4
+$defaultTgValue		= (isset($varDefaultTg[2]) && !empty($varDefaultTg[2])) ? $varDefaultTg[2] : '226';
 
 /* Profile defaults */
 $profiles['reflector']	= $reflectorValue;
@@ -182,6 +188,7 @@ $profiles['shortIdent'] = $shortIdentValue;
 $profiles['longIdent']	= $longIdentValue;
 $profiles['rogerBeep']	= $rogerBeepValue;
 $profiles['connectionStatus'] = $acsValue;
+$profiles['defaultTg']	= $defaultTgValue;
 
 /* Convert config of new installs */
 if (preg_match('/svx\.ro/', $oldCfg)) {
@@ -305,6 +312,7 @@ $newVar[12]	= '${1}'. $frmMonitorTgs;
 if ($monitorTgsValue != $frmMonitorTgs) {
 	++$changes;
 }
+
 $oldVar[13]	= '/(TG_SELECT_TIMEOUT=)(\d+)/';
 $newVar[13]	= '${1}'. $frmTgTimeOut;
 if ($tgSelectTOValue != $frmTgTimeOut) {
@@ -376,6 +384,13 @@ $oldVar[25]	= '/(#?)(MODULES=)(\S+)/';
 $newVar[25]	= ($frmModules == '0' ? '#' : '') . '${2}${3}';
 if ($modulesValue != $frmModules) {
 	++$changes;
+}
+
+$oldVar[26]	= '/(DEFAULT_TG=)(.+)/';
+$newVar[26]	= '${1}'. $frmDefaultTg;
+if ($defaultTgValue != $frmDefaultTg) {
+	++$changes;
+	$profiles['defaultTg']	= $frmDefaultTg;
 }
 
 /* Configuration info sent to reflector ('type' only) */

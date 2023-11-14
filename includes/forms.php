@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.51
+*   RoLinkX Dashboard v3.52
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -246,6 +246,9 @@ function svxForm() {
 	/* Squelch delay */
 	preg_match('/(SQL_DELAY=)(\d+)/', $cfgFileData, $varSquelchDelay);
 	$sqlDelayValue = (isset($varSquelchDelay[2])) ? 'value='. $varSquelchDelay[2] : '';
+	/* Squelch delay */
+	preg_match('/(DEFAULT_TG=)(\d+)/', $cfgFileData, $varDefaultTg);
+	$defaultTgValue = (isset($varDefaultTg[2])) ? 'value='. $varDefaultTg[2] : '';
 	/* Monitor TGs*/
 	preg_match('/(MONITOR_TGS=)(.+)/', $cfgFileData, $varMonitorTgs);
 	$monitorTgsValue = (isset($varMonitorTgs[2])) ? 'value='. $varMonitorTgs[2] : '';
@@ -420,6 +423,10 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
 		  <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch delay" aria-describedby="inputGroup-sizing-sm" '. $sqlDelayValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">Default TG</span>
+		  <input id="svx_dtg" type="text" class="form-control" placeholder="226" aria-label="Default TG" aria-describedby="inputGroup-sizing-sm" '. $defaultTgValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Monitor TGs</span>
