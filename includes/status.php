@@ -92,25 +92,25 @@ function gpioStatus($ajax = 0) {
 
 /* Get IP(s) */
 function networking() {
-	$returnData = '';
-	exec('/usr/bin/ip addr show dev eth0 | /usr/bin/grep \'inet\' | /usr/bin/grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $lanData);
-	exec('/usr/bin/ip addr show dev wlan0 | /usr/bin/grep \'inet\' | /usr/bin/grep -oE "([0-9]{1,3}\.){3}[0-9]{1,3}" | head -n 1', $wlanData);
-	if (empty($lanData) && empty($wlanData)) return false;
-	$lanIp	= (isset($lanData[0]) && preg_match('/^169\.254/', $lanData[0]) === 0) ? $lanData[0] : '' ;
-	$wlanIp = (isset($wlanData[0]) && preg_match('/^169\.254/', $wlanData[0]) === 0) ? $wlanData[0] : '' ;
-	if (!empty($lanIp)) {
-		$returnData .= '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;">LAN IP</span>
-  		<input type="text" class="form-control" placeholder="'. $lanIp .'" readonly>
-	</div>'. PHP_EOL;
-	}
-	if (!empty($wlanIp)) {
-		$returnData .= '<div class="input-group mb-2">
-  		<span class="input-group-text" style="width: 6.5rem;">WLAN IP</span>
-  		<input type="text" class="form-control" placeholder="'. $wlanIp .'" readonly>
-	</div>';
-	}
-	return $returnData;
+    $interfaces = array(
+        'eth0' => 'LAN',
+        'wlan0' => 'WLAN',
+        'ppp0' => 'PPTP',
+        'usb0' => '4G/LTE'
+    );
+    $returnData = '';
+    foreach ($interfaces as $interface => $name) {
+        $data = [];
+        exec("/usr/bin/ip addr show dev $interface | /usr/bin/grep 'inet' | /usr/bin/grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1", $data);
+        $ip = (empty($data) || preg_match('/^169\.254/', $data[0]) !== 0) ? '' : $data[0];
+        if (!empty($ip)) {
+            $returnData .= '<div class="input-group mb-2">
+                <span class="input-group-text" style="width: 6.5rem;">' . $name . ' IP</span>
+                <input type="text" class="form-control" placeholder="' . $ip . '" readonly>
+            </div>';
+        }
+    }
+    return $returnData;
 }
 
 /* Detect SA818 port & return firmware */

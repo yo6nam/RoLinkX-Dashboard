@@ -53,6 +53,52 @@ window.addEventListener('DOMContentLoaded', (event) => {
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+// Refresh selective status data
+function cpuData() {
+	$.ajax({
+		type: 'GET',
+		dataType: 'json',
+		url: 'includes/status.php?cpuData',
+		success: function (data) {
+			$('#cpuLoad').attr('placeholder', data[0]).val('');
+			$('#cpuTemp').attr('placeholder', data[1]).val('');
+			if (data[2]) {
+				$('#cpuTemp').addClass(data[2]);
+			} else {
+				$('#cpuTemp').removeClass('bg-warning text-dark');
+			}
+			if (data[3]) {
+				$('#resvx').text('Restart RoLink');
+			} else {
+				$('#resvx').text('Start RoLink');
+			}
+		}
+	});
+}
+
+function gpioStatus() {
+	$.ajax({
+		type: 'GET',
+		dataType: 'json',
+		url: 'includes/status.php?gpio',
+	success: function (data) {
+	    $('#gpioRx')
+	        .attr('placeholder', data['rx'] === '0' ? 'RX Idle' : 'RX On')
+	        .val('')
+	        .css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
+	    $('#gpioTx')
+	        .attr('placeholder', data['tx'] === '0' ? 'TX Idle' : '')
+	        .val(data['tx'] === '0' ? '' : 'TX On')
+	        .css('background', data['tx'] === '0' ? 'none' : 'red')
+	    	.css('color', data['tx'] === '0' ? '' : 'white');
+	    $('#gpioFan')
+	        .attr('placeholder', data['fan'] === '0' ? 'Fan Off' : 'Fan On')
+	        .val('')
+	        .css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+		}
+	});
+}
+
 /*
  * jQuery stuff
  */

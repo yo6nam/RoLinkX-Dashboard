@@ -105,57 +105,14 @@ switch ($page) {
 	</div>
 	</div>' : null;
 	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
-	$ajax = ($config['cfgCpuStats'] == 'true') ? "<script>
-	cpuData();
-	gpioStatus();
-	function cpuData() {
-		$.ajax({
-			type: 'GET',
-			dataType: 'json',
-			url: 'includes/status.php?cpuData',
-			success: function (data) {
-				$('#cpuLoad').attr('placeholder', data[0]).val('');
-				$('#cpuTemp').attr('placeholder', data[1]).val('');
-				if (data[2]) {
-					$('#cpuTemp').addClass(data[2]);
-				} else {
-					$('#cpuTemp').removeClass('bg-warning text-dark');
-				}
-				if (data[3]) {
-					$('#resvx').text('Restart RoLink');
-				} else {
-					$('#resvx').text('Start RoLink');
-				}
-			}
-		});
-	}
-	function gpioStatus() {
-		$.ajax({
-			type: 'GET',
-			dataType: 'json',
-			url: 'includes/status.php?gpio',
-		success: function (data) {
-		    $('#gpioRx')
-		        .attr('placeholder', data['rx'] === '0' ? 'RX Idle' : 'RX On')
-		        .val('')
-		        .css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
-		    $('#gpioTx')
-		        .attr('placeholder', data['tx'] === '0' ? 'TX Idle' : '')
-		        .val(data['tx'] === '0' ? '' : 'TX On')
-		        .css('background', data['tx'] === '0' ? 'none' : 'red')
-		    	.css('color', data['tx'] === '0' ? '' : 'white');
-		    $('#gpioFan')
-		        .attr('placeholder', data['fan'] === '0' ? 'Fan Off' : 'Fan On')
-		        .val('')
-		        .css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
-			}
-		});
-	}
-	var auto_refresh = setInterval( function () {
-		cpuData()
-		gpioStatus()
-	}, 3000);
-	</script>" : null;
+	$ajax = ($config['cfgCpuStats'] == 'true') ? "$(document).ready(function () {
+		cpuData();
+		gpioStatus();
+		var auto_refresh = setInterval( function () {
+			cpuData()
+			gpioStatus()
+		}, 3000);
+	});" : null;
 }
 ?>
 <!DOCTYPE html>
@@ -245,6 +202,6 @@ switch ($page) {
         <script src="js/bootstrap.js"></script>
         <script src="js/select2.min.js"></script>
         <script src="js/scripts.js?_=<?php echo cacheBuster('js/scripts.js'); ?>"></script>
-		<?php echo (isset($ajax)) ? $ajax : null; ?>
+		<?php echo (isset($ajax)) ? '<script>'. $ajax .'</script>'. PHP_EOL : null; ?>
     </body>
 </html>
