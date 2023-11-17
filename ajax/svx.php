@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.52
+*   RoLinkX Dashboard v3.53
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -73,6 +73,7 @@ $frmSqlDelay	= (empty($_POST['sqd'])) ? '500' : filter_input(INPUT_POST, 'sqd', 
 $frmDelProfile	= (empty($_POST['prd'])) ? '' : filter_input(INPUT_POST, 'prd', FILTER_SANITIZE_ADD_SLASHES);
 $frmFanStart	= (empty($_POST['fan'])) ? '0' : filter_input(INPUT_POST, 'fan', FILTER_SANITIZE_NUMBER_INT);
 $frmModules  	= (empty($_POST['mod'])) ? '0' : filter_input(INPUT_POST, 'mod', FILTER_SANITIZE_NUMBER_INT);
+$frmTxDelay  	= (empty($_POST['txd'])) ? '875' : filter_input(INPUT_POST, 'txd', FILTER_SANITIZE_NUMBER_INT);
 
 /* Process DTMF commands */
 if (isset($_POST['dtmfCommand'])) {
@@ -140,6 +141,7 @@ preg_match('/(#?)(MODULES=)(\S+)/', $oldCfg, $varModules);
 // Since 1.7.99.91-4
 preg_match('/(DEFAULT_TG=)(.+)/', $oldCfg, $varDefaultTg);
 $frmDefaultTg = (empty($frmDefaultTg)) ? '226' : $frmDefaultTg;
+preg_match('/(TX_DELAY=)(\d+)/', $oldCfg, $varTxDelay);
 
 // Safe category values
 $reflectorValue		= (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -163,6 +165,7 @@ $monitorTgsValue	= (isset($varMonitorTgs[2])) ? $varMonitorTgs[2] : '';
 $tgSelectTOValue	= (isset($varTgSelTimeOut[2])) ? $varTgSelTimeOut[2] : '';
 $txTimeOutValue		= (isset($varTxTimeout[2])) ? $varTxTimeout[2] : '';
 $sqlDelayValue		= (isset($varSqlDelay[2])) ? $varSqlDelay[2] : '';
+$txDelayValue		= (isset($varTxDelay[2])) ? $varTxDelay[2] : '';
 $acsValue			= (isset($announceConnectionStatus[2])) ? $announceConnectionStatus[2] : null;
 $preEmphasisValue	= (isset($varPreEmphasis[2])) ? $varPreEmphasis[2] : 0;
 $deEmphasisValue	= (isset($varDeEmphasis[2])) ? $varDeEmphasis[2] : 0;
@@ -391,6 +394,12 @@ $newVar[26]	= '${1}'. $frmDefaultTg;
 if ($defaultTgValue != $frmDefaultTg) {
 	++$changes;
 	$profiles['defaultTg']	= $frmDefaultTg;
+}
+
+$oldVar[27]	= '/(TX_DELAY=)(\d+)/';
+$newVar[27]	= '${1}'. $frmTxDelay;
+if ($txDelayValue != $frmTxDelay) {
+	++$changes;
 }
 
 /* Configuration info sent to reflector ('type' only) */

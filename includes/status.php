@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.52
+*   RoLinkX Dashboard v3.53
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -68,9 +68,21 @@ function getGPSDongle() {
 
 /* GPIO Status(es)*/
 function gpioStatus($ajax = 0) {
+	$rxGPIO = 'gpio10';
+	$txGPIO = 'gpio7';
+	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	if (is_file($cfgFile)) {
+		$data = file_get_contents($cfgFile);
+		preg_match('/(GPIO_SQL_PIN=)(\S+)/', $data, $rx);
+		preg_match('/(PTT_PIN=)(\S+)/', $data, $tx);
+		// Check if the PCB board is supported
+		if ($rx[2] != $rxGPIO || $tx[2] != $txGPIO) return;
+	} else {
+		return;
+	}
 	$gpioPaths = array(
-	    'rx' => '/sys/class/gpio/gpio10/value',
-	    'tx' => '/sys/class/gpio/gpio7/value',
+	    'rx' => '/sys/class/gpio/'. $rxGPIO .'/value',
+	    'tx' => '/sys/class/gpio/'. $txGPIO .'/value',
 	    'fan' => '/sys/class/gpio/gpio6/value'
 	);
 	$data = array();
@@ -95,13 +107,13 @@ function networking() {
     $interfaces = array(
         'eth0' => 'LAN',
         'wlan0' => 'WLAN',
-        'ppp0' => 'PPTP',
-        'usb0' => '4G/LTE'
+        'usb0' => '4G/LTE',
+        'ppp0' => 'PPTP'
     );
     $returnData = '';
     foreach ($interfaces as $interface => $name) {
         $data = [];
-        exec("/usr/bin/ip addr show dev $interface | /usr/bin/grep 'inet' | /usr/bin/grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1", $data);
+        exec("/usr/bin/ip addr show dev $interface 2>/dev/null| /usr/bin/grep 'inet' | /usr/bin/grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1", $data);
         $ip = (empty($data) || preg_match('/^169\.254/', $data[0]) !== 0) ? '' : $data[0];
         if (!empty($ip)) {
             $returnData .= '<div class="input-group mb-2">

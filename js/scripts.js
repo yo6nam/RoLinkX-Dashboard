@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v3.52
+ *   RoLinkX Dashboard v3.53
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -189,38 +189,17 @@ $(document).ready(function () {
   // SVXLink config
   $('#savesvxcfg').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
+    var formData = {};
+    $('[id^="svx_"]').each(function () {
+        var id = $(this).attr('id');
+        var paramName = id.substring(4);
+        formData[paramName] = $(this).val();
+    });
+    console.log(formData);
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
-      data: {
-        prn: $('#svx_prn').val(),
-        ref: $('#svx_ref').val(),
-        prt: $('#svx_prt').val(),
-        cal: $('#svx_cal').val(),
-        key: $('#svx_key').val(),
-        clb: $('#svx_clb').val(),
-        vop: $('#svx_vop').val(),
-        sid: $('#svx_sid').val(),
-        lid: $('#svx_lid').val(),
-        tip: $('#svx_tip').val(),
-        cbr: $('#svx_cbr').val(),
-        rgr: $('#svx_rgr').val(),
-        rxp: $('#svx_rxp').val(),
-        txp: $('#svx_txp').val(),
-        dtg: $('#svx_dtg').val(),
-        mtg: $('#svx_mtg').val(),
-        tgt: $('#svx_tgt').val(),
-        sqd: $('#svx_sqd').val(),
-        txt: $('#svx_txt').val(),
-        acs: $('#svx_acs').val(),
-        rxe: $('#svx_rxe').val(),
-        txe: $('#svx_txe').val(),
-        mag: $('#svx_mag').val(),
-        res: $('#svx_res').val(),
-        lim: $('#svx_lim').val(),
-        fan: $('#svx_fan').val(),
-        mod: $('#svx_mod').val()
-      },
+      data: formData,
       success: function (data) {
         if (data) {
           $('#savesvxcfg').prop('disabled', false).fadeTo('fast', 1);

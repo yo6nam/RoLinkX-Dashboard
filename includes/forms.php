@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.52
+*   RoLinkX Dashboard v3.53
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -290,6 +290,9 @@ function svxForm() {
 	/* Modules */
 	preg_match('/(#?)(MODULES=)(\S+)/', $cfgFileData, $varModules);
 	$modulesValue	= (isset($varModules[1])) ? $varModules[1] : '';
+	/* Tx Delay */
+	preg_match('/(TX_DELAY=)(\d+)/', $cfgFileData, $varTxDelay);
+	$txDelayValue	= (isset($varTxDelay[2])) ? 'value='. $varTxDelay[2] : '';
 
 	/* Profiles section */
 	$profilesPath	= dirname(__FILE__) .'/../profiles/';
@@ -423,6 +426,10 @@ function svxForm() {
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
 		  <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch delay" aria-describedby="inputGroup-sizing-sm" '. $sqlDelayValue .'>
+		</div>
+		<div class="input-group input-group-sm mb-1">
+		  <span class="input-group-text" style="width: 8rem;">TX delay</span>
+		  <input id="svx_txd" type="text" class="form-control" placeholder="875" aria-label="TX delay" aria-describedby="inputGroup-sizing-sm" '. $txDelayValue .'>
 		</div>
 		<div class="input-group input-group-sm mb-1">
 		  <span class="input-group-text" style="width: 8rem;">Default TG</span>
