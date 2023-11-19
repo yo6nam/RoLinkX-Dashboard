@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.53
+*   RoLinkX Dashboard v3.55
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -34,24 +34,22 @@ $pinsArray = array(2, 3, 6, 7, 10, 18, 19);
 function getSSIDs() {
 	$storedSSID = null;
 	$storedPwds = null;
-	preg_match_all('/ssid="(.*)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultSSID);
-	if (empty($resultSSID)) return false;
-
-	foreach ($resultSSID[1] as $key => $ap) {
-		if ($key <= 3) {
-			  $storedSSID[] = $ap;
-		  }
-	}
-
-	preg_match_all('/psk="(\S+)"/', file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf'), $resultPWDS);
-	if (empty($resultPWDS)) return false;
-
-	foreach ($resultPWDS[1] as $key => $pw) {
-		if ($key <= 3) {
-			  $storedPwds[] = $pw;
-		  }
-	}
-	return array($storedSSID, $storedPwds);
+	$wpaBuffer = file_get_contents('/etc/wpa_supplicant/wpa_supplicant.conf');
+    // Match both plain text passwords and hashed passphrases
+    preg_match_all('/ssid="(.*)"/', $wpaBuffer, $resultSSID);
+    preg_match_all('/psk=(".*?"|\S+)/', $wpaBuffer, $resultPWDS);
+    if (empty($resultSSID) || empty($resultPWDS)) return false;
+    foreach ($resultSSID[1] as $key => $ap) {
+        if ($key <= 3) {
+            $storedSSID[] = $ap;
+        }
+    }
+    foreach ($resultPWDS[1] as $key => $pw) {
+        if ($key <= 3) {
+            $storedPwds[] = trim($pw, '"');
+        }
+    }
+    return [$storedSSID, $storedPwds];
 }
 
 function scanWifi($ext = 0) {
@@ -167,20 +165,20 @@ function wifiForm() {
 		<div class="card-header">Add / Edit networks</div>
 		<div class="card-body">'. PHP_EOL;
 	for ($i = 0; $i < 4; $i++) {
-		$active = (isset($con[0])) ? $con[0] : null;
-		$a = (isset($ssidList[0][$i]) && $active === $ssidList[0][$i]) ? true : false;
-		$n = (empty($ssidList[0][$i])) ? 'empty' : $ssidList[0][$i] .' (saved)';
-		$p = (empty($ssidList[1][$i])) ? 'empty' : preg_replace('/(?!^.?).(?!.{0}$)/', '*',  $ssidList[1][$i]);
-		$c = ($i + 1);
-		$b = ($a) ? ' bg-success text-white' : null;
-		$s = ($a) ? ' (connected)' : null;
-		$wifiForm .= '<h4 class="d-flex justify-content-center badge badge-light fs-6'. $b .'"><i class="icon-wifi">&nbsp;</i>Network '. $c . $s .'</h4><div class="input-group input-group-sm mb-2">
+		$connected = (isset($con[0])) ? $con[0] : null;
+		$active = (isset($ssidList[0][$i]) && $connected === $ssidList[0][$i]) ? true : false;
+		$networkName = (empty($ssidList[0][$i])) ? 'empty' : $ssidList[0][$i] .' (saved)';
+		$networkKey = (empty($ssidList[1][$i])) ? 'empty' : '********';
+		$count = ($i + 1);
+		$background = ($active) ? ' bg-success text-white' : null;
+		$status = ($active) ? ' (connected)' : null;
+		$wifiForm .= '<h4 class="d-flex justify-content-center badge badge-light fs-6'. $background .'"><i class="icon-wifi">&nbsp;</i>Network '. $count . $status .'</h4><div class="input-group input-group-sm mb-2">
 		  <span class="input-group-text" style="width: 7rem;">Name (SSID)</span>
-		  <input id="wlan_network_'. $c .'" type="text" class="form-control" placeholder="'. $n .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+		  <input id="wlan_network_'. $count .'" type="text" class="form-control" placeholder="'. $networkName .'" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
 		</div>
 		<div class="input-group input-group-sm mb-4">
 		  <span class="input-group-text" style="width: 7rem;">Key (Password)</span>
-		  <input id="wlan_authkey_'. $c .'" type="text" class="form-control" placeholder="'. $p .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
+		  <input id="wlan_authkey_'. $count .'" type="text" class="form-control" placeholder="'. $networkKey .'" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
 		</div>'. PHP_EOL;
 	}
 	$wifiForm .= '<div class="row justify-content-center m-1">

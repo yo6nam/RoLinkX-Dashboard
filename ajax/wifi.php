@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v2.98
+*   RoLinkX Dashboard v3.55
 *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -38,25 +38,31 @@ $wnD = (isset($_POST['wn4'])) ? filter_input(INPUT_POST, 'wn4', FILTER_SANITIZE_
 $wkD = (isset($_POST['wk4'])) ? filter_input(INPUT_POST, 'wk4', FILTER_SANITIZE_ADD_SLASHES) : '';
 
 function getSSIDs() {
-	global $wpaFile;
-	$storedSSID = null;
-	$storedPwds = null;
-	$wpaBuffer  = file_get_contents($wpaFile);
-	preg_match_all('/ssid="(.*)"/', $wpaBuffer, $resultSSID);
-	if (empty($resultSSID)) return false;
-	foreach ($resultSSID[1] as $key => $ap) {
-		if ($key <= 3) {
-  			$storedSSID[] = $ap;
-  		}
-	}
-	preg_match_all('/psk="(\S+)"/', $wpaBuffer, $resultPWDS);
-	if (empty($resultPWDS)) return false;
-	foreach ($resultPWDS[1] as $key => $pw) {
-		if ($key <= 3) {
-  			$storedPwds[] = $pw;
-  		}
-	}
-	return array($storedSSID, $storedPwds);
+    global $wpaFile;
+    $storedSSID = null;
+    $storedPwds = null;
+    $wpaBuffer  = file_get_contents($wpaFile);
+    // Match both plain text passwords and hashed passphrases
+    preg_match_all('/ssid="(.*)"/', $wpaBuffer, $resultSSID);
+    preg_match_all('/psk=(".*?"|\S+)/', $wpaBuffer, $resultPWDS);
+    if (empty($resultSSID) || empty($resultPWDS)) return false;
+    foreach ($resultSSID[1] as $key => $ap) {
+        if ($key <= 3) {
+            $storedSSID[] = $ap;
+        }
+    }
+    foreach ($resultPWDS[1] as $key => $pw) {
+        if ($key <= 3) {
+            // Remove double quotes if present
+            $storedPwds[] = trim($pw, '"');
+        }
+    }
+    return [$storedSSID, $storedPwds];
+}
+
+function wpa_passphrase($ssid, $passphrase) {
+    $bin = hash_pbkdf2('sha1', $passphrase, $ssid, 4096, 32, true);
+    return bin2hex($bin);
 }
 
 $ssidList	= getSSIDs();
@@ -119,7 +125,7 @@ country=RO'. PHP_EOL;
 if (!empty($networkA)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkA) .'
-        psk='. json_encode($authKeyA) .'
+        psk='. ((strlen($authKeyA) < 32) ? wpa_passphrase($networkA, $authKeyA) : $authKeyA) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
 }'. PHP_EOL;
@@ -128,7 +134,7 @@ if (!empty($networkA)) {
 if (!empty($networkB)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkB) .'
-        psk='. json_encode($authKeyB) .'
+        psk='. ((strlen($authKeyB) < 32) ? wpa_passphrase($networkB, $authKeyB) : $authKeyB) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
 }'. PHP_EOL;
@@ -137,7 +143,7 @@ if (!empty($networkB)) {
 if (!empty($networkC)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkC) .'
-        psk='. json_encode($authKeyC) .'
+        psk='. ((strlen($authKeyC) < 32) ? wpa_passphrase($networkC, $authKeyC) : $authKeyC) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
 }'. PHP_EOL;
@@ -146,12 +152,11 @@ if (!empty($networkC)) {
 if (!empty($networkD)) {
 	$wpaData .= 'network={
         ssid='. json_encode($networkD) .'
-        psk='. json_encode($authKeyD) .'
+        psk='. ((strlen($authKeyD) < 32) ? wpa_passphrase($networkD, $authKeyD) : $authKeyD) .'
         key_mgmt=WPA-PSK
         scan_ssid=1
 }'. PHP_EOL;
 }
-
 if ($weHaveData) {
 	toggleFS(true);
 	file_put_contents($wpaTemp, $wpaData);
