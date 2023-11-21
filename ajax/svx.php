@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.53
+*   RoLinkX Dashboard v3.55
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -367,7 +367,7 @@ if ($masterGainValue != (int)$frmMasterGain) {
 
 $oldVar[22]	= '/(LIMITER_THRESH=)(-?\d+)/';
 $newVar[22]	= '${1}'. $frmLimiter;
-if ($limiterValue != (int)$frmLimiter) {
+if ($limiterValue != (float)$frmLimiter) {
 	++$changes;
 }
 
