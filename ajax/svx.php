@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.55
+*   RoLinkX Dashboard v3.6
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -361,7 +361,7 @@ if ($preEmphasisValue != (int)$frmPreEmphasis) {
 
 $oldVar[21]	= '/(MASTER_GAIN=)(-?\d+(\.\d{1,2})?)/';
 $newVar[21]	= '${1}'. $frmMasterGain;
-if ($masterGainValue != (int)$frmMasterGain) {
+if ($masterGainValue != (float)$frmMasterGain) {
 	++$changes;
 }
 

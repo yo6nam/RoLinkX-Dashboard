@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 /*
- *   RoLinkX Dashboard v3.53
+ *   RoLinkX Dashboard v3.6
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -104,6 +104,65 @@ function gpioStatus() {
  */
 
 $(document).ready(function () {
+  // Events (Talker & GPIO)
+  if (events && window.location.search === '') {
+    var url = window.location.href + "includes/events.php";
+    var source = new EventSource(url);
+    function checkEs() {
+      if (source.readyState === EventSource.CLOSED || source.readyState === EventSource.CONNECTING) {
+        source = new EventSource(url);
+        source.onmessage = function(event) {
+          var data = JSON.parse(event.data);
+          handleEventData(data);
+        };
+      }
+    }
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        checkEs();
+      }
+    });
+    source.onerror = function(event) {
+      if (event.target.readyState === EventSource.CLOSED) {
+        checkEs();
+      }
+    };
+    source.onmessage = function(event) {
+      var data = JSON.parse(event.data);
+      handleEventData(data);
+    };
+    function handleEventData(data) {
+      $('#gpioRx')
+        .attr('placeholder', data['rx'] === '0' ? 'RX Idle' : 'RX On')
+        .val('')
+        .css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
+      $('#gpioTx')
+        .attr('placeholder', data['tx'] === '0' ? 'TX Idle' : '')
+        .val(data['tx'] === '0' ? '' : 'TX On')
+        .css('background', data['tx'] === '0' ? 'none' : 'red')
+        .css('color', data['tx'] === '0' ? '' : 'white');
+      $('#gpioFan')
+        .attr('placeholder', data['fan'] === '0' ? 'Fan Off' : 'Fan On')
+        .val('')
+        .css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+      if (data['ta'] === '1') {
+        $('#onair').html(`<i class="icon-record_voice_over talker-active"></i>${data['tn']}`);
+        $('#onair').removeClass('badge-secondary').addClass('badge-danger').css('opacity', '');
+      } else if (data['ta'] === '0') {
+        var ts = '';
+        if (data['s'] !== 'undefined') {
+          date = new Date(data['s'] * 1000);
+          ts = date.toLocaleTimeString(undefined, { hour12: false });
+        }
+        $('#onair').html(data['tn'] + " (" + ts + ")");
+        $('#onair').removeClass('badge-danger').addClass('badge-secondary').css('opacity', '35%');
+      } else {
+        $('#onair').html('');
+        $('#onair').removeClass('badge-danger badge-secondary').css('opacity', '');
+      }
+    }
+  }
+
   $('[data-bs-toggle="tooltip"').on("click", function () {
     $(this).tooltip("hide");
   });
@@ -195,7 +254,6 @@ $(document).ready(function () {
         var paramName = id.substring(4);
         formData[paramName] = $(this).val();
     });
-    console.log(formData);
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
@@ -811,7 +869,6 @@ $(document).ready(function () {
       var volumeSlider = $(this).attr('id');
       var newValue = $(this).val();
       if (newValue !== prevValue) {
-        console.log(volumeSlider + ' / ' + newValue);
         $('#' + volumeSlider + 'cv').html('(' + $(this).val() + '%)');
         $.ajax({
           type: 'POST',

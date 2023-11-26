@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.55
+*   RoLinkX Dashboard v3.6
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -645,7 +645,6 @@ function aprsForm($ajax = false) {
 		if (!is_file($path)) return '<div class="alert alert-danger text-center" role="alert">'. $name .' not installed!</div>';
 	}
 	$aprsForm = '<h4 class="mt-2 alert alert-primary fw-bold">APRS</h4>';
-	include __DIR__ .'/../includes/functions.php';
 	$data = json_decode(gpsd(), true);
 	if ($data['class'] == 'ERROR') {
 		$aprsForm .= '<div class="alert alert-danger text-center" role="alert">'. $data['message'] .'</div>';
@@ -929,17 +928,13 @@ function ttyForm() {
 
 /* Config */
 function cfgForm() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	$verFile = '/opt/rolink/version';
+	global $pinsArray, $cfgFile, $config;
 	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
-	global $pinsArray;
-	include __DIR__ .'/../includes/functions.php';
 	$ttysArray = array(1, 2, 3);
 	$ttyPortDetected = $sa818Firmware = null;
-	if (is_file($verFile)) {
-		$localData = file_get_contents($verFile);
-		$localVersion = explode('|', $localData);
-		if ((int)$localVersion[0] >= 20230126){
+	$version = version();
+	if ($version) {
+		if ($version['date'] >= 20230126){
 			$sysReply = shell_exec('/usr/bin/sudo /opt/rolink/scripts/init sa_detect');
 			if (!empty($sysReply)) {
 				$sysData = explode('|', $sysReply);
@@ -1071,10 +1066,10 @@ function cfgForm() {
 </div>
 	<div class="d-flex justify-content-center mt-4">
 		<button id="cfgSave" type="button" class="btn btn-danger btn-lg mx-2">Save</button>';
-		if (is_file($verFile)) {
+		if ($version) {
 			$isOnline = checkdnsrr('google.com');
 			// Check if RoLink version is capable of updates and if we're connected to the internet
-			if ((int)$localVersion[0] > '20211204' && $isOnline) {
+			if ($version['date'] > 20211204 && $isOnline) {
 				$configData .= '<button id="updateDash" type="button" class="btn btn-primary btn-lg mx-2">Dashboard update</button>';
 				$configData .= '<button id="updateRoLink" type="button" class="btn btn-warning btn-lg mx-2">RoLink update</button>';
 			}

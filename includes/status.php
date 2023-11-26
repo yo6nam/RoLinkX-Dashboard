@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.55
+*   RoLinkX Dashboard v3.6
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -331,7 +331,7 @@ function getPublicIP() {
 /* Get SVXLink status */
 function getSVXLinkStatus($ext = 0) {
 	exec("/usr/bin/pgrep svxlink", $reply);
-	if ($ext == 1) return ((empty($reply)) ? false : true);
+	if ($ext == 1) return ((empty($reply)) ? false : $reply[0]);
 	$config = include __DIR__ .'/../config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
@@ -379,27 +379,45 @@ function getReflector($ext = 0) {
 
 /* Get Reflector connected nodes */
 function getRefNodes() {
-	if (!getSVXLinkStatus(1)) return false;
-	$station = '<div id="refStations" class="accordion-collapse collapse">
-		<div class="accordion-body">
-			<div class="row">'. PHP_EOL;
-	preg_match_all('/Connected nodes:\s(.*)/', file_get_contents('/tmp/svxlink.log'), $connectedNodes, PREG_SET_ORDER);
-	if (empty($connectedNodes)) return false;
-	$lastMatch = end($connectedNodes)[1];
-	$nodes = explode(', ', $lastMatch);
-	if (is_array($nodes)) {
-		natsort($nodes);
-		foreach ($nodes as $node) {
-			$typeBackground = 'danger';
-			if (strpos($node, '-P') !== false) $typeBackground = 'primary';
-			if (strpos($node, '-M') !== false) $typeBackground = 'warning';
-			$station .= '<div class="col col-lg-2 badge badge-'. $typeBackground .' m-1" style="font-weight: 400;">'. $node .'</div>'. PHP_EOL;
-		}
-	}
-	$station .= '</div>
-	</div>
-	</div>'. PHP_EOL;
-	return $station;
+    $status = getSVXLinkStatus(1);
+    if (!$status) return false;
+    $logFilePath = '/tmp/svxlink.log';
+    $baseCacheFileName = '/tmp/nodes_cache_' . $status . '.txt';
+    if (file_exists($baseCacheFileName)) {
+        return file_get_contents($baseCacheFileName);
+    }
+    // Delete other cache files
+    foreach (glob('/tmp/nodes_cache_*.txt') as $file) {
+        if ($file !== $baseCacheFileName) {
+            unlink($file);
+        }
+    }
+    $logLines = file($logFilePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if (empty($logLines)) {
+        return false;
+    }
+    $stationHTML = '<div id="refStations" class="accordion-collapse collapse">
+        <div class="accordion-body">
+            <div class="row">' . PHP_EOL;
+    foreach ($logLines as $line) {
+        if (preg_match('/Connected nodes:\s(.*)/', $line, $matches)) {
+            $nodes = explode(', ', $matches[1]);
+            natsort($nodes);
+            foreach ($nodes as $node) {
+                $typeBackground = 'danger';
+                if (strpos($node, '-P') !== false) $typeBackground = 'primary';
+                if (strpos($node, '-M') !== false) $typeBackground = 'warning';
+
+                $stationHTML .= '<div class="col col-lg-2 badge badge-' . $typeBackground . ' m-1" style="font-weight: 400;">' . $node . '</div>' . PHP_EOL;
+            }
+            break;
+        }
+    }
+    $stationHTML .= '</div>
+        </div>
+        </div>' . PHP_EOL;
+    file_put_contents($baseCacheFileName, $stationHTML);
+    return $stationHTML;
 }
 
 /* Get SVX Callsign	*/

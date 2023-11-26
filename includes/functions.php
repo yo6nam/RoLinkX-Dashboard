@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.5
+*   RoLinkX Dashboard v3.6
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,10 @@
 
 // Static variables
 $config = include __DIR__ .'/../config.php';
+$cfgFile = '/opt/rolink/conf/rolink.conf';
 $cfgRefFile = '/opt/rolink/conf/rolink.json';
 $tmpRefFile = '/tmp/rolink.json.tmp';
+$verFile = '/opt/rolink/version';
 $cfgRefData = json_decode(file_get_contents($cfgRefFile), true);
 
 // Switch file system status (ReadWrite <-> ReadOnly)
@@ -81,4 +83,23 @@ function gpsd() {
 	    $response = '{"class":"ERROR","message":"no response from GPS daemon"}';
 	}
 	return $response;
+}
+
+/* Handle JS/CSS changes */
+function cacheBuster($target) {
+	return sprintf("%u", crc32(file_get_contents($target)));
+}
+
+/* Return version & date */
+function version() {
+    global $verFile;
+    $v = [];
+    $localData = file_get_contents($verFile);
+    if ($localData === false) {
+        return false;
+    }
+    $data = explode('|', $localData);
+    $v['date'] = (int)$data[0];
+    $v['number'] = $data[1];
+    return $v;
 }

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.55
+*   RoLinkX Dashboard v3.6
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -33,9 +33,16 @@ if (is_file(__DIR__ . '/assets/pwd')){
 $pages = array("wifi", "svx", "sa", "log", "aprs", "tty", "cfg");
 $page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
-// Handle JS/CSS changes
-function cacheBuster($target) {
-	return sprintf("%u", crc32(file_get_contents($target)));
+// Common functions
+include __DIR__ .'/includes/functions.php';
+
+// Events
+$version = version();
+$events = 0;
+$gpioAjax = 'gpioStatus();';
+if ($version && $version['date'] > 20231120) {
+	$events = 1;
+	$gpioAjax = '';
 }
 
 // Detect mobiles
@@ -49,7 +56,7 @@ if (in_array($page, $pages)) {
 	include __DIR__ . '/includes/status.php';
 }
 
-$rolink = (is_file('/opt/rolink/conf/rolink.conf')) ? true : false;
+$rolink = (is_file($cfgFile)) ? true : false;
 
 switch ($page) {
   case "wifi":
@@ -77,7 +84,7 @@ switch ($page) {
     break;
   default:
 	$svxAction = (getSVXLinkStatus(1)) ? 'Restart' : 'Start';
-	$htmlOutput = '<h4 class="m-2 mt-2 alert alert-success fw-bold">Status</h4>
+	$htmlOutput = '<h4 class="m-2 mt-2 alert alert-success fw-bold talker">'. ($detect->isMobile() ? '&nbsp;' : 'Status') .'<span id="onair" class="badge position-absolute top-50 start-50 translate-middle"></span></h4>
 	<div class="card m-2">
 	<div class="card-body">';
 	$htmlOutput .= ($config['cfgHostname'] == 'true' && $rolink) ? hostName() : null;
@@ -111,7 +118,7 @@ switch ($page) {
 		gpioStatus();
 		var auto_refresh = setInterval( function () {
 			cpuData()
-			gpioStatus()
+			$gpioAjax
 		}, 3000);
 	});" : null;
 }
@@ -196,8 +203,9 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v3.55 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v3.6 © 2023 Copyright <a class="text-primary" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
+		<script>var events = <?php echo $events; ?></script>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>
