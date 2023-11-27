@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.61
+*   RoLinkX Dashboard v3.62
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -646,6 +646,15 @@ function aprsForm($ajax = false) {
 	foreach ($cfgFiles as $path => $name) {
 		if (!is_file($path)) return '<div class="alert alert-danger text-center" role="alert">'. $name .' not installed!</div>';
 	}
+	if ($ajax) include_once __DIR__ .'/functions.php';
+	$callsign = $aprsfiLink = $comment = $server = $symbol = '';
+	$report = 0;
+	if (preg_match('/IGLOGIN (\S+)/', file_get_contents('/etc/direwolf.conf'), $matches)) {
+		$callsign = $matches[1];
+		$aprsfiLink = (empty($callsign) && $callsign == 'N0CALL-15') ? null : '<span data-bs-toggle="tooltip" title="View '. $callsign .' on aprs.fi" class="input-group-text">
+			<a class="mx-2" href="https://aprs.fi/#!call='. $callsign .'" target="_blank"><i class="icon-exit_to_app"></i></a>
+		</span>';
+	}
 	$aprsForm = '<h4 class="mt-2 alert alert-primary fw-bold">APRS</h4>';
 	$data = json_decode(gpsd(), true);
 	if ($data['class'] == 'ERROR') {
@@ -667,6 +676,7 @@ function aprsForm($ajax = false) {
 	$dynamicData = '<div class="input-group input-group-sm mb-1">
 			<span class="input-group-text" style="width: 6.5rem;">Direwolf</span>
 			<input type="text" class="form-control '.(($svcDirewolf == 'active') ? 'text-success' : 'text-danger').'" value="'. $svcDirewolf .'" readonly>
+			'. (($svcDirewolf == 'active') ? $aprsfiLink : null) .'
 		</div>
 	<div class="input-group input-group-sm mb-1">
 			<span class="input-group-text" style="width: 6.5rem;">GPSD</span>
@@ -773,12 +783,8 @@ function aprsForm($ajax = false) {
 	if ($ajax) return $dynamicData;
 	/* Read config*/
 	$aprsConfig = file('/etc/direwolf.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-	$callsign = $comment = $server = $symbol = '';
-	$report = 0;
 	foreach ($aprsConfig as $line) {
-		if (preg_match('/IGLOGIN (\S+)/', $line, $matches)) {
-			$callsign = $matches[1];
-		} elseif (preg_match('/IGSERVER (\S+)/', $line, $matches)) {
+		if (preg_match('/IGSERVER (\S+)/', $line, $matches)) {
 			$server = $matches[1];
 		} elseif (preg_match('/TBEACON.*symbol="([^"]+)".*comment="([^"]+)"(?:.*commentcmd="([^"]*)")?/', $line, $matches)) {
 			$symbol = $matches[1];
