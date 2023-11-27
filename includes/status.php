@@ -322,7 +322,7 @@ function getPublicIP() {
 
 /* Get SVXLink status */
 function getSVXLinkStatus($ext = 0) {
-	global $config;
+	$config = include __DIR__ .'/../config.php';
 	exec("/usr/bin/pgrep svxlink", $reply);
 	if ($ext == 1) return ((empty($reply)) ? false : $reply[0]);
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
