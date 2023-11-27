@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.51
+*   RoLinkX Dashboard v3.61
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -28,23 +28,23 @@
 */
 
 include __DIR__ .'/../includes/functions.php';
-$cfgFile = '/etc/direwolf.conf';
+$dwCfgFile = '/etc/direwolf.conf';
 $newFile = '/tmp/direwolf.conf.tmp';
 $overlay = $command = '';
 $msgOut = 'Configuration saved';
 
 $frmService		= filter_input(INPUT_POST, 'service', FILTER_SANITIZE_NUMBER_INT);
-$frmCallsign		= filter_input(INPUT_POST, 'callsign', FILTER_SANITIZE_ADD_SLASHES);
+$frmCallsign	= filter_input(INPUT_POST, 'callsign', FILTER_SANITIZE_ADD_SLASHES);
 $frmSymbol		= filter_input(INPUT_POST, 'symbol', FILTER_SANITIZE_ADD_SLASHES);
 $frmComment		= filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_ADD_SLASHES);
 $frmTemp		= filter_input(INPUT_POST, 'temp', FILTER_SANITIZE_NUMBER_INT);
 $frmServer		= filter_input(INPUT_POST, 'server', FILTER_SANITIZE_ADD_SLASHES);
 $frmReport		= filter_input(INPUT_POST, 'report', FILTER_SANITIZE_NUMBER_INT);
 
-$dwStatus 	= trim(shell_exec("systemctl is-enabled direwolf"));
-$svcDirewolf 	= trim(shell_exec("systemctl is-active direwolf"));
+$dwStatus		= trim(shell_exec("systemctl is-enabled direwolf"));
+$svcDirewolf	= trim(shell_exec("systemctl is-active direwolf"));
 
-$cfgData = file_get_contents($cfgFile);
+$cfgData = file_get_contents($dwCfgFile);
 preg_match('/MYCALL\s+(.+)/', $cfgData, $cfgCallsign);
 preg_match('/TBEACON.*symbol="([^"]*)".*overlay="([^"]*)".*comment="([^"]*)"(?:.*commentcmd="([^"]*)")?/', $cfgData, $cfgBeacon);
 preg_match('/IGSERVER\s+(.+)/', $cfgData, $cfgServer);
@@ -79,7 +79,7 @@ if ($cfgReport) {
 
 toggleFS(true);
 file_put_contents($newFile, $cfgData);
-exec("/usr/bin/sudo /usr/bin/cp $newFile $cfgFile");
+exec("/usr/bin/sudo /usr/bin/cp $newFile $dwCfgFile");
 if ($frmService == 0 && $dwStatus == 'enabled') {
 	serviceControl('direwolf.service', 'disable');
 	serviceControl('direwolf.service', 'stop');

@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.6
+*   RoLinkX Dashboard v3.61
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -23,23 +23,16 @@
 */
 
 include __DIR__ .'/../includes/functions.php';
-$cfgFile		= '/opt/rolink/conf/rolink.conf';
 $restoreFile	= '/var/www/html/rolink/assets/rolink.conf';
 $newFile		= '/tmp/rolink.conf.tmp';
 $profilesPath	= dirname(__FILE__) .'/../profiles/';
 $newProfile		= false;
 $changes		= 0;
 $msgOut			= null;
-$oldVar = $newVar = $profiles = array();
+$oldVar = $newVar = $profiles = [];
 
 // Read version installed
-if (is_file('/opt/rolink/version')) {
-	$localData		= file_get_contents('/opt/rolink/version');
-	$localVersion	= explode('|', $localData);
-} else {
-	echo 'Please update RoLink/SVXLink first!';
-	return;
-}
+$version = version();
 
 // Populate profile from GET vars
 $frmLoadProfile	= (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_ADD_SLASHES) : '';
@@ -228,7 +221,7 @@ if ($beaconValue != $frmBeacon) {
 $oldVar[1]	= '/(HOST=)(\S+)/';
 $newVar[1]	= '${1}'. $frmReflector;
 
-if ($localVersion[1] > '1.7.99.62' && empty($varRefHosts)) {
+if (version_compare($version['number'], '1.7.99.62', '>') && empty($varRefHosts)) {
 	// Upgrade config file to new version
 	$newVar[1]	= '#${1}'. $frmReflector . PHP_EOL .'HOSTS='. $frmReflector .':'. $frmPort;
 }
@@ -239,7 +232,7 @@ if ($reflectorValue != $frmReflector) {
 
 $oldVar[2]	= '/(PORT=)(\d+)/';
 $newVar[2]	= '${1}'. $frmPort;
-if ($localVersion[1] > '1.7.99.62' && empty($varPorts)) {
+if (version_compare($version['number'], '1.7.99.62', '>') && empty($varPorts)) {
 	// Upgrade config file to new version
 	$newVar[2]	= '#${1}'. $frmPort . PHP_EOL .'HOST_PORT='. $frmPort;
 }

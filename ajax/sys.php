@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.2
+*   RoLinkX Dashboard v3.61
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -44,17 +44,36 @@ $accessPassword		= (isset($_POST['accessPassword'])) ? filter_input(INPUT_POST, 
 $mixerControl	= (isset($_POST['mctrl'])) ? filter_input(INPUT_POST, 'mctrl', FILTER_SANITIZE_ADD_SLASHES) : '';
 $mixerValue		= (isset($_POST['mval'])) ? filter_input(INPUT_POST, 'mval', FILTER_SANITIZE_NUMBER_INT) : '';
 
+/* Toggle File System status*/
+if (!empty($changeFS)) {
+	echo switchFSState($changeFS);
+	exit(0);
+}
+
+$actionMappings = [
+    'switchHostName'   => 'switchHostName',
+    'latencyCheck'     => 'latencyCheck',
+    'resvx'            => 'restartSVXLink',
+    'endsvx'           => 'stopSVXLink',
+    'rewifi'           => 'wifiRestart',
+    'halt'             => 'sysHalt',
+    'updateDash'       => 'updateDashboard',
+    'updateRoLink'     => 'updateRoLink',
+    'getVoices'        => 'getVoices',
+    'makeRO'           => 'makeRO',
+    'expandFS'		   => 'expandFS',
+];
+
+/* Process individual actions */
+foreach ($actionMappings as $action => $function) {
+    if ($$action == 1 && function_exists($function)) {
+        echo call_user_func($function);
+        exit(0);
+    }
+}
+
 /* Configuration */
 if (isset($_POST)) {
-	/* Expand File System */
-	if (isset($expandFS)) {
-		toggleFS(true);
-		exec('/usr/bin/sudo /usr/bin/systemctl start armbian-resize-filesystem.service');
-		toggleFS(false);
-		echo 'File system expanded!';
-		exit(0);
-	}
-
 	/* Mixer control action */
 	if (!empty($mixerControl)) {
 		$mixerControls = array
@@ -125,10 +144,10 @@ if (isset($_POST)) {
 }
 
 // Check details about connection (TCP Bandwidth / Latency & UDP Latency)
-if ($latencyCheck == 1) echo latencyCheck();
 function latencyCheck() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	if (!is_file($cfgFile)) return 'RoLink not installed!';
+	$env = checkEnvironment();
+	if ($env) return $env;
+	global $cfgFile;
 	if (empty(exec("command -v qperf"))) return 'Application not installed!<br/>Please install <b>qperf</b> manually';
 	preg_match('/HOST=(\S+)/', file_get_contents($cfgFile), $host);
 	if (empty($host)) return 'Missing or wrong server address!';
@@ -143,7 +162,6 @@ function latencyCheck() {
 }
 
 /* Stop SVXLink */
-if ($endsvx == 1) echo stopSVXLink();
 function stopSVXLink() {
 	unstick();
 	serviceControl('rolink.service', 'stop');
@@ -151,7 +169,6 @@ function stopSVXLink() {
 }
 
 /* Restart SVXLink */
-if ($resvx == 1) echo restartSVXLink();
 function restartSVXLink() {
 	unstick();
 	serviceControl('rolink.service', 'restart');
@@ -159,14 +176,12 @@ function restartSVXLink() {
 }
 
 /* Restart Wi-Fi */
-if ($rewifi == 1) echo wifiRestart();
 function wifiRestart() {
 	exec("/usr/bin/sudo /sbin/wpa_cli -i wlan0 reconfigure");
 	return true;
 }
 
 /* Power Off System */
-if ($halt == 1) sysHalt();
 function sysHalt() {
 	/* If stuck in TX, force exit */
 	unstick();
@@ -182,27 +197,26 @@ function sysReboot() {
 }
 
 /* Switch Host Name */
-if ($switchHostName == 1) echo switchHostName();
 function switchHostName() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	if (!is_file($cfgFile)) return 'RoLink not installed!';
+	$env = checkEnvironment();
+	if ($env) return $env;
+	global $cfgFile;
 	$hostName = gethostname();
 	preg_match('/CALLSIGN=(\S+)/', file_get_contents($cfgFile), $callSign);
 	$newHostName = preg_replace('/[^a-zA-Z0-9\-\._]/', '', trim(strtolower($callSign[1])));
-	if ($newHostName != 'N0CALL' && $hostName != $newHostName) {
+	if ($newHostName != 'N0CALL' && $newHostName !== $hostName) {
 		toggleFS(true);
 		exec("/usr/bin/sudo /usr/bin/hostnamectl set-hostname $newHostName");
 		exec("/usr/bin/sudo /usr/bin/sed -i 's/$hostName/$newHostName/' /etc/hosts");
 		toggleFS(false);
 		return 'Hostname has been changed from <br/><b>'. $hostName .'</b> to <b>'. $newHostName .'</b><br/>You need to reboot to apply changes.';
 	} else {
-		return 'Nothing changed.<br/>New and old hostnames are the same.';
+		return 'New and old hostnames are the same.';
 	}
 	return false;
 }
 
 /* Switch file system state */
-if (!empty($changeFS)) echo switchFSState($changeFS);
 function switchFSState($changeFS) {
 	$askedFSS = ($changeFS == 'ro') ? true : false;
 	toggleFS($askedFSS);
@@ -210,7 +224,6 @@ function switchFSState($changeFS) {
 }
 
 /* Update dashboard */
-if ($updateDash == 1) echo updateDashboard();
 function updateDashboard() {
 	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_dash", $reply);
@@ -220,7 +233,6 @@ function updateDashboard() {
 }
 
 /* Update RoLink (svxlink) */
-if ($updateRoLink == 1) echo updateRoLink();
 function updateRoLink() {
 	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init update_rolink", $reply);
@@ -229,7 +241,6 @@ function updateRoLink() {
 }
 
 /* Download & install voice pack */
-if ($getVoices == 1) echo getVoices();
 function getVoices() {
 	toggleFS(true);
 	exec("/usr/bin/sudo /opt/rolink/scripts/init get_sounds", $reply);
@@ -238,7 +249,6 @@ function getVoices() {
 }
 
 /* Make FS Read-only */
-if ($makeRO == 1) echo makeRO();
 function makeRO() {
 	exec("/usr/bin/sudo /opt/rolink/scripts/init ro s", $reply);
 	sleep(1);
@@ -248,4 +258,12 @@ function makeRO() {
 		$result = $reply[0];
 	}
 	return $result;
+}
+
+/* Expand File System */
+function expandFS() {
+	toggleFS(true);
+	serviceControl('armbian-resize-filesystem.service', 'start');
+	toggleFS(false);
+	return 'File system expanded!';
 }

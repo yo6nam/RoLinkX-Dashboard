@@ -34,7 +34,7 @@ $sql = (isset($_POST['sql'])) ? filter_input(INPUT_POST, 'sql', FILTER_SANITIZE_
 $vol = (isset($_POST['vol'])) ? filter_input(INPUT_POST, 'vol', FILTER_SANITIZE_ADD_SLASHES) : '';
 $flt = (isset($_POST['flt'])) ? filter_input(INPUT_POST, 'flt', FILTER_SANITIZE_ADD_SLASHES) : '';
 
-$ctcssVars = array(
+$ctcssVars = [
 		"0" => "None", "1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
 		"11" => "97.4", "12" => "100.0", "13" => "103.5", "14" => "107.2",
@@ -44,7 +44,7 @@ $ctcssVars = array(
 		"27" => "167.9", "28" => "173.8", "29" => "179.9", "30" => "186.2",
 		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
-		);
+		];
 
 if (empty($grp) && empty($vol) && empty($flt)) {
 	sleep(2);
@@ -54,13 +54,6 @@ if (empty($grp) && empty($vol) && empty($flt)) {
 
 /* Update configuration info sent to reflector */
 if (!empty($grp)) {
-	$cfgRefFile = '/opt/rolink/conf/rolink.json';
-	$tmpRefFile = '/tmp/rolink.json.tmp';
-	if (!is_file($cfgRefFile)) {
-		sleep(2);
-		echo 'RoLink not installed!';
-		exit(1);
-	}
 	$nfoParam = json_decode(file_get_contents($cfgRefFile), true);
 	$nfoParam['pl_in'] = $ctcssVars[floatval($tpl)];
 	$nfoParam['pl_out']	= $ctcssVars[floatval($tpl)];

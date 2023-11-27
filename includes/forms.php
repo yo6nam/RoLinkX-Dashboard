@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.6
+*   RoLinkX Dashboard v3.61
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,6 @@
 
 if (isset($_GET['scan'])) echo scanWifi(1);
 if (isset($_GET['gpsStatus'])) echo aprsForm(1);
-
-$pinsArray = array(2, 3, 6, 7, 10, 18, 19);
 
 /* Wi-Fi form */
 function getSSIDs() {
@@ -201,10 +199,9 @@ function wifiForm() {
 
 /* SVXLink form */
 function svxForm() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
-	$config = include 'config.php';
-	global $pinsArray;
+	$env = checkEnvironment();
+	if ($env) return $env;
+	global $cfgFile, $config, $pinsArray, $cfgRefFile;
 	$svxPinsArray = array();
 
 	/* Convert pins to both states (normal/inverted) */
@@ -216,7 +213,7 @@ function svxForm() {
 	$voicesPath = '/opt/rolink/share/sounds';
 
 	/* Get current variables */
-	$cfgFileData = file_get_contents('/opt/rolink/conf/rolink.conf');
+	$cfgFileData = file_get_contents($cfgFile);
 	/* Host / Reflector */
 	preg_match('/(HOST=)(\S+)/', $cfgFileData, $varReflector);
 	$reflectorValue = (isset($varReflector[2])) ? 'value='. $varReflector[2] : '';
@@ -298,7 +295,7 @@ function svxForm() {
 	$skip			= array('sa818pgm.log', 'index.html');
 
 	/* Configuration info sent to reflector ('tip' only) */
-	$cfgRefFile = file_get_contents('/opt/rolink/conf/rolink.json');
+	$cfgRefFile = file_get_contents($cfgRefFile);
 	$cfgRefData = json_decode($cfgRefFile, true);
 
 	if (!empty($proFiles)) {
@@ -513,9 +510,9 @@ function svxForm() {
 
 /* SA818 radio */
 function sa818Form() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
-	$config = include 'config.php';
+	$env = checkEnvironment();
+	if ($env) return $env;
+	global $cfgFile, $config;
 	$historyFile = dirname(__FILE__) .'/../profiles/sa818pgm.log';
 	// Last programmed details
 	$lastPgmData = array(
@@ -530,7 +527,7 @@ function sa818Form() {
 	if (is_file($historyFile)) {
 		$lastPgmData = json_decode(file_get_contents($historyFile), true);
 	}
-	$ctcssVars = array(
+	$ctcssVars = [
 		"0" => "None", "1" => "67.0", "2" => "71.9", "3" => "74.4", "4" => "77.0", "5" => "79.7",
 		"6" => "82.5", "7" => "85.4", "8" => "88.5", "9" => "91.5", "10" => "94.8",
 		"11" => "97.4", "12" => "100.0", "13" => "103.5", "14" => "107.2",
@@ -540,7 +537,18 @@ function sa818Form() {
 		"27" => "167.9", "28" => "173.8", "29" => "179.9", "30" => "186.2",
 		"31" => "192.8", "32" => "203.5", "33" => "210.7", "34" => "218.1",
 		"35" => "225.7", "36" => "233.6", "37" => "241.8", "38" => "250.3"
-		);
+		];
+	$filterOptions = [
+		'' => 'No change',
+		'0,0,0' => 'Disable All',
+		'1,0,0' => 'Enable Pre/De-Emphasis',
+		'0,1,0' => 'Enable High Pass',
+		'0,0,1' => 'Enable Low Pass',
+		'0,1,1' => 'Enable Low Pass & High Pass',
+		'1,1,0' => 'Enable Pre/De-Emphasis & High Pass',
+		'1,0,1' => 'Enable Pre/De-Emphasis & Low Pass',
+		'1,1,1' => 'Enable All',
+	];
 	$sa818Form = '<h4 class="mt-2 alert alert-danger fw-bold">SA818 programmer</h4>
 	<div class="card mb-2">
 		<h4 class="card-header fs-5">Channel</h4>
@@ -610,17 +618,11 @@ function sa818Form() {
 		<h4 class="card-header fs-5">Filter</h4>
 		<div class="card-body">
 		<div class="form-floating">
-			<select id="sa_flt" class="form-select" aria-label="Filter">
-				<option value="" selected>No change</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,0,0') ? 'selected' : null) .' value="0,0,0">Disable All</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,0,0') ? 'selected' : null) .' value="1,0,0">Enable Pre/De-Emphasis</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,1,0') ? 'selected' : null) .' value="0,1,0">Enable High Pass</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,0,1') ? 'selected' : null) .' value="0,0,1">Enable Low Pass</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '0,1,1') ? 'selected' : null) .' value="0,1,1">Enable Low Pass & High Pass</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,1,0') ? 'selected' : null) .' value="1,1,0">Enable Pre/De-Emphasis & High Pass</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,0,1') ? 'selected' : null) .' value="1,0,1">Enable Pre/De-Emphasis & Low Pass</option>
-				<option '. (isset($lastPgmData['filter']) && ($lastPgmData['filter'] == '1,1,1') ? 'selected' : null) .' value="1,1,1">Enable All</option>
-			</select>
+		<select id="sa_flt" class="form-select" aria-label="Filter">'. PHP_EOL;
+		foreach ($filterOptions as $value => $label) {
+	        $sa818Form .= '<option value="'. $value .'"'. ((isset($lastPgmData["filter"]) && ($lastPgmData["filter"] == $value)) ? " selected" : "") .'>'. $label .'</option>'. PHP_EOL;
+		}
+		$sa818Form .= '</select>
 			<label for="sa_flt">Filter</label>
 		</div>
 		</div>
@@ -630,7 +632,7 @@ function sa818Form() {
 			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
 		</div>'. PHP_EOL;
 		$sa818Form .= '<div class="d-flex justify-content-center"><small class="d-inline-flex px-1 py-1 text-muted border rounded-3">';
-		$sa818Form .= 'Last programmed : '. ((isset($lastPgmData['date'])) ? date('d-M-Y H:i:s', $lastPgmData['date']) : 'Never');
+		$sa818Form .= 'Last programmed : '. ((isset($lastPgmData['date'])) ? date('d-M-Y H:i:s', $lastPgmData['date']) : 'Unknown');
 		$sa818Form .= '</small></div>';
 	return $sa818Form;
 }
@@ -771,7 +773,7 @@ function aprsForm($ajax = false) {
 	if ($ajax) return $dynamicData;
 	/* Read config*/
 	$aprsConfig = file('/etc/direwolf.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-	$callsign = $comment = $server = '';
+	$callsign = $comment = $server = $symbol = '';
 	$report = 0;
 	foreach ($aprsConfig as $line) {
 		if (preg_match('/IGLOGIN (\S+)/', $line, $matches)) {
@@ -877,8 +879,8 @@ function aprsForm($ajax = false) {
 
 /* Logs */
 function logsForm() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
+	$env = checkEnvironment();
+	if ($env) return $env;
 	$logData = '<h4 class="mt-2 alert alert-dark fw-bold">Logs</h4>';
 	$logData .= '<div class="container">
 	<div class="row justify-content-center">
@@ -907,8 +909,8 @@ function logsForm() {
 
 /* Terminal */
 function ttyForm() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
-	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
+	$env = checkEnvironment();
+	if ($env) return $env;
 	$ttydService = '/lib/systemd/system/ttyd.service';
 	if (!is_file($ttydService)) return '<div class="alert alert-danger text-center" role="alert">ttyd package not installed</div>';
 	$host = parse_url($_SERVER['HTTP_HOST']);
@@ -928,8 +930,9 @@ function ttyForm() {
 
 /* Config */
 function cfgForm() {
-	global $pinsArray, $cfgFile, $config;
-	if (!is_file($cfgFile)) return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
+	$env = checkEnvironment();
+	if ($env) return $env;
+	global $pinsArray, $config;
 	$ttysArray = array(1, 2, 3);
 	$ttyPortDetected = $sa818Firmware = null;
 	$version = version();

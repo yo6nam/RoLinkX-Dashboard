@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.6
+*   RoLinkX Dashboard v3.61
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,9 @@ $cfgFile = '/opt/rolink/conf/rolink.conf';
 $cfgRefFile = '/opt/rolink/conf/rolink.json';
 $tmpRefFile = '/tmp/rolink.json.tmp';
 $verFile = '/opt/rolink/version';
+$remoteVerUrl = 'https://rolink.network/data/version';
 $cfgRefData = json_decode(file_get_contents($cfgRefFile), true);
+$pinsArray = [2, 3, 6, 7, 10, 18, 19];
 
 // Switch file system status (ReadWrite <-> ReadOnly)
 function toggleFS($status) {
@@ -102,4 +104,13 @@ function version() {
     $v['date'] = (int)$data[0];
     $v['number'] = $data[1];
     return $v;
+}
+
+/* Check environment */
+function checkEnvironment() {
+	global $cfgFile;
+	if (!is_file($cfgFile)) {
+		return '<div class="alert alert-danger text-center" role="alert">RoLink not installed!</div>';
+	}
+	return false;
 }

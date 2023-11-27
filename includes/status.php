@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.6
+*   RoLinkX Dashboard v3.61
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -128,11 +128,10 @@ function networking() {
 /* Detect SA818 port & return firmware */
 function sa818Detect() {
 	$status = null;
-	# Feature available since RoLink 1.7.99.75-6
-	$localData = file_get_contents('/opt/rolink/version');
-	$localVersion = explode('|', $localData);
-	# Using an older version?
-	if ((int)$localVersion[0] < 20230126) return;
+	$version = version();
+	if (!$version || $version['date'] < 20230126) { // Feature available since RoLink 1.7.99.75-6
+		return;
+	}
 	$sa818 = 'Not detected';
 	$toggle = 'class="input-group-text"';
 	$detected = false;
@@ -203,45 +202,38 @@ function getCpuStats($ajax = 0) {
 	</div>';
 }
 
-function _getServerLoadLinuxData(){
+function getServerLoad() {
     if (is_readable("/proc/stat")) {
-        $stats = file_get_contents("/proc/stat");
-        if ($stats !== false) {
-            $stats = preg_replace("/[[:blank:]]+/", " ", $stats);
-            $stats = str_replace(array("\r\n", "\n\r", "\r"), "\n", $stats);
-            $stats = explode("\n", $stats);
-            foreach ($stats as $statLine) {
-                $statLineData = explode(" ", trim($statLine));
-                if ((count($statLineData) >= 5) && ($statLineData[0] == "cpu")) {
-                    return array(
-                        $statLineData[1],
-                        $statLineData[2],
-                        $statLineData[3],
-                        $statLineData[4],
-                    );
+        $statData1 = $statData2 = null;
+        for ($i = 0; $i < 2; $i++) {
+            $stats = file_get_contents("/proc/stat");
+            if ($stats !== false) {
+                $stats = preg_replace("/[[:blank:]]+/", " ", $stats);
+                $stats = str_replace(["\r\n", "\n\r", "\r"], "\n", $stats);
+                $stats = explode("\n", $stats);
+                foreach ($stats as $statLine) {
+                    $statLineData = explode(" ", trim($statLine));
+                    if (count($statLineData) >= 5 && $statLineData[0] === "cpu") {
+                        if ($i === 0) {
+                            $statData1 = array_slice($statLineData, 1, 4);
+                        } else {
+                            $statData2 = array_slice($statLineData, 1, 4);
+                        }
+                        break;
+                    }
                 }
             }
+            sleep(1);
+        }
+        if (!is_null($statData1) && !is_null($statData2)) {
+            $delta = array_map(function ($a, $b) {
+                return $b - $a;
+            }, $statData1, $statData2);
+            $cpuTime = array_sum($delta);
+            return 100 - ($delta[3] * 100 / $cpuTime);
         }
     }
     return null;
-}
-
-function getServerLoad() {
-    $load = null;
-	if (is_readable("/proc/stat")) {
-            $statData1 = _getServerLoadLinuxData();
-            sleep(1);
-            $statData2 = _getServerLoadLinuxData();
-            if ((!is_null($statData1)) && (!is_null($statData2))) {
-                $statData2[0] -= $statData1[0];
-                $statData2[1] -= $statData1[1];
-                $statData2[2] -= $statData1[2];
-                $statData2[3] -= $statData1[3];
-                $cpuTime = $statData2[0] + $statData2[1] + $statData2[2] + $statData2[3];
-                $load = 100 - ($statData2[3] * 100 / $cpuTime);
-            }
-        }
-    return $load;
 }
 
 /* Retreive SSID (if connected) */
@@ -330,9 +322,9 @@ function getPublicIP() {
 
 /* Get SVXLink status */
 function getSVXLinkStatus($ext = 0) {
+	global $config;
 	exec("/usr/bin/pgrep svxlink", $reply);
 	if ($ext == 1) return ((empty($reply)) ? false : $reply[0]);
-	$config = include __DIR__ .'/../config.php';
 	$result = (empty($reply)) ? 'Not running' : 'Running ('. $reply[0] .')' ;
 	$status = (empty($reply)) ? 'width:6.5rem;' : 'width:6.5rem;background:lightgreen;' ;
 	$dtmfTrigger = ($config['cfgDTMF'] == 'true' && $result != 'Not running') ? '<span data-bs-toggle="tooltip" title="Click to display the <b>DTMF Sender Tool</b> and send commands to the SVXLink application. Usefull when you don\'t have a radio with the DTMF feature."><button id="dtmf" data-bs-toggle="modal" data-bs-target="#dtmfModal" class="input-group-text btn btn-secondary" type="button">#</button></span>' : NULL;
@@ -422,7 +414,7 @@ function getRefNodes() {
 
 /* Get SVX Callsign	*/
 function getCallSign() {
-	$cfgFile = '/opt/rolink/conf/rolink.conf';
+	global $cfgFile;
 	if (is_file($cfgFile)) {
 		preg_match('/(CALLSIGN=")(\S+)"/', file_get_contents($cfgFile), $reply);
 	}
@@ -484,28 +476,30 @@ function getFileSystem() {
 
 /* Version check */
 function getRemoteVersion() {
+	global $remoteVerUrl;
 	if (getPublicIP() == 'Not available') return;
-	if (!is_file('/opt/rolink/version')) return;
+	$version = version();
+	if (!$version) return;
 	$remoteData		= false;
-	$localData		= file_get_contents('/opt/rolink/version');
-	$localVersion	= explode('|', $localData);
+	$cachedVersion	= (isset($_COOKIE["remote_version"])) ? (int)$_COOKIE["remote_version"] : false;
 	$notify			= 'width: 6.5rem';
-	if (isset($_COOKIE["remote_version"])) {
-		$result = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] .' ('. $localVersion[0] .')';
-		$notify = ((int)$_COOKIE["remote_version"] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
+	if ($cachedVersion) {
+		$result = ($cachedVersion > $version['date']) ? 'Update available ('. $cachedVersion .')' : $version['number'] .' ('. $version['date'] .')';
+		$notify = ($cachedVersion > $version['date']) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
 	} else {
-		$remoteData = file_get_contents('https://rolink.network/data/version');
+		$remoteData = file_get_contents($remoteVerUrl);
 	}
 	if ($remoteData) {
 		$remoteVersion = explode('|', $remoteData);
-		$result = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'Update available' : $localVersion[1] .' ('. $localVersion[0] .')';
-		$notify = ((int)$remoteVersion[0] > (int)$localVersion[0]) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
-		setcookie("remote_version", $remoteVersion[0], time()+60*60*24);
+		$result = ((int)$remoteVersion[0] > $version['date']) ? 'Update available ('. $remoteVersion[0] .')' : $version['number'] .' ('. $version['date'] .')';
+		$notify = ((int)$remoteVersion[0] > $version['date']) ? 'width:6.5rem;border-left-width:thick;border-left-color:red' : $notify;
+		setcookie("remote_version", $remoteVersion[0], time() + 60 * 60 * 24);
 	} elseif (!isset($result)) {
 		$result = 'Unavailable';
 	}
 	return '<div class="input-group mb-2">
- 		<span class="input-group-text" style="'. $notify .'">Version</span>
+ 		<span data-bs-toggle="tooltip" title="Local version : '. $version['date'] .'</br>Remote version : '.
+ 		(isset($remoteVersion[0]) ? $remoteVersion[0] : $cachedVersion)  .'" class="input-group-text" style="'. $notify .'">Version</span>
   		<input type="text" class="form-control" placeholder="'. $result .'" readonly>
 	</div>';
 }
