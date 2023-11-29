@@ -6,14 +6,13 @@
 //
 // Scripts
 //
-
 window.addEventListener('DOMContentLoaded', (event) => {
   // Enable Tooltips
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  var tooltipList = tooltipTriggerList.map( function(tooltipTriggerEl) {
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl, {
-      trigger : 'hover',
-      html : true
+      trigger: 'hover',
+      html: true
     });
   });
   // Toggle the side navigation
@@ -26,16 +25,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
     sidebarToggle.addEventListener('click', (event) => {
       event.preventDefault();
       document.body.classList.toggle('sb-sidenav-toggled');
-      localStorage.setItem(
-        'sb|sidebar-toggle',
-        document.body.classList.contains('sb-sidenav-toggled')
-      );
+      localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
     });
   }
 });
-
 /*
- *   RoLinkX Dashboard v3.6
+ *   RoLinkX Dashboard v3.63
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -52,117 +47,162 @@ window.addEventListener('DOMContentLoaded', (event) => {
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-
 // Refresh selective status data
 function cpuData() {
-	$.ajax({
-		type: 'GET',
-		dataType: 'json',
-		url: 'includes/status.php?cpuData',
-		success: function (data) {
-			$('#cpuLoad').attr('placeholder', data[0]).val('');
-			$('#cpuTemp').attr('placeholder', data[1]).val('');
-			if (data[2]) {
-				$('#cpuTemp').addClass(data[2]);
-			} else {
-				$('#cpuTemp').removeClass('bg-warning text-dark');
-			}
-			if (data[3]) {
-				$('#resvx').text('Restart RoLink');
-			} else {
-				$('#resvx').text('Start RoLink');
-			}
-		}
-	});
+  $.ajax({
+    type: 'GET',
+    dataType: 'json',
+    url: 'includes/status.php?cpuData',
+    success: function (data) {
+      $('#cpuLoad').attr('placeholder', data[0]).val('');
+      $('#cpuTemp').attr('placeholder', data[1]).val('');
+      if (data[2]) {
+        $('#cpuTemp').addClass(data[2]);
+      } else {
+        $('#cpuTemp').removeClass('bg-warning text-dark');
+      }
+      if (data[3]) {
+        $('#resvx').text('Restart RoLink');
+      } else {
+        $('#resvx').text('Start RoLink');
+      }
+    }
+  });
 }
 
 function gpioStatus() {
-	$.ajax({
-		type: 'GET',
-		dataType: 'json',
-		url: 'includes/status.php?gpio',
-	success: function (data) {
-	    $('#gpioRx')
-	        .attr('placeholder', data['rx'] === '0' ? 'RX Idle' : 'RX On')
-	        .val('')
-	        .css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
-	    $('#gpioTx')
-	        .attr('placeholder', data['tx'] === '0' ? 'TX Idle' : '')
-	        .val(data['tx'] === '0' ? '' : 'TX On')
-	        .css('background', data['tx'] === '0' ? 'none' : 'red')
-	    	.css('color', data['tx'] === '0' ? '' : 'white');
-	    $('#gpioFan')
-	        .attr('placeholder', data['fan'] === '0' ? 'Fan Off' : 'Fan On')
-	        .val('')
-	        .css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
-		}
-	});
+  $.ajax({
+    type: 'GET',
+    dataType: 'json',
+    url: 'includes/status.php?gpio',
+    success: function (data) {
+      $('#gpioRx').attr('placeholder', data['rx'] === '0' ? 'RX' : 'RX').val('').css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
+      $('#gpioTx').attr('placeholder', data['tx'] === '0' ? 'TX' : '').val(data['tx'] === '0' ? '' : 'TX').css('background', data['tx'] === '0' ? 'none' : 'red').css('color', data['tx'] === '0' ? '' : 'white');
+      $('#gpioFan').attr('placeholder', data['fan'] === '0' ? 'Fan' : 'Fan').val('').css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+    }
+  });
 }
-
 /*
  * jQuery stuff
  */
-
 $(document).ready(function () {
-  // Events (Talker & GPIO)
+  // Events (Talker, GPIO, CPU Stats)
   if (events && window.location.search === '') {
+    var localRx = false;
+    var timerInterval;
     var url = window.location.href + "includes/events.php";
     var source = new EventSource(url);
+
     function checkEs() {
       if (source.readyState === EventSource.CLOSED || source.readyState === EventSource.CONNECTING) {
+        if ($('#sysmsg').iziModal('getState') === 'opened' || $('#sysmsg').iziModal('getState') === 'opening') {
+          $('#sysmsg').iziModal('destroy');
+        }
         source = new EventSource(url);
-        source.onmessage = function(event) {
+        source.onmessage = function (event) {
           var data = JSON.parse(event.data);
           handleEventData(data);
         };
       }
     }
-    document.addEventListener('visibilitychange', function() {
+    document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'visible') {
         checkEs();
       }
     });
-    source.onerror = function(event) {
+    source.onerror = function (event) {
       if (event.target.readyState === EventSource.CLOSED) {
         checkEs();
       }
     };
-    source.onmessage = function(event) {
+    source.onmessage = function (event) {
       var data = JSON.parse(event.data);
       handleEventData(data);
+      $('.talker').addClass('newEvent');
+      setTimeout(function () {
+        $('.talker').removeClass('newEvent')
+      }, 100);
     };
+
     function handleEventData(data) {
-      $('#gpioRx')
-        .attr('placeholder', data['rx'] === '0' ? 'RX Idle' : 'RX On')
-        .val('')
-        .css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
-      $('#gpioTx')
-        .attr('placeholder', data['tx'] === '0' ? 'TX Idle' : '')
-        .val(data['tx'] === '0' ? '' : 'TX On')
-        .css('background', data['tx'] === '0' ? 'none' : 'red')
-        .css('color', data['tx'] === '0' ? '' : 'white');
-      $('#gpioFan')
-        .attr('placeholder', data['fan'] === '0' ? 'Fan Off' : 'Fan On')
-        .val('')
-        .css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+      if (data['rx']) {
+        $('#gpioRx').attr('placeholder', data['rx'] === '0' ? 'RX' : 'RX').val('').css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
+        localRx = (data['rx'] === '1') ? true : false;
+      }
+      if (data['tx']) {
+        $('#gpioTx').attr('placeholder', data['tx'] === '0' ? 'TX' : '').val(data['tx'] === '0' ? '' : 'TX').css('background', data['tx'] === '0' ? 'none' : 'red').css('color', data['tx'] === '0' ? '' : 'white');
+      }
+      if (data['fan']) {
+        $('#gpioFan').attr('placeholder', data['fan'] === '0' ? 'Fan' : 'Fan').val('').css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+      }
       if (data['ta'] === '1') {
-        $('#onair').html(`<i class="icon-record_voice_over talker-active"></i>${data['tn']}`);
+        $('#onair').html(`<i class="icon-record_voice_over talker-active"></i>${data['tn']}<span class="small" id="timerDisplay"></span>`);
         $('#onair').removeClass('badge-secondary').addClass('badge-danger').css('opacity', '');
-      } else if (data['ta'] === '0') {
+        if (localRx === true) {
+          startTimer(timeOutTimer);
+        }
+      }
+      if (data['ta'] === '0') {
         var ts = '';
+        var modalState = $('#sysmsg').iziModal('getState');
+        if (modalState === 'opened' || modalState === 'opening') {
+          $('#sysmsg').iziModal('close');
+        }
         if (data['s'] !== 'undefined') {
+          clearInterval(timerInterval);
+          $('#onair').removeClass('timeOutTimerWarn');
           date = new Date(data['s'] * 1000);
-          ts = date.toLocaleTimeString(undefined, { hour12: false });
+          ts = date.toLocaleTimeString(undefined, {
+            hour12: false
+          });
         }
         $('#onair').html(data['tn'] + " (" + ts + ")");
         $('#onair').removeClass('badge-danger').addClass('badge-secondary').css('opacity', '35%');
-      } else {
-        $('#onair').html('');
-        $('#onair').removeClass('badge-danger badge-secondary').css('opacity', '');
+      }
+      if (data['cl']) {
+        $('#cpuLoad').attr('placeholder', data['cl'] + '%').val('');
+      }
+      if (data['ct']) {
+        $('#cpuTemp').prop('placeholder', data['ct'] + '°C').val('');
+        if (data['ct'] > 60) {
+          $('#cpuTemp').addClass('bg-warning text-dark');
+        } else {
+          if ($('#cpuTemp').hasClass('bg-warning')) {
+            $('#cpuTemp').removeClass('bg-warning text-dark');
+          }
+        }
       }
     }
   }
 
+  function startTimer(seconds) {
+    clearInterval(timerInterval);
+
+    function updateTimerDisplay() {
+      var minutes = Math.floor(seconds / 60);
+      var remainingSeconds = seconds % 60;
+      var timerDisplay = `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+      $('#timerDisplay').text('[' + timerDisplay + ']');
+    }
+    updateTimerDisplay();
+    timerInterval = setInterval(function () {
+      if (seconds > 0) {
+        seconds--;
+        if (seconds < 10) {
+          $('#onair').addClass('timeOutTimerWarn');
+        }
+        updateTimerDisplay();
+      } else {
+        $('#sysmsg').iziModal({
+          title: '<h3 class="m-3 text-white text-center">Timed out!</h3>',
+          width: '50vh',
+          headerColor: '#941919',
+          autoOpen: true,
+          overlay: true
+        });
+      }
+    }, 1000);
+  }
   $('[data-bs-toggle="tooltip"').on("click", function () {
     $(this).tooltip("hide");
   });
@@ -182,14 +222,15 @@ $(document).ready(function () {
       overlay: false,
     });
   };
-
   // SA818 Programming
-	$("#sa_grp").select2({ theme: "bootstrap-5" });
-	$('#sa_grp').parent('div').children('span').children('span').children('span').css('height', ' calc(3.5rem + 2px)');
-	$('#sa_grp').parent('div').children('span').children('span').children('span').children('span').css('margin-top', '18px');
-	$('#sa_grp').parent('div').find('label').css('z-index', '1');
-	$('#programm').click(function () {
-	$(this).prop('disabled', true).fadeTo('fast', 0.15);
+  $("#sa_grp").select2({
+    theme: "bootstrap-5"
+  });
+  $('#sa_grp').parent('div').children('span').children('span').children('span').css('height', ' calc(3.5rem + 2px)');
+  $('#sa_grp').parent('div').children('span').children('span').children('span').children('span').css('margin-top', '18px');
+  $('#sa_grp').parent('div').find('label').css('z-index', '1');
+  $('#programm').click(function () {
+    $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
       title: 'Sending data, please wait...',
@@ -215,8 +256,8 @@ $(document).ready(function () {
       },
       success: function (data) {
         if (data) {
-		  $('#sysmsg').iziModal('destroy');
-		  $('#programm').prop('disabled', false).fadeTo('fast', 1);
+          $('#sysmsg').iziModal('destroy');
+          $('#programm').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3500);
           setTimeout(function () {
             location.reload();
@@ -225,17 +266,18 @@ $(document).ready(function () {
       }
     });
   });
-
   // SVXLink restore config
   $('#restore').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
-      data: { restore: true },
+      data: {
+        restore: true
+      },
       success: function (data) {
         if (data) {
-		  $('#restore').prop('disabled', false).fadeTo('fast', 1);
+          $('#restore').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
             location.reload(true);
@@ -244,15 +286,14 @@ $(document).ready(function () {
       }
     });
   });
-
   // SVXLink config
   $('#savesvxcfg').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     var formData = {};
     $('[id^="svx_"]').each(function () {
-        var id = $(this).attr('id');
-        var paramName = id.substring(4);
-        formData[paramName] = $(this).val();
+      var id = $(this).attr('id');
+      var paramName = id.substring(4);
+      formData[paramName] = $(this).val();
     });
     $.ajax({
       type: 'POST',
@@ -269,24 +310,24 @@ $(document).ready(function () {
       }
     });
   });
-
   // SVXLink delete profile
   $('#delsvxprofile').click(function () {
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
-      data: { prd: $('#svx_spn').val() },
+      data: {
+        prd: $('#svx_spn').val()
+      },
       success: function (data) {
-		if (data) {
-			$('#sysmsg').showNotice(data, 2000);
-			setTimeout(function () {
-				location.reload(true);
-			}, 3000);
-		}
+        if (data) {
+          $('#sysmsg').showNotice(data, 2000);
+          setTimeout(function () {
+            location.reload(true);
+          }, 3000);
+        }
       }
     });
   });
-
   // Load selected SVX profile and populate fields
   $('#svx_spn').on('change', function (event) {
     var selection = $('#svx_spn').val();
@@ -294,12 +335,14 @@ $(document).ready(function () {
       $.ajax({
         type: 'GET',
         url: 'ajax/svx.php',
-        data: { lpn: selection },
+        data: {
+          lpn: selection
+        },
         success: function (data) {
           if (data) {
-			var autoConnect = $('#autoConnect').val();
+            var autoConnect = $('#autoConnect').val();
             var profile = jQuery.parseJSON(data);
-            $('#svx_prn').val(selection.split('.').slice(0,-1).join());
+            $('#svx_prn').val(selection.split('.').slice(0, -1).join());
             $('#svx_ref').val(profile.reflector);
             $('#svx_prt').val(profile.port);
             $('#svx_cal').val(profile.callsign);
@@ -307,44 +350,36 @@ $(document).ready(function () {
             $('#svx_clb').val(profile.beacon);
             $('#svx_tip').val(profile.type);
             if (typeof profile.bitrate !== 'undefined') {
-            	$('#svx_cbr').val(profile.bitrate)
+              $('#svx_cbr').val(profile.bitrate)
             }
             if (typeof profile.rogerBeep !== 'undefined') {
-            	$('#svx_rgr').val(profile.rogerBeep)
+              $('#svx_rgr').val(profile.rogerBeep)
             }
             if (typeof profile.shortIdent !== 'undefined') {
-            	$('#svx_sid').val(profile.shortIdent)
+              $('#svx_sid').val(profile.shortIdent)
             }
             if (typeof profile.longIdent !== 'undefined') {
-            	$('#svx_lid').val(profile.longIdent)
+              $('#svx_lid').val(profile.longIdent)
             }
             if (typeof profile.connectionStatus !== 'undefined') {
-            	$('#svx_acs').val(profile.connectionStatus)
+              $('#svx_acs').val(profile.connectionStatus)
             }
             if (typeof profile.connectionStatus !== 'undefined') {
-            	$('#svx_dtg').val(profile.defaultTg)
+              $('#svx_dtg').val(profile.defaultTg)
             }
             if (autoConnect === 'true') {
-				$('#sysmsg').showNotice(
-              		'Profile loaded!<br/>Auto connection started...',
-              		3000
-            	);
-            	$('#savesvxcfg').trigger('click');
-            	return true;
+              $('#sysmsg').showNotice('Profile loaded!<br/>Auto connection started...', 3000);
+              $('#savesvxcfg').trigger('click');
+              return true;
             }
-            $('#sysmsg').showNotice(
-              'Profile loaded!<br/>Click <b>Save</b> button to apply',
-              3000
-            );
-
+            $('#sysmsg').showNotice('Profile loaded!<br/>Click <b>Save</b> button to apply', 3000);
           }
         }
       });
     }
   });
-
   // SVXLink Show/Hide password
-  $("#show_hide").on('click', function(event) {
+  $("#show_hide").on('click', function (event) {
     var svxKey = $('#svx_key');
     var svxKeyType = svxKey.attr("type");
     if (svxKeyType === "text") {
@@ -355,7 +390,6 @@ $(document).ready(function () {
       $('#show_hide i').toggleClass("icon-visibility icon-visibility_off");
     }
   });
-
   // APRS/Direwolf config
   $('#saveaprscfg').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
@@ -363,13 +397,13 @@ $(document).ready(function () {
       type: 'POST',
       url: 'ajax/aprs.php',
       data: {
-		service: $('#aprs_service').val(),
-		callsign: $('#aprs_callsign').val(),
-		comment: $('#aprs_comment').val(),
-		temp: $('#aprs_temp').val(),
-		symbol: $('#aprs_symbol').val(),
-		server: $('#aprs_server').val(),
-		report: $('#aprs_report').val(),
+        service: $('#aprs_service').val(),
+        callsign: $('#aprs_callsign').val(),
+        comment: $('#aprs_comment').val(),
+        temp: $('#aprs_temp').val(),
+        symbol: $('#aprs_symbol').val(),
+        server: $('#aprs_server').val(),
+        report: $('#aprs_report').val(),
       },
       success: function (data) {
         if (data) {
@@ -382,7 +416,6 @@ $(document).ready(function () {
       }
     });
   });
-
   // WiFi config
   $('#savewifi').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
@@ -404,42 +437,45 @@ $(document).ready(function () {
           $('#savewifi').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           if (data.match(/stored/)) {
-			  setTimeout(function () {
-				  location.reload(true);
-			  }, 3200);
+            setTimeout(function () {
+              location.reload(true);
+            }, 3200);
           }
         }
       }
     });
   });
-
   // Power Off OS
   $('#halt').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { halt: 1 }
+      data: {
+        halt: 1
+      }
     });
   });
-
   // Reboot OS
   $('#reboot').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { reboot: 1 }
+      data: {
+        reboot: 1
+      }
     });
   });
-
   // Restart Wi-Fi
   $('#rewifi').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { rewifi: 1 },
+      data: {
+        rewifi: 1
+      },
       success: function (data) {
         if (data) {
           $('#rewifi').prop('disabled', false).fadeTo('fast', 1);
@@ -448,165 +484,168 @@ $(document).ready(function () {
       }
     });
   });
-
   // Restart SVXLink service
   $('#resvx').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { resvx: 1 },
+      data: {
+        resvx: 1
+      },
       success: function (data) {
         if (data == true) {
           $('#resvx').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('RoLink service has been (re)started', 3000);
           setTimeout(function () {
-			$('#svxStatus').load('includes/status.php?svxStatus');
-			$('#refContainer').load('includes/status.php?svxReflector');
+            $('#svxStatus').load('includes/status.php?svxStatus');
+            $('#refContainer').load('includes/status.php?svxReflector');
           }, 1500);
         }
       }
     });
   });
-
   // Stop SVXLink service
   $('#endsvx').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { endsvx: 1 },
+      data: {
+        endsvx: 1
+      },
       success: function (data) {
         if (data == true) {
           $('#endsvx').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice('RoLink service has been stopped', 3000);
           setTimeout(function () {
-			$('#svxStatus').load('includes/status.php?svxStatus');
-			$('#refContainer').load('includes/status.php?svxReflector');
+            $('#svxStatus').load('includes/status.php?svxStatus');
+            $('#refContainer').load('includes/status.php?svxReflector');
           }, 1500);
         }
       }
     });
   });
-
   // Switch Host Name (default -> callsign)
   $('#switchHostName').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { switchHostName: 1 },
+      data: {
+        switchHostName: 1
+      },
       success: function (data) {
         if (data) {
           $('#switchHostName').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
-		  if (data.match(/reboot/)) {
-			setTimeout(function () {
-			  location.reload(true);
-			}, 3200);
+          if (data.match(/reboot/)) {
+            setTimeout(function () {
+              location.reload(true);
+            }, 3200);
           }
         }
       }
     });
   });
-
   // Latency check
   $('#latencyCheck').click(function () {
-	$(this).html('<span role="status" class="spinner-border spinner-border-sm mx-2"></span>Please wait...');
+    $(this).html('<span role="status" class="spinner-border spinner-border-sm mx-2"></span>Please wait...');
     $('#latencyCheck').prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { latencyCheck: 1 },
+      data: {
+        latencyCheck: 1
+      },
       success: function (data) {
         if (data) {
-			try {
-    			networkData = JSON.parse(data);
-			} catch (error) {
-				$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
-					$('#sysmsg').showNotice(data, 3000);
-					$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
-  				});
-    			return;
-			}
-			// Check if returned data is incomplete
-			if (Object.keys(networkData).length < 5 || networkData[0] == null ||
-				networkData[1] == null || networkData[2] == null ||
-				networkData[3] == null || networkData[4] == null) {
-				$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
-					$('#sysmsg').showNotice('Incomplete data received<br/>Try again in 30 seconds', 3000);
-					$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
-  				});
-    			return;
-			}
-			var tcpBandwidth = networkData[0].match(/(\S+)\s(\MB|KB)/);
-			validate('#tcp_bw', tcpBandwidth, 1)
-			var tcpLatency = networkData[1].match(/(\S+)\s(\S+)/);
-			validate('#tcp_lat', tcpLatency, 2)
-			var udpTxBandwidth = networkData[2].match(/(\S+)\s(\MB|KB)/);
-			validate('#udp_sbw', udpTxBandwidth, 1)
-			var udpRxBandwidth = networkData[3].match(/(\S+)\s(\MB|KB)/);
-			validate('#udp_rbw', udpRxBandwidth, 1)
-			var udpLatency = networkData[4].match(/(\S+)\s(\S+)/);
-			validate('#udp_lat', udpLatency, 2)
-			$('#tcp_bw').val(networkData[0]);
-			$('#tcp_lat').val(networkData[1]);
-			$('#udp_sbw').val(networkData[2]);
-			$('#udp_rbw').val(networkData[3]);
-			$('#udp_lat').val(networkData[4]);
-			$('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function() {
-				$(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
-				$('#sysmsg').showNotice('Completed successfully', 3000);
-  			});
+          try {
+            networkData = JSON.parse(data);
+          } catch (error) {
+            $('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function () {
+              $('#sysmsg').showNotice(data, 3000);
+              $(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+            });
+            return;
+          }
+          // Check if returned data is incomplete
+          if (Object.keys(networkData).length < 5 || networkData[0] == null || networkData[1] == null || networkData[2] == null || networkData[3] == null || networkData[4] == null) {
+            $('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function () {
+              $('#sysmsg').showNotice('Incomplete data received<br/>Try again in 30 seconds', 3000);
+              $(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+            });
+            return;
+          }
+          var tcpBandwidth = networkData[0].match(/(\S+)\s(\MB|KB)/);
+          validate('#tcp_bw', tcpBandwidth, 1)
+          var tcpLatency = networkData[1].match(/(\S+)\s(\S+)/);
+          validate('#tcp_lat', tcpLatency, 2)
+          var udpTxBandwidth = networkData[2].match(/(\S+)\s(\MB|KB)/);
+          validate('#udp_sbw', udpTxBandwidth, 1)
+          var udpRxBandwidth = networkData[3].match(/(\S+)\s(\MB|KB)/);
+          validate('#udp_rbw', udpRxBandwidth, 1)
+          var udpLatency = networkData[4].match(/(\S+)\s(\S+)/);
+          validate('#udp_lat', udpLatency, 2)
+          $('#tcp_bw').val(networkData[0]);
+          $('#tcp_lat').val(networkData[1]);
+          $('#udp_sbw').val(networkData[2]);
+          $('#udp_rbw').val(networkData[3]);
+          $('#udp_lat').val(networkData[4]);
+          $('#latencyCheck').prop('disabled', false).fadeTo('fast', 1, function () {
+            $(this).html('<i class="icon-timer px-2" aria-hidden="true"></i>Run test');
+            $('#sysmsg').showNotice('Completed successfully', 3000);
+          });
         }
       }
     });
 
-	function validate(container, data, type) {
-	    var status = [];
-	    status['ok'] = 'bg-success text-white'
-	    status['limit'] = 'bg-warning text-dark'
-	    status['bad'] = 'bg-danger text-white'
-	    switch (type) {
-	        case 1:
-	            if (data[2] == 'KB') {
-	                if (data[1] < 350) {
-	                    $(container).addClass(status['bad']);
-	                } else if (data[1] >= 350 && data[1] <= 500) {
-	                    $(container).addClass(status['limit']);
-	                } else {
-	                    $(container).addClass(status['ok']);
-	                }
-	            } else {
-	                $(container).addClass(status['ok']);
-	            }
-	            break;
-	        case 2:
-	            if (data[2] == 'ms') {
-	                if (data[1] > 150) {
-	                    $(container).addClass(status['bad']);
-	                } else if (data[1] >= 100 && data[1] <= 150) {
-	                    $(container).addClass(status['limit']);
-	                } else {
-	                    $(container).addClass(status['ok']);
-	                }
-	            } else {
-	                $(container).addClass(status['bad']);
-	            }
-	            break;
-	        default:
-	            return;
-	    }
-	}
+    function validate(container, data, type) {
+      var status = [];
+      status['ok'] = 'bg-success text-white'
+      status['limit'] = 'bg-warning text-dark'
+      status['bad'] = 'bg-danger text-white'
+      switch (type) {
+      case 1:
+        if (data[2] == 'KB') {
+          if (data[1] < 350) {
+            $(container).addClass(status['bad']);
+          } else if (data[1] >= 350 && data[1] <= 500) {
+            $(container).addClass(status['limit']);
+          } else {
+            $(container).addClass(status['ok']);
+          }
+        } else {
+          $(container).addClass(status['ok']);
+        }
+        break;
+      case 2:
+        if (data[2] == 'ms') {
+          if (data[1] > 150) {
+            $(container).addClass(status['bad']);
+          } else if (data[1] >= 100 && data[1] <= 150) {
+            $(container).addClass(status['limit']);
+          } else {
+            $(container).addClass(status['ok']);
+          }
+        } else {
+          $(container).addClass(status['bad']);
+        }
+        break;
+      default:
+        return;
+      }
+    }
   });
-
   // Switch file system state (RW <-> RO)
   $('#changeFS').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { changeFS: $('#changeFS').val() },
+      data: {
+        changeFS: $('#changeFS').val()
+      },
       success: function (data) {
         if (data) {
           $('#changeFS').prop('disabled', false).fadeTo('fast', 1);
@@ -618,11 +657,10 @@ $(document).ready(function () {
       }
     });
   });
-
   // Expand file system
   $('#expandFS').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
-	$('#sysmsg').iziModal('destroy');
+    $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
       title: 'Expanding file system!<br/>It might take a few minutes...',
       width: '40vh',
@@ -639,19 +677,20 @@ $(document).ready(function () {
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { expandFS: 1 },
+      data: {
+        expandFS: 1
+      },
       success: function (data) {
         if (data) {
           $('#expandFS').prop('disabled', false).fadeTo('fast', 1);
           $('#sysmsg').showNotice(data, 3000);
           setTimeout(function () {
-          	location.reload();
+            location.reload();
           }, 4000);
         }
       }
     });
   });
-
   // Update Dashboard
   $('#updateDash').click(function () {
     $(this).text("Please wait...");
@@ -659,19 +698,20 @@ $(document).ready(function () {
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { updateDash: 1 },
+      data: {
+        updateDash: 1
+      },
       success: function (data) {
-		if (data) {
-			$('#sysmsg').showNotice(data, 3000);
-			$('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1)
-			setTimeout(function () {
-				location.reload();
-			}, 4000);
-		}
+        if (data) {
+          $('#sysmsg').showNotice(data, 3000);
+          $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1)
+          setTimeout(function () {
+            location.reload();
+          }, 4000);
+        }
       }
     });
   });
-
   // Download voices
   $('#getVoices').click(function () {
     $('#sysmsg').iziModal('destroy');
@@ -688,25 +728,25 @@ $(document).ready(function () {
       overlayClose: false,
       overlay: true,
     });
-
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { getVoices: 1 },
+      data: {
+        getVoices: 1
+      },
       success: function (data) {
         if (data) {
-			$('#sysmsg').showNotice(data, 3000)
-			setTimeout(function () {
-				location.reload(true);
-			}, 5000);
+          $('#sysmsg').showNotice(data, 3000)
+          setTimeout(function () {
+            location.reload(true);
+          }, 5000);
         }
       }
     });
   });
-
   // RoLink update
   $('#updateRoLink').click(function () {
-	$('#cfgSave, #updateDash, #updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
+    $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', true).fadeTo('fast', 0.15);
     $('#sysmsg').iziModal('destroy');
     $('#sysmsg').iziModal({
       title: 'Updating, please wait!<br/>It might take a few minutes...',
@@ -721,23 +761,23 @@ $(document).ready(function () {
       overlayClose: false,
       overlay: true,
     });
-
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { updateRoLink: 1 },
+      data: {
+        updateRoLink: 1
+      },
       success: function (data) {
         if (data) {
-			$('#sysmsg').showNotice(data, 3000)
-			$('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1)
-			setTimeout(function () {
-				window.location.href = "/rolink";
-			}, 5000);
+          $('#sysmsg').showNotice(data, 3000)
+          $('#cfgSave, #updateDash, #updateRoLink').prop('disabled', false).fadeTo('fast', 1)
+          setTimeout(function () {
+            window.location.href = "/rolink";
+          }, 5000);
         }
       }
     });
   });
-
   // Make Read-only
   $('#makeRO').click(function () {
     $('#sysmsg').iziModal('destroy');
@@ -757,28 +797,33 @@ $(document).ready(function () {
     $.ajax({
       type: 'POST',
       url: 'ajax/sys.php',
-      data: { makeRO: 1 },
+      data: {
+        makeRO: 1
+      },
       success: function (data) {
         if (data) {
           $('#sysmsg').showNotice(data, 3000);
-          $('#makeRO')
-            .unbind()
-            .prop('innerText', 'Click me to reboot!')
-            .prop('id', 'reboot');
+          $('#makeRO').unbind().prop('innerText', 'Click me to reboot!').prop('id', 'reboot');
           var rebootNow = setInterval(blinkMyButton, 1000);
+
           function blinkMyButton() {
             $('#reboot').fadeOut().fadeIn();
           }
           $('#reboot').click(function () {
             $('#reboot').hide();
             clearInterval(rebootNow);
-            $.ajax({ type: 'POST', url: 'ajax/sys.php', data: { reboot: 1 } });
+            $.ajax({
+              type: 'POST',
+              url: 'ajax/sys.php',
+              data: {
+                reboot: 1
+              }
+            });
           });
         }
       }
     });
   });
-
   // Configuration values
   $('#cfgSave').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
@@ -819,18 +864,13 @@ $(document).ready(function () {
       }
     });
   });
-
   // DTMF Sender
   $('button[id^="sendDTMF"]').click(function () {
     var bcID = $(this).attr('id');
     var bcIDVal = $(this).attr('value');
-    $('#' + bcID)
-      .prop('disabled', true)
-      .fadeTo('fast', 0.15);
+    $('#' + bcID).prop('disabled', true).fadeTo('fast', 0.15);
     setTimeout(function () {
-      $('#' + bcID)
-        .prop('disabled', false)
-        .fadeTo('fast', 1);
+      $('#' + bcID).prop('disabled', false).fadeTo('fast', 1);
     }, 500);
     if (bcIDVal != undefined) {
       var dtmfData = bcIDVal;
@@ -841,17 +881,16 @@ $(document).ready(function () {
     $.ajax({
       type: 'POST',
       url: 'ajax/svx.php',
-      data: { dtmfCommand: dtmfData },
+      data: {
+        dtmfCommand: dtmfData
+      },
       success: function (data) {
         if (data) {
-          $('#dtmfConsole')
-            .fadeIn('fast')
-            .append(data + '<br/>');
+          $('#dtmfConsole').fadeIn('fast').append(data + '<br/>');
         }
       }
     });
   });
-
   // Mixer control
   $(function () {
     var prevValue = 0;
@@ -873,35 +912,32 @@ $(document).ready(function () {
         $.ajax({
           type: 'POST',
           url: 'ajax/sys.php',
-          data: { mctrl: volumeSlider, mval: newValue },
+          data: {
+            mctrl: volumeSlider,
+            mval: newValue
+          },
           success: function (data) {},
         });
       }
     });
   });
-
   // Mic1 Boost enable
   $(document).bind('keypress', function (e) {
     if (window.location.search.match(/\=cfg/) && e.which == 109 || e.which == 77) {
       $('#vac_mb').prop('disabled', (i, v) => !v);
     }
   });
-
   // Display a log file in real time
   if (window.location.search.match(/\=log/)) {
     var selectedLogType = sessionStorage.getItem('logtype');
-
     if (selectedLogType != undefined || selectedLogType != null) {
       $('select').first().find(':selected').removeAttr('selected');
-      $('select')
-        .find('option')
-        .each(function () {
-          if ($(this).val() == selectedLogType) {
-            $(this).attr('selected', true);
-          }
-        });
+      $('select').find('option').each(function () {
+        if ($(this).val() == selectedLogType) {
+          $(this).attr('selected', true);
+        }
+      });
     }
-
     $('select').on('change', function () {
       sessionStorage.setItem('logtype', $('select').first().val());
       var url = '?p=log&t=' + $(this).val();
@@ -910,14 +946,16 @@ $(document).ready(function () {
       }
       return false;
     });
-
     connectToServer(0, selectedLogType);
 
     function connectToServer(linenum, selval) {
       $.ajax({
         dataType: 'json',
         url: 'ajax/log.php',
-        data: { n: linenum, t: selval },
+        data: {
+          n: linenum,
+          t: selval
+        },
         timeout: 119000,
         success: function (data) {
           if (data == null) {

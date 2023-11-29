@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.62
+*   RoLinkX Dashboard v3.63
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -38,11 +38,11 @@ include __DIR__ .'/includes/functions.php';
 
 // Events
 $version = version();
-$events = 0;
-$gpioAjax = 'gpioStatus();';
+$eventsData = 'var events=0';
+$ajaxData = 'var auto_refresh = setInterval( function () { cpuData(); gpioStatus(); }, 3000);';
 if ($version && $version['date'] > 20231120) {
-	$events = 1;
-	$gpioAjax = '';
+    $ajaxData = '';
+    $eventsData = 'var events=1; var timeOutTimer=180;';
 }
 
 // Detect mobiles
@@ -116,10 +116,7 @@ switch ($page) {
 	$ajax = ($config['cfgCpuStats'] == 'true') ? "$(document).ready(function () {
 		cpuData();
 		gpioStatus();
-		var auto_refresh = setInterval( function () {
-			cpuData()
-			$gpioAjax
-		}, 3000);
+		$ajaxData
 	});" : null;
 }
 ?>
@@ -128,8 +125,8 @@ switch ($page) {
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
+        <meta name="description" content="RoLinkX Dashboard" />
+        <meta name="author" content="YO6NAM" />
         <title>RoLinkX Dashboard - <?php echo gethostname(); ?></title>
         <link rel="apple-touch-icon" sizes="57x57" href="assets/fav/apple-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="assets/fav/apple-icon-60x60.png">
@@ -144,9 +141,9 @@ switch ($page) {
 		<link rel="icon" type="image/png" sizes="32x32" href="assets/fav/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="96x96" href="assets/fav/favicon-96x96.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="assets/fav/favicon-16x16.png">
-		<link rel="manifest" href="/manifest.json">
+		<link rel="manifest" href="manifest.json">
 		<meta name="msapplication-TileColor" content="#ffffff">
-		<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+		<meta name="msapplication-TileImage" content="ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
         <link href="css/styles.css?_=<?php echo cacheBuster('css/styles.css'); ?>" rel="stylesheet" />
 		<link href="css/select2.min.css" rel="stylesheet" />
@@ -203,9 +200,9 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v3.62 © 2023 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v3.63 © 2023 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
-		<script>var events = <?php echo $events; ?></script>
+		<script><?php echo $eventsData; ?></script>
         <script src="js/jquery.js"></script>
         <script src="js/iziModal.min.js"></script>
         <script src="js/bootstrap.js"></script>

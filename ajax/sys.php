@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.61
+*   RoLinkX Dashboard v3.63
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -56,12 +56,13 @@ $actionMappings = [
     'resvx'            => 'restartSVXLink',
     'endsvx'           => 'stopSVXLink',
     'rewifi'           => 'wifiRestart',
+    'reboot'           => 'sysReboot',
     'halt'             => 'sysHalt',
     'updateDash'       => 'updateDashboard',
     'updateRoLink'     => 'updateRoLink',
     'getVoices'        => 'getVoices',
     'makeRO'           => 'makeRO',
-    'expandFS'		   => 'expandFS',
+    'expandFS'		   => 'expandFS'
 ];
 
 /* Process individual actions */
@@ -186,14 +187,11 @@ function sysHalt() {
 	/* If stuck in TX, force exit */
 	unstick();
 	exec('/usr/bin/sudo /usr/sbin/halt -p');
-	exit(0);
 }
 
 /* Reboot System */
-if ($reboot == 1) sysReboot();
 function sysReboot() {
 	exec("/usr/bin/sudo /usr/sbin/reboot");
-	exit(0);
 }
 
 /* Switch Host Name */

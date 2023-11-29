@@ -12,4 +12,4 @@
 /*APRS*/
 .map{height:50vh; width: 100%;} .fill {border: 1px solid green; height:100%;}
 /*Events*/
-#onair{font-size:1em}.talker-active{margin-right:10px;vertical-align:bottom;animation: blinker 0.4s linear infinite !important;}@keyframes blinker{60%{opacity:0}}
+#onair{font-size:1em}.talker-active{margin-right:10px;vertical-align:bottom;animation: blinker 0.4s linear infinite !important;}@keyframes blinker{60%{opacity:0}}#timerDisplay{vertical-align:bottom;margin-left:10px;line-height:24px}.timeOutTimerWarn{animation: blinker 0.4s linear infinite !important;}.talker{border-right-width:thick}.newEvent{border-right-color:red}
