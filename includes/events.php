@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.63
+*   RoLinkX Dashboard v3.64
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,7 @@ $gpioPaths = [
     'tx' => '/sys/class/gpio/gpio7/value',
     'fan' => '/sys/class/gpio/gpio6/value'
 ];
+$config = include __DIR__ .'/../config.php';
 while (true) {
     // Clear the arrays
     $talkerData = $gpioData = $cpuData = $cpuStatus = [];
@@ -96,7 +97,7 @@ while (true) {
         );
         $cpuTemp = number_format((int) $rawTemp / 1000, 1);
         $cpuData["cl"] = $cpuLoad;
-        $cpuData["ct"] = $cpuTemp;
+        $cpuData["ct"] = ($config['cfgTempOffset'] == 'true') ? $cpuTemp + 38 : $cpuTemp;
         $delay = 0;
         if ($prevData['cpuLoad'] == $cpuLoad) {
             continue;
