@@ -1,5 +1,5 @@
 #!/bin/bash
-# RoLinkX Dashboard v2.97
+# RoLinkX Dashboard v3.64
 # Setup script for minimum dashboard requirements
 
 wlanCfgFile="/etc/wpa_supplicant/wpa_supplicant.conf"
@@ -16,6 +16,11 @@ fi
 if grep "jammy" /etc/os-release >/dev/null;then
         nmService=NetworkManager
         phpVersion=8.1
+fi
+
+if grep "bookworm" /etc/os-release >/dev/null; then
+        printf 'Armbian Bookworm is NOT (yet) supported. Aborting...\n'
+        exit 1
 fi
 
 # Check if we should modify network
