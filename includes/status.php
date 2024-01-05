@@ -1,6 +1,6 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.61
+*   RoLinkX Dashboard v3.63
 *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
 *
 *   This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ if (isset($_GET['gpio'])) echo gpioStatus(1);
 
 /* GPS dongle */
 function getGPSDongle() {
-	$vidPidList = array("1546:01a7", "067b:aaa0");
+	$vidPidList = array("1546:01a6", "1546:01a7", "067b:aaa0");
 	$usbDevices = shell_exec('lsusb');
 	$usbDevicesArray = explode("\n", $usbDevices);
 	$detected = false;
