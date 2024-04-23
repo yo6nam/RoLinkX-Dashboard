@@ -1,119 +1,119 @@
 <?php
 /*
-*   RoLinkX Dashboard v3.63
-*   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
-*
-*   This program is free software; you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation; either version 2 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program; if not, write to the Free Software
-*   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ *   RoLinkX Dashboard v3.64
+ *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the Free Software
+ *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
 /*
-* Index page
-*/
+ * Index page
+ */
 
 // Password protection
-if (is_file(__DIR__ . '/assets/pwd')){
-	$password = file_get_contents(__DIR__ . '/assets/pwd');
-	$hash = md5($password);
-	if (!isset($_COOKIE[$hash]) && !empty($password)) {
-		require_once(__DIR__ . '/includes/access.php');
-	}
+if (is_file(__DIR__ . '/assets/pwd')) {
+    $password = file_get_contents(__DIR__ . '/assets/pwd');
+    $hash     = md5($password);
+    if (!isset($_COOKIE[$hash]) && !empty($password)) {
+        require_once __DIR__ . '/includes/access.php';
+    }
 }
 $pages = array("wifi", "svx", "sa", "log", "aprs", "tty", "cfg");
-$page = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
+$page  = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
 // Common functions
-include __DIR__ .'/includes/functions.php';
+include __DIR__ . '/includes/functions.php';
 
 // Events
-$version = version();
+$version    = version();
 $eventsData = 'var events=0';
-$ajaxData = 'var auto_refresh = setInterval( function () { cpuData(); gpioStatus(); }, 3000);';
+$ajaxData   = 'var auto_refresh = setInterval( function () { cpuData(); gpioStatus(); }, 3000);';
 if ($version && $version['date'] > 20231120) {
-    $ajaxData = '';
+    $ajaxData   = '';
     $eventsData = 'var events=1; var timeOutTimer=180;';
 }
 
 // Detect mobiles
-require_once(__DIR__ . '/includes/Mobile_Detect.php');
+require_once __DIR__ . '/includes/Mobile_Detect.php';
 $detect = new Mobile_Detect();
 
 if (in_array($page, $pages)) {
-	include __DIR__ . '/includes/forms.php';
+    include __DIR__ . '/includes/forms.php';
 } else {
-	$config = include 'config.php';
-	include __DIR__ . '/includes/status.php';
+    $config = include 'config.php';
+    include __DIR__ . '/includes/status.php';
 }
 
 $rolink = (is_file($cfgFile)) ? true : false;
 
 switch ($page) {
-  case "wifi":
-	$htmlOutput = wifiForm();
-    break;
-  case "svx":
-    $htmlOutput = svxForm();
-    break;
-  case "sa":
-    $htmlOutput = sa818Form();
-    break;
-  case "aprs":
-    $htmlOutput = aprsForm();
-    $extraResource	= '<link href="https://cdn.jsdelivr.net/npm/ol@v8.1.0/ol.css" rel="stylesheet">
+    case "wifi":
+        $htmlOutput = wifiForm();
+        break;
+    case "svx":
+        $htmlOutput = svxForm();
+        break;
+    case "sa":
+        $htmlOutput = sa818Form();
+        break;
+    case "aprs":
+        $htmlOutput    = aprsForm();
+        $extraResource = '<link href="https://cdn.jsdelivr.net/npm/ol@v8.1.0/ol.css" rel="stylesheet">
     	<script src="https://cdn.jsdelivr.net/npm/ol@v8.1.0/dist/ol.js"></script>';
-    break;
-  case "log":
-    $htmlOutput = logsForm();
-    break;
-  case "tty":
-    $htmlOutput = ttyForm();
-    break;
-  case "cfg":
-    $htmlOutput = cfgForm();
-    break;
-  default:
-	$svxAction = (getSVXLinkStatus(1)) ? 'Restart' : 'Start';
-	$htmlOutput = '<h4 class="m-2 mt-2 alert alert-success fw-bold talker">'. ($detect->isMobile() ? '&nbsp;' : 'Status') .'<span id="onair" class="badge position-absolute top-50 start-50 translate-middle"></span></h4>
+        break;
+    case "log":
+        $htmlOutput = logsForm();
+        break;
+    case "tty":
+        $htmlOutput = ttyForm();
+        break;
+    case "cfg":
+        $htmlOutput = cfgForm();
+        break;
+    default:
+        $svxAction  = (getSVXLinkStatus(1)) ? 'Restart' : 'Start';
+        $htmlOutput = '<h4 class="m-2 mt-2 alert alert-success fw-bold talker">' . ($detect->isMobile() ? '&nbsp;' : 'Status') . '<span id="onair" class="badge position-absolute top-50 start-50 translate-middle"></span></h4>
 	<div class="card m-2">
 	<div class="card-body">';
-	$htmlOutput .= ($config['cfgHostname'] == 'true' && $rolink) ? hostName() : null;
-	$htmlOutput .= ($config['cfgUptime'] == 'true') ? getUpTime() : null;
-	$htmlOutput .= ($config['cfgCpuStats'] == 'true') ? getCpuStats() : null;
-	$htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
-	$htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
-	$htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
-	$htmlOutput .= gpioStatus();
- 	$htmlOutput .= ($config['cfgDetectSa'] == 'true') ? sa818Detect() : null;
-	$htmlOutput .= ($config['cfgSvxStatus'] == 'true' && $rolink) ? '<div id="svxStatus">'. getSVXLinkStatus() .'</div>' : null;
-	$htmlOutput .= '<div id="refContainer">'. getReflector() .'</div>';
-	$htmlOutput .= ($config['cfgRefNodes'] == 'true' && $rolink) ? getRefNodes() : null;
-	$htmlOutput .= ($config['cfgCallsign'] == 'true' && $rolink) ? getCallSign() . PHP_EOL : null;
-	$htmlOutput .= ($rolink) ? getGPSDongle() . PHP_EOL : null;
-	$htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
-	$htmlOutput .= ($config['cfgFreeSpace'] == 'true') ? getFreeSpace() : null;
-	$htmlOutput .= ($rolink) ? getFileSystem() . PHP_EOL : null;
-	$htmlOutput .= ($rolink) ? getRemoteVersion() . PHP_EOL : null;
-	$htmlOutput .= ($rolink) ? '<div class="d-grid gap-2 col-7 mx-auto">
-	<button id="resvx" class="btn btn-warning btn-lg">'. $svxAction .' RoLink</button>
+        $htmlOutput .= ($config['cfgHostname'] == 'true' && $rolink) ? hostName() : null;
+        $htmlOutput .= ($config['cfgUptime'] == 'true') ? getUpTime() : null;
+        $htmlOutput .= ($config['cfgCpuStats'] == 'true') ? getCpuStats() : null;
+        $htmlOutput .= ($config['cfgNetworking'] == 'true') ? networking() : null;
+        $htmlOutput .= ($config['cfgSsid'] == 'true') ? getSSID() : null;
+        $htmlOutput .= ($config['cfgPublicIp'] == 'true') ? getPublicIP() : null;
+        $htmlOutput .= gpioStatus();
+        $htmlOutput .= ($config['cfgDetectSa'] == 'true') ? sa818() : null;
+        $htmlOutput .= ($config['cfgSvxStatus'] == 'true' && $rolink) ? '<div id="svxStatus">' . getSVXLinkStatus() . '</div>' : null;
+        $htmlOutput .= '<div id="refContainer">' . getReflector() . '</div>';
+        $htmlOutput .= ($config['cfgRefNodes'] == 'true' && $rolink) ? getRefNodes() : null;
+        $htmlOutput .= ($config['cfgCallsign'] == 'true' && $rolink) ? getCallSign() . PHP_EOL : null;
+        $htmlOutput .= ($rolink) ? getGPSDongle() . PHP_EOL : null;
+        $htmlOutput .= ($config['cfgKernel'] == 'true') ? getKernel() : null;
+        $htmlOutput .= ($config['cfgFreeSpace'] == 'true') ? getFreeSpace() : null;
+        $htmlOutput .= ($rolink) ? getFileSystem() . PHP_EOL : null;
+        $htmlOutput .= ($rolink) ? getRemoteVersion() . PHP_EOL : null;
+        $htmlOutput .= ($rolink) ? '<div class="d-grid gap-2 col-7 mx-auto">
+	<button id="resvx" class="btn btn-warning btn-lg">' . $svxAction . ' RoLink</button>
 	<button id="endsvx" class="btn btn-dark btn-lg">Stop RoLink</button>
 	<button id="reboot" class="btn btn-primary btn-lg">Reboot</button>
 	<button id="halt" class="btn btn-danger btn-lg">Power Off</button>
 	</div>
 	</div>
 	</div>' : null;
-	$htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
-	$ajax = ($config['cfgCpuStats'] == 'true') ? "$(document).ready(function () {
+        $htmlOutput .= ($config['cfgDTMF'] == 'true') ? dtmfSender() . PHP_EOL : null;
+        $ajax = ($config['cfgCpuStats'] == 'true') ? "$(document).ready(function () {
 		cpuData();
 		gpioStatus();
 		$ajaxData
@@ -200,7 +200,7 @@ switch ($page) {
 			<div id="sysmsg"></div>
 		</div>
 		<footer class="page-footer fixed-bottom font-small bg-light">
-			<div class="text-center small p-2">v3.63 © 2023 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+			<div class="text-center small p-2">v3.64 © 2023 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
 		</footer>
 		<script><?php echo $eventsData; ?></script>
         <script src="js/jquery.js"></script>
@@ -208,6 +208,6 @@ switch ($page) {
         <script src="js/bootstrap.js"></script>
         <script src="js/select2.min.js"></script>
         <script src="js/scripts.js?_=<?php echo cacheBuster('js/scripts.js'); ?>"></script>
-		<?php echo (isset($ajax)) ? '<script>'. $ajax .'</script>'. PHP_EOL : null; ?>
+		<?php echo (isset($ajax)) ? '<script>' . $ajax . '</script>' . PHP_EOL : null; ?>
     </body>
 </html>

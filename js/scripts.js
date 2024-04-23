@@ -30,7 +30,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
 });
 /*
- *   RoLinkX Dashboard v3.63
+ *   RoLinkX Dashboard v3.64
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -249,7 +249,8 @@ $(document).ready(function () {
       data: {
         grp: $('#sa_grp').val(),
         dev: $('#sa_dev').val(),
-        tpl: $('#sa_tpl').val(),
+        tpl_rx: $('#sa_tpl_rx').val(),
+        tpl_tx: $('#sa_tpl_tx').val(),
         sql: $('#sa_sql').val(),
         vol: $('#sa_vol').val(),
         flt: $('#sa_flt').val(),
@@ -378,18 +379,26 @@ $(document).ready(function () {
       });
     }
   });
-  // SVXLink Show/Hide password
+  // SVXLink and EchoLink Show/Hide password
   $("#show_hide").on('click', function (event) {
-    var svxKey = $('#svx_key');
-    var svxKeyType = svxKey.attr("type");
-    if (svxKeyType === "text") {
-      svxKey.attr('type', 'password');
-      $('#show_hide i').toggleClass("icon-visibility icon-visibility_off");
-    } else if (svxKeyType === "password") {
-      svxKey.attr('type', 'text');
-      $('#show_hide i').toggleClass("icon-visibility icon-visibility_off");
-    }
+    togglePwd('#svx_key');
   });
+  $("#show_hide_el").on('click', function (event) {
+    togglePwd('#svx_el_pwd');
+  });
+  function togglePwd(selector) {
+    var passwordField = $(selector);
+    var passwordType = passwordField.attr("type");
+
+    if (passwordType === "text") {
+      passwordField.attr('type', 'password');
+      $(selector + '_show_hide i').toggleClass("icon-visibility icon-visibility_off");
+    } else if (passwordType === "password") {
+      passwordField.attr('type', 'text');
+      $(selector + '_show_hide i').toggleClass("icon-visibility icon-visibility_off");
+    }
+  }
+
   // APRS/Direwolf config
   $('#saveaprscfg').click(function () {
     $(this).prop('disabled', true).fadeTo('fast', 0.15);
