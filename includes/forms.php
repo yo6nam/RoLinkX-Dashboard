@@ -957,8 +957,7 @@ function aprsForm($ajax = false)
         'North America'   => 'noam.aprs2.net',
         'South America'   => 'soam.aprs2.net',
         'Asia'            => 'asia.aprs2.net',
-        'Oceania'         => 'aunz.aprs2.net',
-        'Romania'         => 'aprs.439100.ro',
+        'Oceania'         => 'aunz.aprs2.net'
     );
     foreach ($servers as $label => $value) {
         $selected = ($server == $value) ? 'selected' : '';
