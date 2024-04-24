@@ -1,7 +1,7 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.61
- *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.65
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ $cfgELFile    = '/opt/rolink/conf/svxlink.d/ModuleEchoLink.conf';
 $cfgRefFile   = '/opt/rolink/conf/rolink.json';
 $tmpRefFile   = '/tmp/rolink.json.tmp';
 $verFile      = '/opt/rolink/version';
+$hwCache      = '/tmp/hw_cache.json';
 $remoteVerUrl = 'https://rolink.network/data/version';
 $cfgRefData   = json_decode(file_get_contents($cfgRefFile), true);
 $pinsArray    = [2, 3, 6, 7, 10, 18, 19];
@@ -129,21 +130,77 @@ function checkEnvironment()
     return false;
 }
 
-/* Detect SA8x8 */
+/* Detect SA8x8 (port & firmware)*/
 function sa8x8Detect()
 {
-    $ttyPortDetected = $sa818Firmware = null;
-    $version         = version();
-    if ($version) {
-        if ($version['date'] >= 20230126) {
-            $sysReply = shell_exec('/usr/bin/sudo /opt/rolink/scripts/init sa_detect');
-            if (!empty($sysReply)) {
-                $sysData         = explode('|', $sysReply);
-                $ttyPortDetected = (int) $sysData[0];
-                $sa818Firmware   = str_replace("+VERSION:", "", trim($sysData[1]));
-                return ['port' => $ttyPortDetected, 'version' => $sa818Firmware];
-            }
+    global $hwCache;
+
+    $cachedData = readFromCache($hwCache, 'sa8x8');
+    if ($cachedData !== null) {
+        return $cachedData;
+    }
+
+    $version = version();
+    if ($version && $version['date'] >= 20230126) {
+        $sysReply = shell_exec('/usr/bin/sudo /opt/rolink/scripts/init sa_detect');
+        if (!empty($sysReply)) {
+            $sysData         = explode('|', $sysReply);
+            $ttyPortDetected = (int) $sysData[0];
+            $sa8x8Firmware   = str_replace("+VERSION:", "", trim($sysData[1]));
+            $data            = ['port' => $ttyPortDetected, 'version' => $sa8x8Firmware];
+            writeToCache($hwCache, 'sa8x8', $data);
+            return $data;
         }
     }
-    return;
+    return null;
+}
+
+/* Return external IP */
+function getExtIp()
+{
+    global $hwCache;
+
+    $cachedIp = readFromCache($hwCache, 'publicIp');
+    if ($cachedIp !== null && time() - $cachedIp['ts'] < 300) {
+        return $cachedIp['ip'];
+    }
+
+    exec("/usr/bin/dig @resolver4.opendns.com myip.opendns.com +short", $getIP);
+    if (filter_var($getIP[0], FILTER_VALIDATE_IP) !== false) {
+        $ip = $getIP[0];
+    } else {
+        $getIP = file_get_contents('http://ipecho.net/plain');
+        if (filter_var($getIP, FILTER_VALIDATE_IP) !== false) {
+            $ip = $getIP;
+        }
+    }
+
+    if (isset($ip)) {
+        $data = ['ip' => $ip, 'ts' => time()];
+        writeToCache($hwCache, 'publicIp', $data);
+        return $ip;
+    }
+
+    return null;
+}
+
+function readFromCache($cacheFile, $key)
+{
+    if (is_file($cacheFile) && is_readable($cacheFile)) {
+        $data = json_decode(file_get_contents($cacheFile), true);
+        if (isset($data[$key])) {
+            return $data[$key];
+        }
+    }
+    return null;
+}
+
+function writeToCache($cacheFile, $key, $value)
+{
+    $data = [];
+    if (is_file($cacheFile) && is_readable($cacheFile)) {
+        $data = json_decode(file_get_contents($cacheFile), true);
+    }
+    $data[$key] = $value;
+    file_put_contents($cacheFile, json_encode($data));
 }
