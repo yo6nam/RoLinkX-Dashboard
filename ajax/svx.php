@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.64
+ *   RoLinkX Dashboard v3.66
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -106,6 +106,16 @@ if (isset($_POST['restore'])) {
     echo "RoLink configuration restored to defaults";
     exit(0);
 }
+
+// Add the backup reflector if using RoLink.Network
+$backupReflector = 'backup.rolink.network';
+$reflectors      = explode(',', $frmReflector);
+if (array_intersect(['rolink.network', 'svx.439100.ro'], $reflectors)) {
+    if (!in_array($backupReflector, $reflectors)) {
+        $reflectors[] = $backupReflector;
+    }
+}
+$frmReflector = implode(',', $reflectors);
 
 // Get current variables
 $oldCfg = file_get_contents($cfgFile);
