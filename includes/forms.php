@@ -1,7 +1,7 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.64
- *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.67
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

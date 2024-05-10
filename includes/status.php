@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.65
+ *   RoLinkX Dashboard v3.67
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -468,7 +468,7 @@ function getFreeSpace()
     /* Determine if it's an image based install */
     exec('/usr/bin/df /', $drive);
     preg_match('/mmcblk0p1\s+(\d+)/m', $drive[1], $size);
-    if ($size[1] < 2097152) {
+    if ($size[1] < 3145728) {
         $status = 'background:yellow;color:black';
         $expand = '<button type="button" id="expandFS" class="btn btn-danger">&#8633;</button>';
     }

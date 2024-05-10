@@ -1,7 +1,7 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.63
- *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.67
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ function latencyCheck()
         return 'Application not installed!<br/>Please install <b>qperf</b> manually';
     }
 
-    preg_match('/HOST=(\S+)/', file_get_contents($cfgFile), $host);
+    preg_match('/HOST=([^\s,]+)/', file_get_contents($cfgFile), $host);
     if (empty($host)) {
         return 'Missing or wrong server address!';
     }
