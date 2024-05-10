@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.64
+ *   RoLinkX Dashboard v3.68
  *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ while (true) {
             }
             if ($prevData['talkerAction'] != $talkerData["ta"]) {
                 $jsonTalker = json_encode($talkerData);
-                echo "id: $id\retry: 1000\ndata: $jsonTalker\n\n";
+                echo "id: $id\nretry: 1000\ndata: $jsonTalker\n\n";
                 flush();
                 ++$id;
                 $prevData['talkerAction'] = $talkerData["ta"];
@@ -79,7 +79,7 @@ while (true) {
     }
     $jsonGpio = json_encode($gpioData);
     if ($jsonGpio != $prevData['gpio']) {
-        echo "id: $id\retry: 1000\ndata: $jsonGpio\n\n";
+        echo "id: $id\nretry: 1000\ndata: $jsonGpio\n\n";
         flush();
         ++$id;
         $prevData['gpio'] = $jsonGpio;
@@ -109,7 +109,7 @@ while (true) {
 
         }
         $jsonCpu = json_encode($cpuData);
-        echo "id: $id\retry: 1000\ndata: $jsonCpu\n\n";
+        echo "id: $id\nretry: 1000\ndata: $jsonCpu\n\n";
         flush();
         ++$id;
         $prevData['cpuLoad'] = $cpuLoad;
