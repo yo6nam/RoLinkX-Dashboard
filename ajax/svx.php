@@ -1,7 +1,7 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.66
- *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.68
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +22,10 @@
  * SVXLink / EchoLink configuration module
  */
 
+if (empty($_POST) && empty($_GET)) {
+    exit;
+}
+
 include __DIR__ . '/../includes/functions.php';
 $restoreFile  = '/var/www/html/rolink/assets/rolink.conf';
 $newFile      = '/tmp/rolink.conf.tmp';
@@ -37,6 +41,20 @@ $version = version();
 
 // Populate profile from GET vars
 $frmLoadProfile = (isset($_GET['lpn'])) ? filter_input(INPUT_GET, 'lpn', FILTER_SANITIZE_ADD_SLASHES) : '';
+
+// Proxy list (EchoLink)
+if (isset($_GET['getProxyList'])) {
+    $proxyList = @file_get_contents('https://rolink.network/api/echolink/proxyList');
+    if ($proxyList !== false) {
+        $ipList = json_decode($proxyList, true);
+        if (is_array($ipList['proxies']['available'])) {
+            echo json_encode($ipList['proxies']['available']);
+            exit;
+        }
+    }
+    echo json_encode(["Failed to fetch proxy list."]);
+    exit;
+}
 
 // Retrieve POST vars (defaults if empty values to avoid locking the config file)
 $frmProfile     = (isset($_POST['prn'])) ? filter_input(INPUT_POST, 'prn', FILTER_SANITIZE_ADD_SLASHES) : '';
@@ -76,6 +94,10 @@ $frmElSysop           = trim(filter_input(INPUT_POST, 'el_sop', FILTER_SANITIZE_
 $frmElLocation        = filter_input(INPUT_POST, 'el_loc', FILTER_SANITIZE_ADD_SLASHES);
 $frmElTimeout         = trim(filter_input(INPUT_POST, 'el_to', FILTER_SANITIZE_NUMBER_INT));
 $frmElLinkIdleTimeout = trim(filter_input(INPUT_POST, 'el_lit', FILTER_SANITIZE_NUMBER_INT));
+
+$frmElProxyServer   = (empty($_POST['el_pxsrv'])) ? 'the.proxy.server' : preg_replace('/^(http(s)?:\/\/)?(www.)?|(\/)/i', '', filter_input(INPUT_POST, 'el_pxsrv', FILTER_SANITIZE_ADD_SLASHES));
+$frmElProxyPort     = trim(filter_input(INPUT_POST, 'el_pxp', FILTER_SANITIZE_NUMBER_INT));
+$frmElProxyPassword = trim(filter_input(INPUT_POST, 'el_pxpw', FILTER_SANITIZE_ADD_SLASHES));
 
 /* Process DTMF commands */
 if (isset($_POST['dtmfCommand'])) {
@@ -163,6 +185,9 @@ preg_match('/SYSOPNAME=(.*)/', $oldElCfg, $elSysop);
 preg_match('/TIMEOUT=(\d+)/', $oldElCfg, $elTimeout);
 preg_match('/LOCATION=(.*)/', $oldElCfg, $elLocation);
 preg_match('/LINK_IDLE_TIMEOUT=(.*)/', $oldElCfg, $elLinkIdleTimeout);
+preg_match('/(#?)(PROXY_SERVER=)(.*)/', $oldElCfg, $elProxyServer);
+preg_match('/(#?)(PROXY_PORT=)(\d+)/', $oldElCfg, $elProxyPort);
+preg_match('/(#?)(PROXY_PASSWORD=)(\S+)/', $oldElCfg, $elProxyPassword);
 
 // Safe category values
 $reflectorValue    = (isset($varReflector[2])) ? $varReflector[2] : '';
@@ -496,7 +521,7 @@ if ($modulesValue != 0 &&
         ++$changesEl;
     }
 
-    $oldElVar[1] = '/(PASSWORD=)(\S+)/';
+    $oldElVar[1] = '/^(PASSWORD=)(\S+)/m';
     $newElVar[1] = '${1}' . $frmElPassword;
     if ($elPassword[1] != $frmElPassword) {
         ++$changes;
@@ -510,7 +535,7 @@ if ($modulesValue != 0 &&
         ++$changesEl;
     }
 
-    $oldElVar[3] = '/(^TIMEOUT=)(\d+)/m';
+    $oldElVar[3] = '/^(TIMEOUT=)(\d+)/m';
     $newElVar[3] = '${1}' . (empty($frmElTimeout) ? 60 : $frmElTimeout);
     if ($elTimeout[1] != $frmElTimeout) {
         ++$changes;
@@ -527,6 +552,28 @@ if ($modulesValue != 0 &&
     $oldElVar[5] = '/(LINK_IDLE_TIMEOUT=)(\d+)/';
     $newElVar[5] = '${1}' . (empty($frmElLinkIdleTimeout) ? 300 : $frmElLinkIdleTimeout);
     if ($elLinkIdleTimeout[1] != $frmElLinkIdleTimeout) {
+        ++$changes;
+        ++$changesEl;
+    }
+
+    $oldElVar[6]    = '/(#?)(PROXY_SERVER=)(.*)/';
+    $disableElProxy = ($frmElProxyServer != 'the.proxy.server') ? '' : '#';
+    $newElVar[6]    = $disableElProxy . '${2}' . $frmElProxyServer;
+    if ($elProxyServer[3] != $frmElProxyServer) {
+        ++$changes;
+        ++$changesEl;
+    }
+
+    $oldElVar[7] = '/(#?)(PROXY_PORT=)(.*)/';
+    $newElVar[7] = $disableElProxy . '${2}' . $frmElProxyPort;
+    if ($elProxyPort[3] != $frmElProxyPort) {
+        ++$changes;
+        ++$changesEl;
+    }
+
+    $oldElVar[8] = '/(#?)(PROXY_PASSWORD=)(.*)/';
+    $newElVar[8] = $disableElProxy . '${2}' . $frmElProxyPassword;
+    if ($elProxyPassword[3] != $frmElProxyPassword) {
         ++$changes;
         ++$changesEl;
     }

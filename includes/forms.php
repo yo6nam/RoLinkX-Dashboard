@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.67
+ *   RoLinkX Dashboard v3.68
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -92,21 +92,21 @@ function scanWifi($ext = 0)
         $cnt = 1;
         if ($ext != 1) {
             $apList = '<div class="accordion mb-3" id="wifiNetworks">
-	<div class="accordion-item">
-	 <h3 class="accordion-header" id="heading">
-		<button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks (click to open)</button>
-	 </h3>
-	 <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
-		<div id="updateList" class="accordion-body">';
+    <div class="accordion-item">
+     <h3 class="accordion-header" id="heading">
+        <button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks (click to open)</button>
+     </h3>
+     <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
+        <div id="updateList" class="accordion-body">';
         }
         $apList .= '<table class="table table-sm"><thead><tr>
-			<th scope="col">#</th>
-			<th scope="col">SSID</th>
-			<th scope="col">RSSI</th>
-			<th scope="col">Auth</th>
-			<th scope="col">Ch.</th>
-			</tr></thead>
-			<tbody>';
+            <th scope="col">#</th>
+            <th scope="col">SSID</th>
+            <th scope="col">RSSI</th>
+            <th scope="col">Auth</th>
+            <th scope="col">Ch.</th>
+            </tr></thead>
+            <tbody>';
 
         foreach ($networks as $name => $data) {
             if ($data['rssi'] >= -80) {
@@ -118,11 +118,11 @@ function scanWifi($ext = 0)
             }
 
             $apList .= '<tr ' . $lvlQuality . '><th scope="row">' . $cnt . '</th>
-						<td>' . $name . '</td>
-						<td>' . $data['rssi'] . '</td>
-						<td>' . $data['protocol'] . '</td>
-						<td>' . $data['channel'] . '</td>
-						</tr>';
+                        <td>' . $name . '</td>
+                        <td>' . $data['rssi'] . '</td>
+                        <td>' . $data['protocol'] . '</td>
+                        <td>' . $data['channel'] . '</td>
+                        </tr>';
             ++$cnt;
         }
         $apList .= '</tbody></table>';
@@ -179,8 +179,8 @@ function wifiForm()
     $wifiForm = '<h4 class="mt-2 alert alert-info fw-bold">Wi-Fi configuration</h4>';
     $wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
     $wifiForm .= '<div class="card">
-		<div class="card-header">Add / Edit networks</div>
-		<div class="card-body">' . PHP_EOL;
+        <div class="card-header">Add / Edit networks</div>
+        <div class="card-body">' . PHP_EOL;
     for ($i = 0; $i < 4; $i++) {
         $connected   = (isset($con[0])) ? $con[0] : null;
         $active      = (isset($ssidList[0][$i]) && $connected === $ssidList[0][$i]) ? true : false;
@@ -190,29 +190,29 @@ function wifiForm()
         $background  = ($active) ? ' bg-success text-white' : null;
         $status      = ($active) ? ' (connected)' : null;
         $wifiForm .= '<h4 class="d-flex justify-content-center badge badge-light fs-6' . $background . '"><i class="icon-wifi">&nbsp;</i>Network ' . $count . $status . '</h4><div class="input-group input-group-sm mb-2">
-		  <span class="input-group-text" style="width: 7rem;">Name (SSID)</span>
-		  <input id="wlan_network_' . $count . '" type="text" class="form-control" placeholder="' . $networkName . '" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
-		</div>
-		<div class="input-group input-group-sm mb-4">
-		  <span class="input-group-text" style="width: 7rem;">Key (Password)</span>
-		  <input id="wlan_authkey_' . $count . '" type="text" class="form-control" placeholder="' . $networkKey . '" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
-		</div>' . PHP_EOL;
+          <span class="input-group-text" style="width: 7rem;">Name (SSID)</span>
+          <input id="wlan_network_' . $count . '" type="text" class="form-control" placeholder="' . $networkName . '" aria-label="Network Name" aria-describedby="inputGroup-sizing-sm">
+        </div>
+        <div class="input-group input-group-sm mb-4">
+          <span class="input-group-text" style="width: 7rem;">Key (Password)</span>
+          <input id="wlan_authkey_' . $count . '" type="text" class="form-control" placeholder="' . $networkKey . '" aria-label="Network key" aria-describedby="inputGroup-sizing-sm">
+        </div>' . PHP_EOL;
     }
     $wifiForm .= '<div class="row justify-content-center m-1">
-			<div class="col-auto alert alert-info m-2 p-1" role="alert">To delete a network use the - (dash) character as SSID</div>
-			<div class="col-auto alert alert-warning m-2 p-1" role="alert">Note : Open networks (no key) are not supported</div>
-		</div>
-		<div class="d-flex justify-content-center mt-2">
-			<button id="savewifi" class="m-2 btn btn-danger btn-lg">Save</button>
-			<button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
-		</div>
-		</div>
-	</div>' . PHP_EOL;
+            <div class="col-auto alert alert-info m-2 p-1" role="alert">To delete a network use the - (dash) character as SSID</div>
+            <div class="col-auto alert alert-warning m-2 p-1" role="alert">Note : Open networks (no key) are not supported</div>
+        </div>
+        <div class="d-flex justify-content-center mt-2">
+            <button id="savewifi" class="m-2 btn btn-danger btn-lg">Save</button>
+            <button id="rewifi" class="m-2 btn btn-info btn-lg">Restart Wi-Fi</button>
+        </div>
+        </div>
+    </div>' . PHP_EOL;
     $wifiForm .= '<script>
-	var auto_refresh = setInterval( function () {
-		$("#updateList").load("includes/forms.php?scan");
-	}, 6000);
-	</script>' . PHP_EOL;
+    var auto_refresh = setInterval( function () {
+        $("#updateList").load("includes/forms.php?scan");
+    }, 6000);
+    </script>' . PHP_EOL;
     return $wifiForm;
 }
 
@@ -324,9 +324,9 @@ function svxForm()
 
     if (!empty($proFiles)) {
         $profileOption = '<div class="input-group input-group-sm mb-3">
-			  <label class="input-group-text bg-info text-white" for="svx_spn" style="width: 8rem;">Select profile</label>
-			  <select id="svx_spn" class="form-select">
-				<option value="" selected disabled>Select a profile</option>' . PHP_EOL;
+              <label class="input-group-text bg-info text-white" for="svx_spn" style="width: 8rem;">Select profile</label>
+              <select id="svx_spn" class="form-select">
+                <option value="" selected disabled>Select a profile</option>' . PHP_EOL;
         foreach ($proFiles as $profile) {
             if (in_array($profile, $skip)) {
                 continue;
@@ -335,48 +335,48 @@ function svxForm()
             $profileOption .= '<option value="' . $profile . '">' . basename($profile, '.json') . '</option>' . PHP_EOL;
         }
         $profileOption .= '</select>
-		<button id="delsvxprofile" class="btn btn-outline-danger" type="button">Delete</button>
-		</div>
-		<div class="separator">General</div>';
+        <button id="delsvxprofile" class="btn btn-outline-danger" type="button">Delete</button>
+        </div>
+        <div class="separator">General</div>';
     }
 
     $svxForm = '<h4 class="mt-2 alert alert-warning fw-bold">SVXLink configuration</h4>';
     $svxForm .= $profileOption;
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text bg-info text-white" style="width: 8rem;">Create new profile</span>
-		  <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
-		</div>';
+          <span class="input-group-text bg-info text-white" style="width: 8rem;">Create new profile</span>
+          <input id="svx_prn" type="text" class="form-control" placeholder="Name your profile" aria-label="Profile name" aria-describedby="inputGroup-sizing-sm">
+        </div>';
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
-		  <input id="svx_ref" type="text" class="form-control" placeholder="rolink.network" aria-label="Server address" aria-describedby="inputGroup-sizing-sm" ' . $reflectorValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Port</span>
-		  <input id="svx_prt" type="text" class="form-control" placeholder="5301" aria-label="Port" aria-describedby="inputGroup-sizing-sm" ' . $portValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Callsign</span>
-		  <input id="svx_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" ' . $callSignValue . '>
-		</div>
-		<div id="auth_key" class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Auth Key</span>
-		  <input id="svx_key" type="password" class="form-control" placeholder="nod_portabil" aria-label="Auth Key" aria-describedby="inputGroup-sizing-sm" ' . $authKeyValue . '>
-		  <button id="show_hide" class="input-group-text" role="button"><i class="icon-visibility" aria-hidden="true"></i></button>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Callsign (beacon)</span>
-		  <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" ' . $beaconValue . '>
-		</div>';
+          <span class="input-group-text" style="width: 8rem;">Reflector (IP/DNS)</span>
+          <input id="svx_ref" type="text" class="form-control" placeholder="rolink.network" aria-label="Server address" aria-describedby="inputGroup-sizing-sm" ' . $reflectorValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Port</span>
+          <input id="svx_prt" type="text" class="form-control" placeholder="5301" aria-label="Port" aria-describedby="inputGroup-sizing-sm" ' . $portValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Callsign</span>
+          <input id="svx_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" ' . $callSignValue . '>
+        </div>
+        <div id="auth_key" class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Auth Key</span>
+          <input id="svx_key" type="password" class="form-control" placeholder="nod_portabil" aria-label="Auth Key" aria-describedby="inputGroup-sizing-sm" ' . $authKeyValue . '>
+          <button id="show_hide" class="input-group-text" role="button"><i class="icon-visibility" aria-hidden="true"></i></button>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Callsign (beacon)</span>
+          <input id="svx_clb" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" ' . $beaconValue . '>
+        </div>';
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Roger Beep</span>
-		  <select id="svx_rgr" class="form-select">
-			<option value="0"' . (($rogerBeepValue == 0) ? ' selected' : '') . '>No</option>
-			<option value="1"' . (($rogerBeepValue == 1) ? ' selected' : '') . '>Yes</option>
-		  </select>
-		</div>';
+          <span class="input-group-text" style="width: 8rem;">Roger Beep</span>
+          <select id="svx_rgr" class="form-select">
+            <option value="0"' . (($rogerBeepValue == 0) ? ' selected' : '') . '>No</option>
+            <option value="1"' . (($rogerBeepValue == 1) ? ' selected' : '') . '>Yes</option>
+          </select>
+        </div>';
     /* Voice language detection/selection */
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-		<span class="input-group-text" style="width: 8rem;">Voice pack</span>' . PHP_EOL;
+        <span class="input-group-text" style="width: 8rem;">Voice pack</span>' . PHP_EOL;
     if (is_dir($voicesPath)) {
         $svxForm .= '<select id="svx_vop" class="form-select">' . PHP_EOL;
         foreach (glob($voicesPath . '/*', GLOB_ONLYDIR) as $voiceDir) {
@@ -391,134 +391,134 @@ function svxForm()
     }
     $svxForm .= '</div>' . PHP_EOL;
     $svxForm .= '
-		<div class="input-group input-group-sm mb-1">
-		  <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
-		  <select id="svx_sid" class="form-select">
-			 <option value="0">Disabled</option>' . PHP_EOL;
+        <div class="input-group input-group-sm mb-1">
+          <label class="input-group-text" for="svx_sid" style="width: 8rem;">Short Ident</label>
+          <select id="svx_sid" class="form-select">
+             <option value="0">Disabled</option>' . PHP_EOL;
     /* Generate 5 minutes intervals up to 60 & identify stored value on file */
     for ($sid = 5; $sid <= 120; $sid += 5) {
         $sel = ($sid == $varShortIdent[2]) ? ' selected' : null;
         $svxForm .= '<option value="' . $sid . '"' . $sel . '>' . $sid . ' minutes</option>' . PHP_EOL;
     }
     $svxForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
-		  <select id="svx_lid" class="form-select">
-			 <option value="0">Disabled</option>' . PHP_EOL;
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <label class="input-group-text" for="svx_lid" style="width: 8rem;">Long Ident</label>
+          <select id="svx_lid" class="form-select">
+             <option value="0">Disabled</option>' . PHP_EOL;
     /* Generate 5 minutes intervals up to 60 & identify stored value on file */
     for ($lid = 5; $lid <= 300; $lid += 5) {
         $sel = ($lid == $varLongIdent[2]) ? ' selected' : null;
         $svxForm .= '<option value="' . $lid . '"' . $sel . '>' . $lid . ' minutes</option>' . PHP_EOL;
     }
     $svxForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Type</span>
-		  <input id="svx_tip" type="text" class="form-control" placeholder="nod portabil" aria-label="Description" aria-describedby="inputGroup-sizing-sm" value="' . $cfgRefData['tip'] . '">
-		</div>
-		<div class="input-group input-group-sm mb-3">
-		  <span class="input-group-text" style="width: 8rem;">Modules</span>
-		  <select id="svx_mod" class="form-select">
-			<option value="0"' . (($modulesValue === '#') ? ' selected' : '') . '>None</option>
-			<option value="1"' . ((empty($modulesValue) && in_array('moduleparrot', $modulesEnabled)) ? ' selected' : '') . '>Parrot</option>
-			<option value="2"' . ((empty($modulesValue) && in_array('moduleecholink', $modulesEnabled)) ? ' selected' : '') . '>EchoLink</option>
-			<option value="9"' . ((empty($modulesValue) && count($modulesEnabled) > 1) ? ' selected' : '') . '>All</option>
-		  </select>
-		</div>';
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Type</span>
+          <input id="svx_tip" type="text" class="form-control" placeholder="nod portabil" aria-label="Description" aria-describedby="inputGroup-sizing-sm" value="' . $cfgRefData['tip'] . '">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+          <span class="input-group-text" style="width: 8rem;">Modules</span>
+          <select id="svx_mod" class="form-select">
+            <option value="0"' . (($modulesValue === '#') ? ' selected' : '') . '>None</option>
+            <option value="1"' . ((empty($modulesValue) && in_array('moduleparrot', $modulesEnabled)) ? ' selected' : '') . '>Parrot</option>
+            <option value="2"' . ((empty($modulesValue) && in_array('moduleecholink', $modulesEnabled)) ? ' selected' : '') . '>EchoLink</option>
+            <option value="9"' . ((empty($modulesValue) && count($modulesEnabled) > 1) ? ' selected' : '') . '>All</option>
+          </select>
+        </div>';
     if (empty($modulesValue) && in_array('moduleecholink', $modulesEnabled)) {
         $svxForm .= '<div class="separator mb-1">EchoLink Module</div>';
         $svxForm .= echoLinkForm();
     }
     $svxForm .= '<div class="separator mb-1">Advanced</div>';
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-			<label class="input-group-text" for="svx_rxp" style="width: 8rem;">RX GPIO pin</label>
-			<select id="svx_rxp" class="form-select">' . PHP_EOL;
+            <label class="input-group-text" for="svx_rxp" style="width: 8rem;">RX GPIO pin</label>
+            <select id="svx_rxp" class="form-select">' . PHP_EOL;
     foreach ($svxPinsArray as $rxpin) {
         $inverted     = (strpos($rxpin, '!') !== false) ? ' (inverted)' : null;
         $defaultRxPin = ($rxpin == 'gpio10') ? ' (default)' : null;
         $svxForm .= '<option value="' . $rxpin . '"' . ($rxpin == $rxGPIOValue ? ' selected' : '') . '>' . (int) filter_var($rxpin, FILTER_SANITIZE_NUMBER_INT) . $defaultRxPin . $inverted . '</option>' . PHP_EOL;
     }
     $svxForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<label class="input-group-text" for="svx_txp" style="width: 8rem;">TX GPIO pin</label>
-			<select id="svx_txp" class="form-select">' . PHP_EOL;
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <label class="input-group-text" for="svx_txp" style="width: 8rem;">TX GPIO pin</label>
+            <select id="svx_txp" class="form-select">' . PHP_EOL;
     foreach ($svxPinsArray as $txpin) {
         $inverted     = (strpos($txpin, '!') !== false) ? ' (inverted)' : null;
         $defaultTxPin = ($txpin == 'gpio7') ? ' (default)' : null;
         $svxForm .= '<option value="' . $txpin . '"' . ($txpin == $txGPIOValue ? ' selected' : '') . '>' . (int) filter_var($txpin, FILTER_SANITIZE_NUMBER_INT) . $defaultTxPin . $inverted . '</option>' . PHP_EOL;
     }
     $svxForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
-		  <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch delay" aria-describedby="inputGroup-sizing-sm" ' . $sqlDelayValue . '>
-		</div>';
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
+          <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch delay" aria-describedby="inputGroup-sizing-sm" ' . $sqlDelayValue . '>
+        </div>';
     if (!is_array($saDetect)) {
         $svxForm .= '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">TX delay</span>
-		  <input id="svx_txd" type="text" class="form-control" placeholder="875" aria-label="TX delay" aria-describedby="inputGroup-sizing-sm" ' . $txDelayValue . '>
-		</div>';
+          <span class="input-group-text" style="width: 8rem;">TX delay</span>
+          <input id="svx_txd" type="text" class="form-control" placeholder="875" aria-label="TX delay" aria-describedby="inputGroup-sizing-sm" ' . $txDelayValue . '>
+        </div>';
     }
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Default TG</span>
-		  <input id="svx_dtg" type="text" class="form-control" placeholder="226" aria-label="Default TG" aria-describedby="inputGroup-sizing-sm" ' . $defaultTgValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Monitor TGs</span>
-		  <input id="svx_mtg" type="text" class="form-control" placeholder="226++" aria-label="Monitor TGs" aria-describedby="inputGroup-sizing-sm" ' . $monitorTgsValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
-		  <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" ' . $tgSelTimeOutValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Reconnect seconds</span>
-		  <input id="svx_res" type="text" class="form-control" placeholder="0" aria-label="Reconnect seconds" aria-describedby="inputGroup-sizing-sm" ' . $reconnectSecondsValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Connection Status</span>
-		  <input id="svx_acs" type="text" class="form-control" placeholder="0" aria-label="Connection Status" aria-describedby="inputGroup-sizing-sm" ' . $announceConnectionStatusValue . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">TX Timeout</span>
-		  <input id="svx_txt" type="text" class="form-control" placeholder="180" aria-label="TX Timeout" aria-describedby="inputGroup-sizing-sm" ' . $txTimeOutValue . '>
-		</div>';
+          <span class="input-group-text" style="width: 8rem;">Default TG</span>
+          <input id="svx_dtg" type="text" class="form-control" placeholder="226" aria-label="Default TG" aria-describedby="inputGroup-sizing-sm" ' . $defaultTgValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Monitor TGs</span>
+          <input id="svx_mtg" type="text" class="form-control" placeholder="226++" aria-label="Monitor TGs" aria-describedby="inputGroup-sizing-sm" ' . $monitorTgsValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
+          <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" ' . $tgSelTimeOutValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Reconnect seconds</span>
+          <input id="svx_res" type="text" class="form-control" placeholder="0" aria-label="Reconnect seconds" aria-describedby="inputGroup-sizing-sm" ' . $reconnectSecondsValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Connection Status</span>
+          <input id="svx_acs" type="text" class="form-control" placeholder="0" aria-label="Connection Status" aria-describedby="inputGroup-sizing-sm" ' . $announceConnectionStatusValue . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">TX Timeout</span>
+          <input id="svx_txt" type="text" class="form-control" placeholder="180" aria-label="TX Timeout" aria-describedby="inputGroup-sizing-sm" ' . $txTimeOutValue . '>
+        </div>';
     if (!is_array($saDetect)) {
         $svxForm .= '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">De-Emphasis (RX)</span>
-		  <select id="svx_rxe" class="form-select">
-			<option value="0"' . (($deEmphasisValue == 0) ? ' selected' : '') . '>No</option>
-			<option value="1"' . (($deEmphasisValue == 1) ? ' selected' : '') . '>Yes</option>
-		  </select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Pre-Emphasis (TX)</span>
-		  <select id="svx_txe" class="form-select">
-			<option value="0"' . (($preEmphasisValue == 0) ? ' selected' : '') . '>No</option>
-			<option value="1"' . (($preEmphasisValue == 1) ? ' selected' : '') . '>Yes</option>
-		  </select>
-		</div>';
+          <span class="input-group-text" style="width: 8rem;">De-Emphasis (RX)</span>
+          <select id="svx_rxe" class="form-select">
+            <option value="0"' . (($deEmphasisValue == 0) ? ' selected' : '') . '>No</option>
+            <option value="1"' . (($deEmphasisValue == 1) ? ' selected' : '') . '>Yes</option>
+          </select>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Pre-Emphasis (TX)</span>
+          <select id="svx_txe" class="form-select">
+            <option value="0"' . (($preEmphasisValue == 0) ? ' selected' : '') . '>No</option>
+            <option value="1"' . (($preEmphasisValue == 1) ? ' selected' : '') . '>Yes</option>
+          </select>
+        </div>';
     }
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-			<label class="input-group-text" for="svx_mag" style="width: 8rem;">Master Gain (TX)</label>
-			<select id="svx_mag" class="form-select">' . PHP_EOL;
+            <label class="input-group-text" for="svx_mag" style="width: 8rem;">Master Gain (TX)</label>
+            <select id="svx_mag" class="form-select">' . PHP_EOL;
     for ($gain = 6; $gain >= -6; $gain -= .25) {
         $svxForm .= '<option value="' . $gain . '"' . ($gain == $masterGainValue ? ' selected' : '') . '>' . (($gain > 0) ? '+' . $gain : $gain) . ' dB</option>' . PHP_EOL;
     }
     $svxForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Audio Compressor</span>
-		  <select id="svx_lim" class="form-select">
-			<option value="-6"' . (($limiterValue != 0) ? ' selected' : '') . '>Normal</option>
-			<option value="0"' . (($limiterValue == 0) ? ' selected' : '') . '>Enhanced</option>
-		  </select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
-		  <select id="svx_cbr" class="form-select">' . PHP_EOL;
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Audio Compressor</span>
+          <select id="svx_lim" class="form-select">
+            <option value="-6"' . (($limiterValue != 0) ? ' selected' : '') . '>Normal</option>
+            <option value="0"' . (($limiterValue == 0) ? ' selected' : '') . '>Enhanced</option>
+          </select>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <label class="input-group-text" for="svx_cbr" style="width: 8rem;">Codec Bitrate</label>
+          <select id="svx_cbr" class="form-select">' . PHP_EOL;
     if (isset($varCodecBitRate[2])) {
         /* Generate codec bitrates */
         for ($cbr = 8000; $cbr <= 32000; $cbr += 2000) {
@@ -530,18 +530,18 @@ function svxForm()
         $svxForm .= '<option value="" disabled selected>Unavailable</option>' . PHP_EOL;
     }
     $svxForm .= '
-		  </select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Fan Start</span>
-		  <input id="svx_fan" type="text" class="form-control" placeholder="180" aria-label="Fan Start after" aria-describedby="inputGroup-sizing-sm" ' . $fanStartValue . '>
-		</div>
-		<input type="hidden" id="autoConnect" name="autoConnect" value="' . $config['cfgAutoConnect'] . '" />';
+          </select>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Fan Start</span>
+          <input id="svx_fan" type="text" class="form-control" placeholder="180" aria-label="Fan Start after" aria-describedby="inputGroup-sizing-sm" ' . $fanStartValue . '>
+        </div>
+        <input type="hidden" id="autoConnect" name="autoConnect" value="' . $config['cfgAutoConnect'] . '" />';
     $svxForm .= '
-		<div class="d-flex justify-content-center mt-4">
-			<button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
-			<button id="restore" type="submit" class="btn btn-info btn-lg m-2">Restore defaults</button>
-			</div>' . PHP_EOL;
+        <div class="d-flex justify-content-center mt-4">
+            <button id="savesvxcfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
+            <button id="restore" type="submit" class="btn btn-info btn-lg m-2">Restore defaults</button>
+            </div>' . PHP_EOL;
     return $svxForm;
 }
 
@@ -556,31 +556,55 @@ function echoLinkForm()
     preg_match('/TIMEOUT=(\d+)/', $echoLinkData, $elTimeout);
     preg_match('/LOCATION=(.*)/', $echoLinkData, $elLocation);
     preg_match('/LINK_IDLE_TIMEOUT=(\d+)/', $echoLinkData, $elLinkIdleTimeout);
+    // Proxy options
+    preg_match('/(#?)PROXY_SERVER=(\S+)/', $echoLinkData, $elProxyServer);
+    preg_match('/(#?)PROXY_PORT=(\d+)/', $echoLinkData, $elProxyPort);
+    preg_match('/(#?)PROXY_PASSWORD=(\S+)/', $echoLinkData, $elProxyPassword);
     $echoLinkForm = '<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Callsign</span>
-		  <input id="svx_el_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value=' . $elCallSign[1] . '>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Password</span>
-		  <input id="svx_el_pwd" type="password" class="form-control" placeholder="s3cr3t" aria-label="Password" aria-describedby="inputGroup-sizing-sm" value=' . $elPassword[1] . '>
-		  <button id="show_hide_el" class="input-group-text" role="button"><i class="icon-visibility" aria-hidden="true"></i></button>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Sysop</span>
-		  <input id="svx_el_sop" type="text" class="form-control" placeholder="John Doe" aria-label="Sysop Name" aria-describedby="inputGroup-sizing-sm" value="' . $elSysop[1] . '">
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Location</span>
-		  <input id="svx_el_loc" type="text" class="form-control" placeholder="..." aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value="' . htmlspecialchars($elLocation[1], ENT_QUOTES, 'UTF-8') . '">
-		</div>
-		<div class="input-group input-group-sm mb-1">
-		  <span class="input-group-text" style="width: 8rem;">Timeout</span>
-		  <input id="svx_el_to" type="text" class="form-control" placeholder="60" aria-label="Timeout" aria-describedby="inputGroup-sizing-sm" value="' . $elTimeout[1] . '">
-		</div>
-		<div class="input-group input-group-sm mb-3">
-		  <span class="input-group-text" style="width: 8rem;">Link Idle Timeout</span>
-		  <input id="svx_el_lit" type="text" class="form-control" placeholder="300" aria-label="Link Idle Timeout" aria-describedby="inputGroup-sizing-sm" value="' . $elLinkIdleTimeout[1] . '">
-		</div>';
+          <span class="input-group-text" style="width: 8rem;">Callsign</span>
+          <input id="svx_el_cal" type="text" class="form-control" placeholder="YO1XYZ" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value=' . $elCallSign[1] . '>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Password</span>
+          <input id="svx_el_pwd" type="password" class="form-control" placeholder="s3cr3t" aria-label="Password" aria-describedby="inputGroup-sizing-sm" value=' . $elPassword[1] . '>
+          <button id="show_hide_el" class="input-group-text" role="button"><i class="icon-visibility" aria-hidden="true"></i></button>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Sysop</span>
+          <input id="svx_el_sop" type="text" class="form-control" placeholder="John Doe" aria-label="Sysop Name" aria-describedby="inputGroup-sizing-sm" value="' . $elSysop[1] . '">
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Location</span>
+          <input id="svx_el_loc" type="text" class="form-control" placeholder="..." aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value="' . htmlspecialchars($elLocation[1], ENT_QUOTES, 'UTF-8') . '">
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Timeout</span>
+          <input id="svx_el_to" type="text" class="form-control" placeholder="60" aria-label="Timeout" aria-describedby="inputGroup-sizing-sm" value="' . $elTimeout[1] . '">
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Link Idle Timeout</span>
+          <input id="svx_el_lit" type="text" class="form-control" placeholder="300" aria-label="Link Idle Timeout" aria-describedby="inputGroup-sizing-sm" value="' . $elLinkIdleTimeout[1] . '">
+        </div>
+         <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Proxy Server Type</span>
+          <select id="svx_el_pxtype" class="form-select">
+             <option value="" selected disabled>- please select-</option>
+            <option value="0">Custom</option>
+            <option value="1">Public</option>
+          </select>
+        </div>
+        <div class="input-group input-group-sm mb-1" id="proxyInputContainer">
+          <span class="input-group-text" style="width: 8rem;">Proxy Server</span>
+          <input id="svx_el_pxsrv" type="text" class="form-control" placeholder="the.proxy.server" aria-label="Proxy Server" aria-describedby="inputGroup-sizing-sm" value="' . $elProxyServer[2] . '">
+        </div>
+        <div class="input-group input-group-sm mb-1">
+          <span class="input-group-text" style="width: 8rem;">Proxy Port</span>
+          <input id="svx_el_pxp" type="text" class="form-control" placeholder="8100" aria-label="Proxy Port" aria-describedby="inputGroup-sizing-sm" value="' . $elProxyPort[2] . '">
+        </div>
+        <div class="input-group input-group-sm mb-3">
+          <span class="input-group-text" style="width: 8rem;">Proxy Password</span>
+          <input id="svx_el_pxpw" type="text" class="form-control" placeholder="PUBLIC" aria-label="Proxy Password" aria-describedby="inputGroup-sizing-sm" value="' . $elProxyPassword[2] . '">
+        </div>';
     return $echoLinkForm;
 }
 
@@ -631,12 +655,12 @@ function sa818Form()
         '1,1,1' => 'Enable All',
     ];
     $sa818Form = '<h4 class="mt-2 alert alert-danger fw-bold">SA818 programmer</h4>
-	<div class="card mb-2">
-		<h4 class="card-header fs-5">Channel</h4>
-		<div class="card-body">
-			<div class="form-floating mb-1">
-				<select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
-				<option selected disabled>Select a value</option>';
+    <div class="card mb-2">
+        <h4 class="card-header fs-5">Channel</h4>
+        <div class="card-body">
+            <div class="form-floating mb-1">
+                <select id="sa_grp" class="form-select" aria-label="Frecvenţă (MHz)">
+                <option selected disabled>Select a value</option>';
     for ($f = 144.000; $f <= 148.000; $f += 0.0125) {
         $freqFmt = str_replace('000', '00', sprintf("%0.4f", $f));
         $freqFmt = (strlen($freqFmt) == 8) ? str_replace(',0', '', preg_replace('/\d$/', ',$0', $freqFmt)) : $freqFmt;
@@ -646,83 +670,83 @@ function sa818Form()
         $sa818Form .= '<option ' . (($lastPgmData['frequency'] == sprintf("%0.4f", $f)) ? 'selected' : null) . ' value="' . sprintf("%0.4f", $f) . '">' . sprintf("%0.3f", $f) . '</option>' . PHP_EOL;
     }
     $sa818Form .= '</select>
-			<label for="sa_grp">Frequency (MHz)</label>
-		</div>
-		<div class="form-floating mb-1">
-			<select id="sa_dev" class="form-select" aria-label="Deviation (kHz)">
-				<option selected disabled>Select a value</option>
-				<option ' . ((isset($lastPgmData['deviation']) && $lastPgmData['deviation'] == 0) ? 'selected' : null) . ' value="0">12.5</option>
-				<option ' . (($lastPgmData['deviation'] == 1) ? 'selected' : null) . ' value="1">25</option>
-			</select>
-			<label for="sa_dev">Deviation (kHz)</label>
-		</div>
-		<div class="form-floating mb-1">
-			<select id="sa_tpl_rx" class="form-select" aria-label="RX CTCSS (Hz)">
-				<option selected disabled>Select a value</option>';
+            <label for="sa_grp">Frequency (MHz)</label>
+        </div>
+        <div class="form-floating mb-1">
+            <select id="sa_dev" class="form-select" aria-label="Deviation (kHz)">
+                <option selected disabled>Select a value</option>
+                <option ' . ((isset($lastPgmData['deviation']) && $lastPgmData['deviation'] == 0) ? 'selected' : null) . ' value="0">12.5</option>
+                <option ' . (($lastPgmData['deviation'] == 1) ? 'selected' : null) . ' value="1">25</option>
+            </select>
+            <label for="sa_dev">Deviation (kHz)</label>
+        </div>
+        <div class="form-floating mb-1">
+            <select id="sa_tpl_rx" class="form-select" aria-label="RX CTCSS (Hz)">
+                <option selected disabled>Select a value</option>';
     /* Build RX CTCSS selects */
     foreach ($ctcssVars as $key => $val) {
         $selected = ($lastPgmData['ctcssRx'] == sprintf("%04d", $key)) ? 'selected' : null;
         $sa818Form .= '<option value="' . sprintf("%04d", $key) . '"' . $selected . '>' . $val . '</option>' . PHP_EOL;
     }
     $sa818Form .= '</select>
-			<label for="sa_tpl_tx">RX CTCSS (Hz)</label>
-		</div>
-		<div class="form-floating mb-1">
-			<select id="sa_tpl_tx" class="form-select" aria-label="TX CTCSS (Hz)">
-				<option selected disabled>Select a value</option>';
+            <label for="sa_tpl_tx">RX CTCSS (Hz)</label>
+        </div>
+        <div class="form-floating mb-1">
+            <select id="sa_tpl_tx" class="form-select" aria-label="TX CTCSS (Hz)">
+                <option selected disabled>Select a value</option>';
     /* Build TX CTCSS selects */
     foreach ($ctcssVars as $key => $val) {
         $selected = ($lastPgmData['ctcssTx'] == sprintf("%04d", $key)) ? 'selected' : null;
         $sa818Form .= '<option value="' . sprintf("%04d", $key) . '"' . $selected . '>' . $val . '</option>' . PHP_EOL;
     }
     $sa818Form .= '</select>
-			<label for="sa_tpl">TX CTCSS (Hz)</label>
-		</div>
-		<div class="form-floating mb-1">
-			<select id="sa_sql" class="form-select" aria-label="Squelch">
-				<option selected disabled>Select a value</option>';
+            <label for="sa_tpl">TX CTCSS (Hz)</label>
+        </div>
+        <div class="form-floating mb-1">
+            <select id="sa_sql" class="form-select" aria-label="Squelch">
+                <option selected disabled>Select a value</option>';
     /* Generate squelch values */
     for ($sq = 1; $sq <= 8; $sq += 1) {
         $selected = ($lastPgmData['squelch'] == $sq) ? ' selected' : '';
         $sa818Form .= '<option value="' . $sq . '"' . $selected . '>' . $sq . '</option>' . PHP_EOL;
     }
     $sa818Form .= '</select>
-			<label for="sa_sql">Squelch</label>
-		</div>
-		</div>
-		</div>
-		<div class="card mb-2">
-		<h4 class="card-header fs-5">Volume</h4>
-		<div class="card-body">
-		<div class="form-floating">
-			<select id="sa_vol" class="form-select" aria-label="Volume">
-				<option value="" selected>No change</option>';
+            <label for="sa_sql">Squelch</label>
+        </div>
+        </div>
+        </div>
+        <div class="card mb-2">
+        <h4 class="card-header fs-5">Volume</h4>
+        <div class="card-body">
+        <div class="form-floating">
+            <select id="sa_vol" class="form-select" aria-label="Volume">
+                <option value="" selected>No change</option>';
     /* Generate volume values */
     for ($vol = 1; $vol <= 8; $vol += 1) {
         $sa818Form .= '<option ' . (isset($lastPgmData['volume']) && ($lastPgmData['volume'] == $vol) ? 'selected' : null) . ' value="' . $vol . '">' . $vol . '</option>' . PHP_EOL;
     }
     $sa818Form .= '</select>
-			<label for="sa_vol">Volume</label>
-		</div>
-		</div>
-		</div>
-		<div class="card mb-2">
-		<h4 class="card-header fs-5">Filter</h4>
-		<div class="card-body">
-		<div class="form-floating">
-		<select id="sa_flt" class="form-select" aria-label="Filter">' . PHP_EOL;
+            <label for="sa_vol">Volume</label>
+        </div>
+        </div>
+        </div>
+        <div class="card mb-2">
+        <h4 class="card-header fs-5">Filter</h4>
+        <div class="card-body">
+        <div class="form-floating">
+        <select id="sa_flt" class="form-select" aria-label="Filter">' . PHP_EOL;
     foreach ($filterOptions as $value => $label) {
         $sa818Form .= '<option value="' . $value . '"' . ((isset($lastPgmData["filter"]) && ($lastPgmData["filter"] == $value)) ? " selected" : "") . '>' . $label . '</option>' . PHP_EOL;
     }
     $sa818Form .= '</select>
-			<label for="sa_flt">Filter</label>
-		</div>
-		</div>
-		</div>';
+            <label for="sa_flt">Filter</label>
+        </div>
+        </div>
+        </div>';
     $sa818Form .= '<div class="col alert alert-info mt-3 p-1 mx-auto text-center" role="alert">Note : Using <b>ttyS' . $config['cfgTty'] . '</b> and <b>GPIO' . $config['cfgPttPin'] . '</b> for PTT. You can change these using the config page.</div>' . PHP_EOL;
     $sa818Form .= '<div class="d-flex justify-content-center my-3">
-			<button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
-		</div>' . PHP_EOL;
+            <button id="programm" type="button" class="btn btn-danger btn-lg">Send data</button>
+        </div>' . PHP_EOL;
     $sa818Form .= '<div class="d-flex justify-content-center"><small class="d-inline-flex px-1 py-1 text-muted border rounded-3">';
     $sa818Form .= 'Last programmed : ' . ((isset($lastPgmData['date'])) ? date('d-M-Y H:i:s', $lastPgmData['date']) : 'Unknown');
     $sa818Form .= '</small></div>';
@@ -751,8 +775,8 @@ function aprsForm($ajax = false)
     if (preg_match('/IGLOGIN (\S+)/', file_get_contents('/etc/direwolf.conf'), $matches)) {
         $callsign   = $matches[1];
         $aprsfiLink = (empty($callsign) && $callsign == 'N0CALL-15') ? null : '<span data-bs-toggle="tooltip" title="View ' . $callsign . ' on aprs.fi" class="input-group-text">
-			<a class="mx-2" href="https://aprs.fi/#!call=' . $callsign . '" target="_blank"><i class="icon-exit_to_app"></i></a>
-		</span>';
+            <a class="mx-2" href="https://aprs.fi/#!call=' . $callsign . '" target="_blank"><i class="icon-exit_to_app"></i></a>
+        </span>';
     }
     $aprsForm = '<h4 class="mt-2 alert alert-primary fw-bold">APRS</h4>';
     $data     = json_decode(gpsd(), true);
@@ -771,17 +795,17 @@ function aprsForm($ajax = false)
          <button class="bg-' . (($svcDirewolf == 'active' && $svcGPSD == 'active') ? 'success' : 'danger') . ' text-white accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#position" aria-expanded="true" aria-controls="position">Status</button>
       </h3>
       <div id="position" class="accordion-collapse collapse show" aria-labelledby="heading" data-bs-parent="#gpsdata">
-	<div id="dynamicData" class="accordion-body">';
+    <div id="dynamicData" class="accordion-body">';
 
     $dynamicData = '<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 6.5rem;">Direwolf</span>
-			<input type="text" class="form-control ' . (($svcDirewolf == 'active') ? 'text-success' : 'text-danger') . '" value="' . $svcDirewolf . '" readonly>
-			' . (($svcDirewolf == 'active') ? $aprsfiLink : null) . '
-		</div>
-	<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 6.5rem;">GPSD</span>
-			<input type="text" class="form-control ' . (($svcGPSD == 'active') ? 'text-success' : 'text-danger') . '" value="' . $svcGPSD . '" readonly>
-	</div>';
+            <span class="input-group-text" style="width: 6.5rem;">Direwolf</span>
+            <input type="text" class="form-control ' . (($svcDirewolf == 'active') ? 'text-success' : 'text-danger') . '" value="' . $svcDirewolf . '" readonly>
+            ' . (($svcDirewolf == 'active') ? $aprsfiLink : null) . '
+        </div>
+    <div class="input-group input-group-sm mb-1">
+            <span class="input-group-text" style="width: 6.5rem;">GPSD</span>
+            <input type="text" class="form-control ' . (($svcGPSD == 'active') ? 'text-success' : 'text-danger') . '" value="' . $svcGPSD . '" readonly>
+    </div>';
 
     if ($svcGPSD == 'active' && isset($data['tpv'][0])) {
         $fixDescriptions = [0 => "unknown", 1 => "no fix", 2 => "2D", 3 => "3D"];
@@ -816,68 +840,68 @@ function aprsForm($ajax = false)
         $locator .= chr($letterA + intval(($latitude - intval($latitude / 1) * 1) / (1 / 24)));
 
         $dynamicData .= '<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 6.5rem;">Fix mode</span>
-			<input type="text" class="form-control" value="' . $fixMode . '" readonly>
-		</div>';
+            <span class="input-group-text" style="width: 6.5rem;">Fix mode</span>
+            <input type="text" class="form-control" value="' . $fixMode . '" readonly>
+        </div>';
         $dynamicData .= ($gpsData['mode'] < 2) ? null : '<div class="input-group input-group-sm mb-1">
-  			<div class="input-group-prepend input-group-sm">
-    			<span class="input-group-text" style="width: 6.5rem;">Lat / Lon</span>
-  			</div>
-  			<input type="text" class="form-control" value="' . $coordinates . '" readonly>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-  			<div class="input-group-prepend input-group-sm">
-    			<span class="input-group-text" style="width: 6.5rem;">Grid Square</span>
-  			</div>
-  			<input type="text" class="form-control" value="' . $locator . '" readonly>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 6.5rem;">Altitude</span>
-			<input type="text" class="form-control" value="' . $altitude . '" readonly>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 6.5rem;">Speed</span>
-			<input type="text" class="form-control" value="' . $speed . '" readonly>
-		</div>';
+            <div class="input-group-prepend input-group-sm">
+                <span class="input-group-text" style="width: 6.5rem;">Lat / Lon</span>
+            </div>
+            <input type="text" class="form-control" value="' . $coordinates . '" readonly>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <div class="input-group-prepend input-group-sm">
+                <span class="input-group-text" style="width: 6.5rem;">Grid Square</span>
+            </div>
+            <input type="text" class="form-control" value="' . $locator . '" readonly>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span class="input-group-text" style="width: 6.5rem;">Altitude</span>
+            <input type="text" class="form-control" value="' . $altitude . '" readonly>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span class="input-group-text" style="width: 6.5rem;">Speed</span>
+            <input type="text" class="form-control" value="' . $speed . '" readonly>
+        </div>';
         $dynamicData .= '<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 6.5rem;">Time</span>
-			<input type="text" class="form-control" value="' . $time . '" readonly>
-		</div>';
+            <span class="input-group-text" style="width: 6.5rem;">Time</span>
+            <input type="text" class="form-control" value="' . $time . '" readonly>
+        </div>';
         $dynamicData .= ($gpsData['mode'] < 2) ? null : '<div class="col-auto fill">
-			<div class="map" id="map"></div>
-		</div>
-		<script>
-			var LonLat = ol.proj.fromLonLat([' . $gpsData['lon'] . ',' . $gpsData['lat'] . '])
-			var stroke = new ol.style.Stroke({color: "red", width: 2});
-			var feature = new ol.Feature(new ol.geom.Point(LonLat))
-			var x = new ol.style.Style({
-				image: new ol.style.Icon({
-				anchor: [0.5, 1],
-				crossOrigin: "anonymous",
-				src: "assets/img/pin.png",
-				})
-			})
-			feature.setStyle(x)
-			var source = new ol.source.Vector({
-			    features: [feature]
-			});
-			var vectorLayer = new ol.layer.Vector({
-			  source: source
-			});
-			var map = new ol.Map({
-			  target: "map",
-			  layers: [
-			    new ol.layer.Tile({
-			      source: new ol.source.OSM()
-			    }),
-			    vectorLayer
-			  ],
-			  view: new ol.View({
-			    center: LonLat,
-			    zoom: 10
-			  })
-			});
-		</script>' . PHP_EOL;
+            <div class="map" id="map"></div>
+        </div>
+        <script>
+            var LonLat = ol.proj.fromLonLat([' . $gpsData['lon'] . ',' . $gpsData['lat'] . '])
+            var stroke = new ol.style.Stroke({color: "red", width: 2});
+            var feature = new ol.Feature(new ol.geom.Point(LonLat))
+            var x = new ol.style.Style({
+                image: new ol.style.Icon({
+                anchor: [0.5, 1],
+                crossOrigin: "anonymous",
+                src: "assets/img/pin.png",
+                })
+            })
+            feature.setStyle(x)
+            var source = new ol.source.Vector({
+                features: [feature]
+            });
+            var vectorLayer = new ol.layer.Vector({
+              source: source
+            });
+            var map = new ol.Map({
+              target: "map",
+              layers: [
+                new ol.layer.Tile({
+                  source: new ol.source.OSM()
+                }),
+                vectorLayer
+              ],
+              view: new ol.View({
+                center: LonLat,
+                zoom: 10
+              })
+            });
+        </script>' . PHP_EOL;
     }
     /* Return updates only */
     if ($ajax) {
@@ -903,34 +927,34 @@ function aprsForm($ajax = false)
    </div>
 </div>
 <div class="card mb-2">
-	<h4 class="card-header fs-5">Configuration</h4>
-	<div class="card-body">
-		<div class="input-group input-group-sm mb-1">
-			<span data-bs-toggle="tooltip" title="Manage the Direwolf service which handles sending GPS data to APRS-IS" class="input-group-text" style="width: 8rem;">Direwolf</span>
-			<select id="aprs_service" class="form-select">
-				<option value="0"' . (($svcDirewolf == 'inactive') ? ' selected' : null) . '>Disabled</option>
-				<option value="1"' . (($svcDirewolf == 'active') ? ' selected' : null) . '>Enabled</option>
-			</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span data-bs-toggle="tooltip" title="Use a valid callsign with a proper suffix. The password will be generated automatically" class="input-group-text" style="width: 8rem;">Callsign</span>
-			<input id="aprs_callsign" type="text" class="form-control" placeholder="YO1XYZ-15" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value="' . $callsign . '">
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span data-bs-toggle="tooltip" title="A short comment about the device or status" class="input-group-text" style="width: 8rem;">Comment</span>
-			<input id="aprs_comment" type="text" class="form-control" placeholder="Nod rolink" aria-label="Comment" aria-describedby="inputGroup-sizing-sm" value="' . $comment . '">
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span data-bs-toggle="tooltip" title="Choose whether to include the CPU temperature reading at the end of your comment. Selecting <b>Yes (compensated)</b> will add +38°C to the result, which is required for H2+ SoC-based Orange Pi Zero." class="input-group-text" style="width: 8rem;">CPU Temp</span>
-			<select id="aprs_temp" class="form-select">
-				<option value="0"' . (($temp == 0) ? ' selected' : null) . '>No</option>
-				<option value="1"' . (($temp == 1) ? ' selected' : null) . '>Yes</option>
-				<option value="2"' . (($temp == 2) ? ' selected' : null) . '>Yes (compensated)</option>
-			</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 8rem;">Symbol</span>
-			<select id="aprs_symbol" class="form-select">';
+    <h4 class="card-header fs-5">Configuration</h4>
+    <div class="card-body">
+        <div class="input-group input-group-sm mb-1">
+            <span data-bs-toggle="tooltip" title="Manage the Direwolf service which handles sending GPS data to APRS-IS" class="input-group-text" style="width: 8rem;">Direwolf</span>
+            <select id="aprs_service" class="form-select">
+                <option value="0"' . (($svcDirewolf == 'inactive') ? ' selected' : null) . '>Disabled</option>
+                <option value="1"' . (($svcDirewolf == 'active') ? ' selected' : null) . '>Enabled</option>
+            </select>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span data-bs-toggle="tooltip" title="Use a valid callsign with a proper suffix. The password will be generated automatically" class="input-group-text" style="width: 8rem;">Callsign</span>
+            <input id="aprs_callsign" type="text" class="form-control" placeholder="YO1XYZ-15" aria-label="Callsign" aria-describedby="inputGroup-sizing-sm" value="' . $callsign . '">
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span data-bs-toggle="tooltip" title="A short comment about the device or status" class="input-group-text" style="width: 8rem;">Comment</span>
+            <input id="aprs_comment" type="text" class="form-control" placeholder="Nod rolink" aria-label="Comment" aria-describedby="inputGroup-sizing-sm" value="' . $comment . '">
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span data-bs-toggle="tooltip" title="Choose whether to include the CPU temperature reading at the end of your comment. Selecting <b>Yes (compensated)</b> will add +38°C to the result, which is required for H2+ SoC-based Orange Pi Zero." class="input-group-text" style="width: 8rem;">CPU Temp</span>
+            <select id="aprs_temp" class="form-select">
+                <option value="0"' . (($temp == 0) ? ' selected' : null) . '>No</option>
+                <option value="1"' . (($temp == 1) ? ' selected' : null) . '>Yes</option>
+                <option value="2"' . (($temp == 2) ? ' selected' : null) . '>Yes (compensated)</option>
+            </select>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span class="input-group-text" style="width: 8rem;">Symbol</span>
+            <select id="aprs_symbol" class="form-select">';
     $symbols = array(
         'rolink' => 'RoLink',
         '/['     => 'Person',
@@ -947,41 +971,41 @@ function aprsForm($ajax = false)
         $aprsForm .= "<option value=\"$sym\" $selected>$name</option>" . PHP_EOL;
     }
     $aprsForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span class="input-group-text" style="width: 8rem;">Server</span>
-			<select id="aprs_server" class="form-select">';
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span class="input-group-text" style="width: 8rem;">Server</span>
+            <select id="aprs_server" class="form-select">';
     $servers = array(
         'Worldwide'       => 'rotate.aprs2.net',
         'Europe / Africa' => 'euro.aprs2.net',
         'North America'   => 'noam.aprs2.net',
         'South America'   => 'soam.aprs2.net',
         'Asia'            => 'asia.aprs2.net',
-        'Oceania'         => 'aunz.aprs2.net'
+        'Oceania'         => 'aunz.aprs2.net',
     );
     foreach ($servers as $label => $value) {
         $selected = ($server == $value) ? 'selected' : '';
         $aprsForm .= "<option value=\"$value\" $selected>$label</option>" . PHP_EOL;
     }
     $aprsForm .= '</select>
-		</div>
-		<div class="input-group input-group-sm mb-1">
-			<span data-bs-toggle="tooltip" title="Specify if you want to notify the server (reflector) about your usage of GPS service." class="input-group-text" style="width: 8rem;">Report position</span>
-			<select id="aprs_report" class="form-select">
-				<option value="0"' . ((!$report) ? ' selected' : null) . '>No</option>
-				<option value="1"' . (($report) ? ' selected' : null) . '>Yes</option>
-			</select>
-		</div>
-		<div class="d-flex justify-content-center mx-2">
-			<button id="saveaprscfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
-		</div>
-	</div>
+        </div>
+        <div class="input-group input-group-sm mb-1">
+            <span data-bs-toggle="tooltip" title="Specify if you want to notify the server (reflector) about your usage of GPS service." class="input-group-text" style="width: 8rem;">Report position</span>
+            <select id="aprs_report" class="form-select">
+                <option value="0"' . ((!$report) ? ' selected' : null) . '>No</option>
+                <option value="1"' . (($report) ? ' selected' : null) . '>Yes</option>
+            </select>
+        </div>
+        <div class="d-flex justify-content-center mx-2">
+            <button id="saveaprscfg" type="submit" class="btn btn-danger btn-lg m-2">Save</button>
+        </div>
+    </div>
 </div>';
     $aprsForm .= '<script>
-	var auto_refresh = setInterval( function () {
-		$("#dynamicData").load("includes/forms.php?gpsStatus");
-	}, 30000);
-	</script>' . PHP_EOL;
+    var auto_refresh = setInterval( function () {
+        $("#dynamicData").load("includes/forms.php?gpsStatus");
+    }, 30000);
+    </script>' . PHP_EOL;
     return $aprsForm;
 }
 
@@ -995,26 +1019,26 @@ function logsForm()
 
     $logData = '<h4 class="mt-2 alert alert-dark fw-bold">Logs</h4>';
     $logData .= '<div class="container">
-	<div class="row justify-content-center">
-		<div class="col-lg-12">
-			<div class="card bg-light shadow border-0">
-				<div class="card-header bg-white">
-					<img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
-					<div id="log_selector">
-						<select id="log">
-							<option value="" disabled>-Log file-</option>
-							<option value="1" selected>Syslog</option>
-							<option value="2">RoLink</option>
-							<option value="3">Direwolf</option>
-						</select>
-					</div>
-				</div>
-				<div class="card-body px-lg-3 py-lg-2 scrolog">
-					<div class="small" id="log_data" style="height:65vh;overflow:auto"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card bg-light shadow border-0">
+                <div class="card-header bg-white">
+                    <img id="new_log_line" src="assets/img/new.svg" alt="received" style="display:none;">
+                    <div id="log_selector">
+                        <select id="log">
+                            <option value="" disabled>-Log file-</option>
+                            <option value="1" selected>Syslog</option>
+                            <option value="2">RoLink</option>
+                            <option value="3">Direwolf</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body px-lg-3 py-lg-2 scrolog">
+                    <div class="small" id="log_data" style="height:65vh;overflow:auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>';
     return $logData;
 }
@@ -1036,14 +1060,14 @@ function ttyForm()
     $host     = (empty($host['host']) ? $_SERVER['HTTP_HOST'] : $host['host']);
     $ttyFrame = '<h4 class="mt-2 alert alert-primary fw-bold">Terminal</h4>';
     $ttyFrame .= '<div class="row">
-	    <div class="col-lg-12">
-	        <div class="card bg-light shadow border-0">
-	            <div class="card-body px-lg-3 py-lg-2">
-	                <iframe style="height:65vh;overflow:auto" class="col-lg-12 col-md-12 col-sm-12 embed-responsive-item" src="//' . $host . ':8080"></iframe>
-	            </div>
-	        </div>
-	    </div>
-	</div>';
+        <div class="col-lg-12">
+            <div class="card bg-light shadow border-0">
+                <div class="card-body px-lg-3 py-lg-2">
+                    <iframe style="height:65vh;overflow:auto" class="col-lg-12 col-md-12 col-sm-12 embed-responsive-item" src="//' . $host . ':8080"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>';
     return $ttyFrame;
 }
 
@@ -1086,18 +1110,18 @@ function cfgForm()
     exec('/usr/bin/sudo /usr/bin/amixer get \'ADC Gain\' | grep -Po \'(?<=(\[)).*(?=\%\])\' | head -1', $mixerGetADCGain);
 
     $configData = '<h4 class="mt-2 alert alert-warning fw-bold">Configuration</h4>
-	<div class="card m-1">
-		<h4 class="m-2">Serial & GPIO</h4>
-		<div class="form-floating m-2">
-			<select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
+    <div class="card m-1">
+        <h4 class="m-2">Serial & GPIO</h4>
+        <div class="form-floating m-2">
+            <select id="cfgPttPin" class="form-select" aria-label="GPIO Pin (PTT)">' . PHP_EOL;
     foreach ($pinsArray as $pin) {
         $configData .= '<option value="' . $pin . '"' . ($pin == $config['cfgPttPin'] ? ' selected' : '') . '>' . $pin . '</option>' . PHP_EOL;
     }
     $configData .= '</select>
-		<label for="cfgPttPin">GPIO Pin (PTT)</label>
-		</div>' . PHP_EOL;
+        <label for="cfgPttPin">GPIO Pin (PTT)</label>
+        </div>' . PHP_EOL;
     $configData .= '<div class="form-floating m-2">
-				<select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
+                <select id="cfgTty" class="form-select" aria-label="Serial Port (ttyS)">' . PHP_EOL;
     foreach ($ttysArray as $tty) {
         $ttyDetails = null;
         if ($saDetect != null && (int) $tty == (int) $saDetect['port']) {
@@ -1106,27 +1130,27 @@ function cfgForm()
         $configData .= '<option value="' . $tty . '"' . ($tty == $config['cfgTty'] ? ' selected' : '') . '>' . $tty . $ttyDetails . '</option>' . PHP_EOL;
     }
     $configData .= '</select>
-		<label for="cfgTty">Serial Port (ttyS)</label>
-	</div>
-	<h4 class="m-2">System</h4>
-	<div class="form-floating m-2">
-		<select id="timezone" class="form-select" aria-label="Time Zone">' . PHP_EOL;
+        <label for="cfgTty">Serial Port (ttyS)</label>
+    </div>
+    <h4 class="m-2">System</h4>
+    <div class="form-floating m-2">
+        <select id="timezone" class="form-select" aria-label="Time Zone">' . PHP_EOL;
     $tz = file('./assets/timezones.txt', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($tz as $timezone) {
         $configData .= '<option value="' . $timezone . '"' . ($timezone == trim(file_get_contents('/etc/timezone')) ? ' selected' : '') . '>' . $timezone . '</option>' . PHP_EOL;
     }
     $configData .= '</select>
-		<label for="timezone">Time Zone</label>
-	</div>
-	<div class="form-floating m-2">
-		<select id="cfgAutoConnect" name="cfgAutoConnect" class="form-select" aria-label="Auto connect">' . PHP_EOL;
+        <label for="timezone">Time Zone</label>
+    </div>
+    <div class="form-floating m-2">
+        <select id="cfgAutoConnect" name="cfgAutoConnect" class="form-select" aria-label="Auto connect">' . PHP_EOL;
     $configData .= '<option ' . (($config['cfgAutoConnect'] == 'true') ? 'selected' : null) . ' value="true">Yes</option>
-						<option ' . (($config['cfgAutoConnect'] == 'false') ? 'selected' : null) . ' value="false">No</option>';
+                        <option ' . (($config['cfgAutoConnect'] == 'false') ? 'selected' : null) . ' value="false">No</option>';
     $configData .= '</select>
-		<label for="cfgAutoConnect">Auto connect on profile change</label>
-	</div>
-	<div class="form-floating m-2">
-		<input id="accessPassword" type="text" class="form-control" aria-label="Password"';
+        <label for="cfgAutoConnect">Auto connect on profile change</label>
+    </div>
+    <div class="form-floating m-2">
+        <input id="accessPassword" type="text" class="form-control" aria-label="Password"';
     $password = $label = null;
     if (is_file(__DIR__ . '/../assets/pwd')) {
         $password = file_get_contents(__DIR__ . '/../assets/pwd');
@@ -1138,52 +1162,52 @@ function cfgForm()
         $configData .= ' value="' . $password . '"';
     }
     $configData .= '>
-		<label for="accessPassword">Dashboard password' . $label . '</label>
-	</div>
-	<h4 class="m-2">Status page content</h4>
-	<div class="row form-floating m-2">' . PHP_EOL;
+        <label for="accessPassword">Dashboard password' . $label . '</label>
+    </div>
+    <h4 class="m-2">Status page content</h4>
+    <div class="row form-floating m-2">' . PHP_EOL;
     foreach ($statusPageItems as $cfgName => $cfgTitle) {
         $configData .= '<div class="form-check col col-lg-2 m-3">
-			<input class="form-check-input" type="checkbox" id="' . $cfgName . '"' . ($config[$cfgName] == 'true' ? ' checked' : '') . '>
-			<label class="form-check-label" for="' . $cfgName . '">' . $cfgTitle . '</label>
-		</div>' . PHP_EOL;
+            <input class="form-check-input" type="checkbox" id="' . $cfgName . '"' . ($config[$cfgName] == 'true' ? ' checked' : '') . '>
+            <label class="form-check-label" for="' . $cfgName . '">' . $cfgTitle . '</label>
+        </div>' . PHP_EOL;
     }
     $configData .= '</div>
 <h4 class="m-2">Audio control</h4>
 <div class="row m-3">
-	<p class="lead">Output</p>
-	<div class="col-sm-3">
-		<div class="d-flex flex-column">
-			<label for="vac_out">Volume Out<span class="mx-2" id="vac_outcv">(' . $mixerGetLineOut[0] . '%)</span></label>
-			<input type="range" min="6" max="100" step="3" class="form-control-range" id="vac_out" value="' . $mixerGetLineOut[0] . '">
-		</div>
-	</div>
-	<div class="col-sm-3">
-    	<div class="d-flex flex-column">
-			<label for="vac_dac">DAC<span class="mx-2" id="vac_daccv">(' . $mixerGetDAC[0] . '%)</span></label>
-			<input type="range" min="0" max="100" step="2" class="form-control-range" id="vac_dac" value="' . $mixerGetDAC[0] . '">
-		</div>
-	</div>
+    <p class="lead">Output</p>
+    <div class="col-sm-3">
+        <div class="d-flex flex-column">
+            <label for="vac_out">Volume Out<span class="mx-2" id="vac_outcv">(' . $mixerGetLineOut[0] . '%)</span></label>
+            <input type="range" min="6" max="100" step="3" class="form-control-range" id="vac_out" value="' . $mixerGetLineOut[0] . '">
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="d-flex flex-column">
+            <label for="vac_dac">DAC<span class="mx-2" id="vac_daccv">(' . $mixerGetDAC[0] . '%)</span></label>
+            <input type="range" min="0" max="100" step="2" class="form-control-range" id="vac_dac" value="' . $mixerGetDAC[0] . '">
+        </div>
+    </div>
 </div>
 <div class="row m-3">
-	<p class="lead">Input</p>
-	<div class="col-sm-3">
-    	<div class="d-flex flex-column">
-    		<label for="vac_mb">Mic1 Boost<span class="mx-2" id="vac_mbcv">(' . $mixerGetMic1Boost[0] . '%)</span></label>
-    		<input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_mb" value="' . $mixerGetMic1Boost[0] . '" disabled>
-    	</div>
-	</div>
-  	<div class="col-sm-3">
-    	<div class="d-flex flex-column">
-    		<label for="vac_adc">ADC Gain<span class="mx-2" id="vac_adccv">(' . $mixerGetADCGain[0] . '%)</span></label>
-    		<input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_adc" value="' . $mixerGetADCGain[0] . '">
-    	</div>
-	</div>
+    <p class="lead">Input</p>
+    <div class="col-sm-3">
+        <div class="d-flex flex-column">
+            <label for="vac_mb">Mic1 Boost<span class="mx-2" id="vac_mbcv">(' . $mixerGetMic1Boost[0] . '%)</span></label>
+            <input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_mb" value="' . $mixerGetMic1Boost[0] . '" disabled>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="d-flex flex-column">
+            <label for="vac_adc">ADC Gain<span class="mx-2" id="vac_adccv">(' . $mixerGetADCGain[0] . '%)</span></label>
+            <input type="range" min="0" max="100" step="10" class="form-control-range" id="vac_adc" value="' . $mixerGetADCGain[0] . '">
+        </div>
+    </div>
 </div>
-		<div class="alert alert-info m-2 p-1" role="alert">Note : Adjusting the sliders has immediate effect!</div>
+        <div class="alert alert-info m-2 p-1" role="alert">Note : Adjusting the sliders has immediate effect!</div>
 </div>
-	<div class="d-flex justify-content-center mt-4">
-		<button id="cfgSave" type="button" class="btn btn-danger btn-lg mx-2">Save</button>';
+    <div class="d-flex justify-content-center mt-4">
+        <button id="cfgSave" type="button" class="btn btn-danger btn-lg mx-2">Save</button>';
     if ($version) {
         $isOnline = checkdnsrr('google.com');
         // Check if RoLink version is capable of updates and if we're connected to the internet

@@ -30,8 +30,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
 });
 /*
- *   RoLinkX Dashboard v3.64
- *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.68
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -379,6 +379,54 @@ $(document).ready(function () {
       });
     }
   });
+
+  // Retrieve EchoLink public proxy list (available servers)
+  $('#svx_el_pxtype').on('change', function(event) {
+    var selection = $('#svx_el_pxtype').val();
+    if (selection == 1) {
+      $.ajax({
+        type: 'GET',
+        url: 'ajax/svx.php',
+        data: { getProxyList: selection },
+        success: function(data) {
+          if (data) {
+            var jsonData = JSON.parse(data);
+            if (Array.isArray(jsonData)) {
+              var select = $('<select>', {
+                id: 'svx_el_pxsrv',
+                class: 'form-select'
+              });
+              $('#proxyInputContainer').empty().append(
+                $('<span>', {
+                  class: 'input-group-text',
+                  style: 'width: 8rem;',
+                  text: 'Proxy Server'
+                }),
+                select
+              );
+              jsonData.forEach(function(item) {
+                select.append($('<option>', {
+                  value: item,
+                  text: item
+                }));
+              });
+              $('#svx_el_pxp').val('8100');
+              $('#svx_el_pxpw').val('PUBLIC');
+              $('#sysmsg').showNotice('Available proxy list loaded!<br/>Select a server from the list', 3000);
+            }
+          }
+        }
+      });
+    } else if (selection == 0) {
+      $('#proxyInputContainer').empty().append($('<span>', {
+          class: 'input-group-text',
+          style: 'width: 8rem;',
+          text: 'Proxy Server'
+        }),
+        `<input id="svx_el_pxsrv" type="text" class="form-control" placeholder="the.proxy.server" aria-label="Proxy Server" aria-describedby="inputGroup-sizing-sm">`);
+    }
+  });
+
   // SVXLink and EchoLink Show/Hide password
   $("#show_hide").on('click', function (event) {
     togglePwd('#svx_key');
