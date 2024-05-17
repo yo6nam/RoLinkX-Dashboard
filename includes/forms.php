@@ -296,7 +296,7 @@ function svxForm()
     /* MasterGain (TX) */
     preg_match('/(MASTER_GAIN=)(-?\d+(\.\d{1,2})?)\n/', $cfgFileData, $varMasterGain);
     $masterGainValue = (isset($varMasterGain[2])) ? $varMasterGain[2] : '';
-    /* Reconnect seconds */
+    /* Reconnect after (seconds) */
     preg_match('/(RECONNECT_SECONDS=)(\d+)/', $cfgFileData, $varReconnectSeconds);
     $reconnectSecondsValue = (isset($varReconnectSeconds[2])) ? 'value=' . $varReconnectSeconds[2] : '';
     /* Limiter */
@@ -376,7 +376,7 @@ function svxForm()
         </div>';
     /* Voice language detection/selection */
     $svxForm .= '<div class="input-group input-group-sm mb-1">
-        <span class="input-group-text" style="width: 8rem;">Voice pack</span>' . PHP_EOL;
+        <span class="input-group-text" style="width: 8rem;">Voice Pack</span>' . PHP_EOL;
     if (is_dir($voicesPath)) {
         $svxForm .= '<select id="svx_vop" class="form-select">' . PHP_EOL;
         foreach (glob($voicesPath . '/*', GLOB_ONLYDIR) as $voiceDir) {
@@ -452,13 +452,13 @@ function svxForm()
     $svxForm .= '</select>
         </div>
         <div class="input-group input-group-sm mb-1">
-          <span class="input-group-text" style="width: 8rem;">Squelch delay</span>
-          <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch delay" aria-describedby="inputGroup-sizing-sm" ' . $sqlDelayValue . '>
+          <span class="input-group-text" style="width: 8rem;">Squelch Delay</span>
+          <input id="svx_sqd" type="text" class="form-control" placeholder="500" aria-label="Squelch Delay" aria-describedby="inputGroup-sizing-sm" ' . $sqlDelayValue . '>
         </div>';
     if (!is_array($saDetect)) {
         $svxForm .= '<div class="input-group input-group-sm mb-1">
-          <span class="input-group-text" style="width: 8rem;">TX delay</span>
-          <input id="svx_txd" type="text" class="form-control" placeholder="875" aria-label="TX delay" aria-describedby="inputGroup-sizing-sm" ' . $txDelayValue . '>
+          <span class="input-group-text" style="width: 8rem;">TX Delay</span>
+          <input id="svx_txd" type="text" class="form-control" placeholder="875" aria-label="TX Delay" aria-describedby="inputGroup-sizing-sm" ' . $txDelayValue . '>
         </div>';
     }
     $svxForm .= '<div class="input-group input-group-sm mb-1">
@@ -470,12 +470,12 @@ function svxForm()
           <input id="svx_mtg" type="text" class="form-control" placeholder="226++" aria-label="Monitor TGs" aria-describedby="inputGroup-sizing-sm" ' . $monitorTgsValue . '>
         </div>
         <div class="input-group input-group-sm mb-1">
-          <span class="input-group-text" style="width: 8rem;">TG Sel Timeout</span>
+          <span class="input-group-text" style="width: 8rem;">TG Select Timeout</span>
           <input id="svx_tgt" type="text" class="form-control" placeholder="30" aria-label="TG Timeout" aria-describedby="inputGroup-sizing-sm" ' . $tgSelTimeOutValue . '>
         </div>
         <div class="input-group input-group-sm mb-1">
-          <span class="input-group-text" style="width: 8rem;">Reconnect seconds</span>
-          <input id="svx_res" type="text" class="form-control" placeholder="0" aria-label="Reconnect seconds" aria-describedby="inputGroup-sizing-sm" ' . $reconnectSecondsValue . '>
+          <span class="input-group-text" style="width: 8rem;">Reconnect After</span>
+          <input id="svx_res" type="text" class="form-control" placeholder="0" aria-label="Reconnect After" aria-describedby="inputGroup-sizing-sm" ' . $reconnectSecondsValue . '>
         </div>
         <div class="input-group input-group-sm mb-1">
           <span class="input-group-text" style="width: 8rem;">Connection Status</span>
@@ -586,7 +586,7 @@ function echoLinkForm()
           <input id="svx_el_lit" type="text" class="form-control" placeholder="300" aria-label="Link Idle Timeout" aria-describedby="inputGroup-sizing-sm" value="' . $elLinkIdleTimeout[1] . '">
         </div>
          <div class="input-group input-group-sm mb-1">
-          <span class="input-group-text" style="width: 8rem;">Proxy Server Type</span>
+          <span class="input-group-text" style="width: 8rem;">Proxy Server</span>
           <select id="svx_el_pxtype" class="form-select">
              <option value="" selected disabled>- please select-</option>
             <option value="0">Custom</option>
@@ -594,7 +594,7 @@ function echoLinkForm()
           </select>
         </div>
         <div class="input-group input-group-sm mb-1" id="proxyInputContainer">
-          <span class="input-group-text" style="width: 8rem;">Proxy Server</span>
+          <span class="input-group-text" style="width: 8rem;">Proxy Address</span>
           <input id="svx_el_pxsrv" type="text" class="form-control" placeholder="the.proxy.server" aria-label="Proxy Server" aria-describedby="inputGroup-sizing-sm" value="' . $elProxyServer[2] . '">
         </div>
         <div class="input-group input-group-sm mb-1">
@@ -810,9 +810,8 @@ function aprsForm($ajax = false)
     if ($svcGPSD == 'active' && isset($data['tpv'][0])) {
         $fixDescriptions = [0 => "unknown", 1 => "no fix", 2 => "2D", 3 => "3D"];
         $gpsData         = $data['tpv'][0];
-        if ($gpsData['mode'] == 0) {
-            $aprsForm .= '<meta http-equiv="refresh" content="3"><div class="alert alert-warning text-center" role="alert">Status unknown. Reloading...</div>';
-            return $aprsForm;
+        if ($gpsData['mode'] === 0) {
+            return '<meta http-equiv="refresh" content="3"><div class="alert alert-warning text-center" role="alert">Status unknown. Reloading...</div>';
         }
 
         $fixMode     = $fixDescriptions[$gpsData['mode']];

@@ -400,7 +400,7 @@ $(document).ready(function () {
                 $('<span>', {
                   class: 'input-group-text',
                   style: 'width: 8rem;',
-                  text: 'Proxy Server'
+                  text: 'Proxy Address'
                 }),
                 select
               );
@@ -421,9 +421,9 @@ $(document).ready(function () {
       $('#proxyInputContainer').empty().append($('<span>', {
           class: 'input-group-text',
           style: 'width: 8rem;',
-          text: 'Proxy Server'
+          text: 'Proxy Address'
         }),
-        `<input id="svx_el_pxsrv" type="text" class="form-control" placeholder="the.proxy.server" aria-label="Proxy Server" aria-describedby="inputGroup-sizing-sm">`);
+        `<input id="svx_el_pxsrv" type="text" class="form-control" placeholder="the.proxy.server" aria-label="Proxy Address" aria-describedby="inputGroup-sizing-sm">`);
     }
   });
 
