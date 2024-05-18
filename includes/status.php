@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.67
+ *   RoLinkX Dashboard v3.68
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -148,7 +148,6 @@ function sa818()
     $status  = null;
     $version = version();
     if (!$version || $version['date'] < 20230126) {
-        // Feature available since RoLink 1.7.99.75-6
         return;
     }
     $sa818    = 'Not detected';
@@ -264,10 +263,12 @@ function getSSID()
     exec('/sbin/iwgetid --raw', $reply);
     if (isset($reply[0])) {
         $wifiStatus = $reply[0];
-        $wifiMode   = 'SSID';
+        $wifiMode   = 'WLAN SSID';
     } else {
-        exec('/usr/bin/systemctl is-active hostapd', $mode);
-        $wifiStatus = ($mode[0] == 'active') ? 'Hotspot' : 'Not associated';
+        #exec('/usr/bin/systemctl is-active hostapd', $mode);
+        #$wifiStatus = ($mode[0] == 'active') ? 'Hotspot' : 'Not associated';
+        # ToDo : AutoHotspot
+        $wifiStatus = 'Not associated';
         $wifiMode   = 'Wi-Fi mode';
     }
     return '<div class="input-group mb-2">

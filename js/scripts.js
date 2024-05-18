@@ -76,9 +76,18 @@ function gpioStatus() {
     dataType: 'json',
     url: 'includes/status.php?gpio',
     success: function (data) {
-      $('#gpioRx').attr('placeholder', data['rx'] === '0' ? 'RX' : 'RX').val('').css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
-      $('#gpioTx').attr('placeholder', data['tx'] === '0' ? 'TX' : '').val(data['tx'] === '0' ? '' : 'TX').css('background', data['tx'] === '0' ? 'none' : 'red').css('color', data['tx'] === '0' ? '' : 'white');
-      $('#gpioFan').attr('placeholder', data['fan'] === '0' ? 'Fan' : 'Fan').val('').css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+      $('#gpioRx').attr('placeholder',
+      	data['rx'] === '0' ? 'RX' : 'RX').val('').css('background',
+      	data['rx'] === '0' ? 'none' : 'lightgreen');
+      $('#gpioTx').attr('placeholder',
+      	data['tx'] === '0' ? 'TX' : '').val(data['tx'] === '0' ? '' : 'TX').css('background',
+      	data['tx'] === '0' ? 'none' : 'red').css('color', data['tx'] === '0' ? '' : 'white');
+      $('#gpioFan').attr('placeholder',
+      	data['fan'] === '0' ? 'Fan' : 'Fan').val('').css('background',
+      	data['fan'] === '0' ? 'none' : 'lightgreen');
+      $('#gpioBlock').attr('placeholder',
+        data['block'] === '0' ? 'Block' : 'Block').val(data['block'] === '0' ? '' : 'Block').css('background',
+        data['block'] === '0' ? 'none' : 'red').css('color', data['block'] === '0' ? '' : 'white');
     }
   });
 }
@@ -126,14 +135,25 @@ $(document).ready(function () {
 
     function handleEventData(data) {
       if (data['rx']) {
-        $('#gpioRx').attr('placeholder', data['rx'] === '0' ? 'RX' : 'RX').val('').css('background', data['rx'] === '0' ? 'none' : 'lightgreen');
+        $('#gpioRx').attr('placeholder',
+          data['rx'] === '0' ? 'RX' : 'RX').val('').css('background',
+          data['rx'] === '0' ? 'none' : 'lightgreen');
         localRx = (data['rx'] === '1') ? true : false;
       }
       if (data['tx']) {
-        $('#gpioTx').attr('placeholder', data['tx'] === '0' ? 'TX' : '').val(data['tx'] === '0' ? '' : 'TX').css('background', data['tx'] === '0' ? 'none' : 'red').css('color', data['tx'] === '0' ? '' : 'white');
+        $('#gpioTx').attr('placeholder',
+          data['tx'] === '0' ? 'TX' : '').val(data['tx'] === '0' ? '' : 'TX').css('background',
+          data['tx'] === '0' ? 'none' : 'red').css('color',
+          data['tx'] === '0' ? '' : 'white');
       }
       if (data['fan']) {
-        $('#gpioFan').attr('placeholder', data['fan'] === '0' ? 'Fan' : 'Fan').val('').css('background', data['fan'] === '0' ? 'none' : 'lightgreen');
+        $('#gpioFan').attr('placeholder', data['fan'] === '0' ? 'Fan' : 'Fan').val('').css('background',
+          data['fan'] === '0' ? 'none' : 'lightgreen');
+      }
+      if (data['block']) {
+        $('#gpioBlock').attr('placeholder',
+          data['block'] === '0' ? 'Block' : 'Block').val(data['block'] === '0' ? '' : 'Block').css('background',
+          data['block'] === '0' ? 'none' : 'red').css('color', data['block'] === '0' ? '' : 'white');
       }
       if (data['ta'] === '1') {
         $('#onair').html(`<i class="icon-record_voice_over talker-active"></i>${data['tn']}<span class="small" id="timerDisplay"></span>`);
@@ -583,27 +603,28 @@ $(document).ready(function () {
       }
     });
   });
-  // Switch Host Name (default -> callsign)
-  $('#switchHostName').click(function () {
-    $(this).prop('disabled', true).fadeTo('fast', 0.15);
-    $.ajax({
-      type: 'POST',
-      url: 'ajax/sys.php',
-      data: {
-        switchHostName: 1
-      },
-      success: function (data) {
-        if (data) {
-          $('#switchHostName').prop('disabled', false).fadeTo('fast', 1);
-          $('#sysmsg').showNotice(data, 3000);
-          if (data.match(/reboot/)) {
-            setTimeout(function () {
-              location.reload(true);
-            }, 3200);
+  $('#switchHostName').click(function() {
+    if (confirm("Are you sure you want to switch the hostname? This action may require a system reboot.")) {
+      $(this).prop('disabled', true).fadeTo('fast', 0.15);
+      $.ajax({
+        type: 'POST',
+        url: 'ajax/sys.php',
+        data: {
+          switchHostName: 1
+        },
+        success: function(data) {
+          if (data) {
+            $('#switchHostName').prop('disabled', false).fadeTo('fast', 1);
+            $('#sysmsg').showNotice(data, 3000);
+            if (data.match(/reboot/)) {
+              setTimeout(function() {
+                location.reload(true);
+              }, 3200);
+            }
           }
         }
-      }
-    });
+      });
+    }
   });
   // Latency check
   $('#latencyCheck').click(function () {
