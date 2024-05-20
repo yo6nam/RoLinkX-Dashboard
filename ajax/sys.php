@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.67
+ *   RoLinkX Dashboard v3.7
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -125,17 +125,12 @@ if (isset($_POST)) {
 
     /* Dashboard Password */
     if (isset($accessPassword)) {
-        $passwordFile = __DIR__ . '/../assets/pwd';
-        if (is_file($passwordFile)) {
-            $password = file_get_contents(__DIR__ . '/../assets/pwd');
-            if ($password != $accessPassword) {
-                file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
-                $messages[] = (empty($accessPassword) ? 'Password deleted' : 'The password has been changed');
-            }
-        } else {
-            file_put_contents($passwordFile, preg_replace('/\s+/', '', $accessPassword));
-            $messages[] = 'The password has been set';
+        $password = dashPassword("get");
+        if ($password != $accessPassword) {
+            $newPassword = preg_replace('/\s+/', '', $accessPassword);
+            dashPassword("set", $newPassword);
         }
+        $messages[] = (empty($accessPassword) ? 'Password deleted' : 'The password has been set/changed');
     }
     toggleFS(false);
     foreach ($messages as $message) {
@@ -290,6 +285,7 @@ function expandFS()
 {
     toggleFS(true);
     serviceControl('armbian-resize-filesystem.service', 'start');
+    serviceControl('fstrim.service', 'start');
     toggleFS(false);
     return 'File system expanded!';
 }

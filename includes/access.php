@@ -1,7 +1,7 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.1
- *   Copyright (C) 2023 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.7
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ if (isset($_POST['submit_pwd'])) {
         exit();
     }
     setcookie(md5($password), "1", time() + 3600 * 24 * 7);
+    header("Location: ./");
+    exit();
 } else {
     showForm();
     exit();
@@ -39,6 +41,7 @@ function showForm()
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/fav/favicon-96x96.png">
     <link href="css/styles.css" rel="stylesheet" />
   </head>
 <body>

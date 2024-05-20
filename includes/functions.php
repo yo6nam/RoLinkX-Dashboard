@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.65
+ *   RoLinkX Dashboard v3.7
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -203,4 +203,25 @@ function writeToCache($cacheFile, $key, $value)
     }
     $data[$key] = $value;
     file_put_contents($cacheFile, json_encode($data));
+}
+
+function dashPassword($operation = null, $password = '')
+{
+    $macAddress   = trim(shell_exec("cat /sys/class/net/eth0/address"));
+    $passwordFile = __DIR__ . '/../assets/pwd_' . hash('sha256', $macAddress);
+
+    switch ($operation) {
+        case "get":
+            return (is_file($passwordFile)) ? file_get_contents($passwordFile) : null;
+        case "set":
+            file_put_contents($passwordFile, $password);
+            break;
+        case "check":
+            $password = (is_file($passwordFile)) ? file_get_contents($passwordFile) : null;
+            $hash     = md5($password);
+            if (!isset($_COOKIE[$hash]) && !empty($password)) {
+                require_once __DIR__ . '/access.php';
+            }
+            break;
+    }
 }

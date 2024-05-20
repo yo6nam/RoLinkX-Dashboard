@@ -1,7 +1,7 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.55
- *   Copyright (C) 2022 by Razvan Marin YO6NAM / www.xpander.ro
+ *   RoLinkX Dashboard v3.7
+ *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,43 +25,13 @@
 include __DIR__ . '/../includes/functions.php';
 $wpaFile    = '/etc/wpa_supplicant/wpa_supplicant.conf';
 $wpaTemp    = '/tmp/wpa_supplicant.tmp';
-$weHaveData = $fail = false;
+$maxNetworks = 5;
+$weHaveData = false;
 
 /* Get POST vars */
-$wnA = (isset($_POST['wn1'])) ? filter_input(INPUT_POST, 'wn1', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wkA = (isset($_POST['wk1'])) ? filter_input(INPUT_POST, 'wk1', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wnB = (isset($_POST['wn2'])) ? filter_input(INPUT_POST, 'wn2', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wkB = (isset($_POST['wk2'])) ? filter_input(INPUT_POST, 'wk2', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wnC = (isset($_POST['wn3'])) ? filter_input(INPUT_POST, 'wn3', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wkC = (isset($_POST['wk3'])) ? filter_input(INPUT_POST, 'wk3', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wnD = (isset($_POST['wn4'])) ? filter_input(INPUT_POST, 'wn4', FILTER_SANITIZE_ADD_SLASHES) : '';
-$wkD = (isset($_POST['wk4'])) ? filter_input(INPUT_POST, 'wk4', FILTER_SANITIZE_ADD_SLASHES) : '';
-
-function getSSIDs()
-{
-    global $wpaFile;
-    $storedSSID = null;
-    $storedPwds = null;
-    $wpaBuffer  = file_get_contents($wpaFile);
-    // Match both plain text passwords and hashed passphrases
-    preg_match_all('/ssid="(.*)"/', $wpaBuffer, $resultSSID);
-    preg_match_all('/psk=(".*?"|\S+)/', $wpaBuffer, $resultPWDS);
-    if (empty($resultSSID) || empty($resultPWDS)) {
-        return false;
-    }
-
-    foreach ($resultSSID[1] as $key => $ap) {
-        if ($key <= 3) {
-            $storedSSID[] = $ap;
-        }
-    }
-    foreach ($resultPWDS[1] as $key => $pw) {
-        if ($key <= 3) {
-            // Remove double quotes if present
-            $storedPwds[] = trim($pw, '"');
-        }
-    }
-    return [$storedSSID, $storedPwds];
+for ($i = 1; $i <= $maxNetworks; $i++) {
+    ${"wn$i"} = isset($_POST["wn$i"]) ? filter_input(INPUT_POST, "wn$i", FILTER_SANITIZE_ADD_SLASHES) : '';
+    ${"wk$i"} = isset($_POST["wk$i"]) ? filter_input(INPUT_POST, "wk$i", FILTER_SANITIZE_ADD_SLASHES) : '';
 }
 
 function wpa_passphrase($ssid, $passphrase)
@@ -70,79 +40,68 @@ function wpa_passphrase($ssid, $passphrase)
     return bin2hex($bin);
 }
 
-$ssidList = getSSIDs();
-$networkA = (empty($ssidList[0][0])) ? '' : $ssidList[0][0];
-$networkB = (empty($ssidList[0][1])) ? '' : $ssidList[0][1];
-$networkC = (empty($ssidList[0][2])) ? '' : $ssidList[0][2];
-$networkD = (empty($ssidList[0][3])) ? '' : $ssidList[0][3];
-$authKeyA = (empty($ssidList[1][0])) ? '' : $ssidList[1][0];
-$authKeyB = (empty($ssidList[1][1])) ? '' : $ssidList[1][1];
-$authKeyC = (empty($ssidList[1][2])) ? '' : $ssidList[1][2];
-$authKeyD = (empty($ssidList[1][3])) ? '' : $ssidList[1][3];
+function getSSIDs($wpaFile, $maxNetworks)
+{
+    $storedSSID = [];
+    $storedPwds = [];
+    $wpaBuffer = file_get_contents($wpaFile);
+
+    // Match both plain text passwords and hashed passphrases
+    preg_match_all('/ssid="(.*)"/', $wpaBuffer, $resultSSID);
+    preg_match_all('/psk=(".*?"|\S+)/', $wpaBuffer, $resultPWDS);
+
+    if (empty($resultSSID[1]) || empty($resultPWDS[1])) {
+        return false;
+    }
+
+    // Store up to 4 SSIDs and passwords
+    for ($i = 0; $i < $maxNetworks; $i++) {
+        if (isset($resultSSID[1][$i])) {
+            $storedSSID[] = $resultSSID[1][$i];
+        }
+        if (isset($resultPWDS[1][$i])) {
+            $storedPwds[] = trim($resultPWDS[1][$i], '"');
+        }
+    }
+
+    return [$storedSSID, $storedPwds];
+}
 
 /* Check for user input data */
-if ($wnA || $wnB || $wnC || $wnD || $wkA || $wkB || $wkC || $wkD) {
-    $weHaveData = true;
+for ($i = 1; $i <= 4; $i++) {
+    if (${"wn$i"} || ${"wk$i"}) {
+        $weHaveData = true;
+        break;
+    }
 }
 
-/* Networks */
-if ($wnA && $wnA != $networkA) {
-    $networkA = $wnA;
+$ssidList = getSSIDs($wpaFile, $maxNetworks);
+
+$storedNetwork = [];
+$storedAuthKey = [];
+
+for ($i = 0; $i < $maxNetworks; $i++) {
+    $storedNetwork[$i] = $ssidList ? ($ssidList[0][$i] ?? '') : '';
+    $storedAuthKey[$i] = $ssidList ? ($ssidList[1][$i] ?? '') : '';
 }
 
-if ($wnB && $wnB != $networkB) {
-    $networkB = $wnB;
-}
+/* Networks and Validation */
+for ($i = 1; $i <= $maxNetworks; $i++) {
+    ${"network$i"} = $storedNetwork[$i - 1];
+    ${"authKey$i"} = $storedAuthKey[$i - 1];
 
-if ($wnC && $wnC != $networkC) {
-    $networkC = $wnC;
-}
+    if (${"wn$i"} == '-') {
+         ${"network$i"} = '';
+    } elseif (${"wn$i"} && strlen(${"wk$i"}) < 8) {
+		echo 'Network <b>'. ${"wn$i"} .'</b> : Invalid network security key lenght!';
+		exit(1);
+    } elseif (${"wn$i"} && ${"wn$i"} != $storedNetwork[$i - 1]) {
+        ${"network$i"} = ${"wn$i"};
+    }
 
-if ($wnD && $wnD != $networkD) {
-    $networkD = $wnD;
-}
-
-if ($wkA && $wkA != $authKeyA) {
-    $authKeyA = $wkA;
-}
-
-if ($wkB && $wkB != $authKeyB) {
-    $authKeyB = $wkB;
-}
-
-if ($wkC && $wkC != $authKeyC) {
-    $authKeyC = $wkC;
-}
-
-if ($wkD && $wkD != $authKeyD) {
-    $authKeyD = $wkD;
-}
-
-/* Delete networks if supplied with '-' character or validate key lenght */
-if ($wnA == '-') {
-    $networkA = '';
-} elseif ($wnA && strlen($wkA) < 8) {
-    $fail = true;
-}
-if ($wnB == '-') {
-    $networkB = '';
-} elseif ($wnB && strlen($wkB) < 8) {
-    $fail = true;
-}
-if ($wnC == '-') {
-    $networkC = '';
-} elseif ($wnC && strlen($wkC) < 8) {
-    $fail = true;
-}
-if ($wnD == '-') {
-    $networkD = '';
-} elseif ($wnD && strlen($wkD) < 8) {
-    $fail = true;
-}
-
-if ($fail) {
-    echo $wkC . 'Invalid network security key lenght!';
-    exit(1);
+    if (${"wk$i"} && ${"wk$i"} != $storedAuthKey[$i - 1]) {
+        ${"authKey$i"} = ${"wk$i"};
+    }
 }
 
 /* Update the wpa_supplicant.conf file with new data */
@@ -151,41 +110,18 @@ update_config=1
 ap_scan=1
 fast_reauth=1
 country=RO' . PHP_EOL;
-if (!empty($networkA)) {
-    $wpaData .= 'network={
-        ssid=' . json_encode($networkA) . '
-        psk=' . ((strlen($authKeyA) < 32) ? wpa_passphrase($networkA, $authKeyA) : $authKeyA) . '
-        key_mgmt=WPA-PSK
-        scan_ssid=1
+for ($i = 1; $i <= $maxNetworks; $i++) {
+    if (!empty(${"network$i"})) {
+        $psk = (strlen(${"authKey$i"}) < 32) ? wpa_passphrase(${"network$i"}, ${"authKey$i"}) : ${"authKey$i"};
+        $wpaData .= 'network={
+	ssid=' . json_encode(${"network$i"}) . '
+	psk=' . $psk . '
+	key_mgmt=WPA-PSK
+	scan_ssid=1
 }' . PHP_EOL;
+    }
 }
 
-if (!empty($networkB)) {
-    $wpaData .= 'network={
-        ssid=' . json_encode($networkB) . '
-        psk=' . ((strlen($authKeyB) < 32) ? wpa_passphrase($networkB, $authKeyB) : $authKeyB) . '
-        key_mgmt=WPA-PSK
-        scan_ssid=1
-}' . PHP_EOL;
-}
-
-if (!empty($networkC)) {
-    $wpaData .= 'network={
-        ssid=' . json_encode($networkC) . '
-        psk=' . ((strlen($authKeyC) < 32) ? wpa_passphrase($networkC, $authKeyC) : $authKeyC) . '
-        key_mgmt=WPA-PSK
-        scan_ssid=1
-}' . PHP_EOL;
-}
-
-if (!empty($networkD)) {
-    $wpaData .= 'network={
-        ssid=' . json_encode($networkD) . '
-        psk=' . ((strlen($authKeyD) < 32) ? wpa_passphrase($networkD, $authKeyD) : $authKeyD) . '
-        key_mgmt=WPA-PSK
-        scan_ssid=1
-}' . PHP_EOL;
-}
 if ($weHaveData) {
     toggleFS(true);
     file_put_contents($wpaTemp, $wpaData);

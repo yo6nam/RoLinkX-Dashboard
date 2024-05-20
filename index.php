@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.68
+ *   RoLinkX Dashboard v3.7
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -22,19 +22,14 @@
  * Index page
  */
 
-// Password protection
-if (is_file(__DIR__ . '/assets/pwd')) {
-    $password = file_get_contents(__DIR__ . '/assets/pwd');
-    $hash     = md5($password);
-    if (!isset($_COOKIE[$hash]) && !empty($password)) {
-        require_once __DIR__ . '/includes/access.php';
-    }
-}
 $pages = array("wifi", "svx", "sa", "log", "aprs", "tty", "cfg");
 $page  = (null !== filter_input(INPUT_GET, 'p', FILTER_SANITIZE_SPECIAL_CHARS)) ? $_GET['p'] : '';
 
 // Common functions
 include __DIR__ . '/includes/functions.php';
+
+// Password protection
+dashPassword('check');
 
 // Events
 $version    = version();
@@ -200,7 +195,7 @@ switch ($page) {
             <div id="sysmsg"></div>
         </div>
         <footer class="page-footer fixed-bottom font-small bg-light">
-            <div class="text-center small p-2">v3.68 © 2024 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+            <div class="text-center small p-2">v3.7 © 2024 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
         </footer>
         <script><?php echo $eventsData; ?></script>
         <script src="js/jquery.js"></script>

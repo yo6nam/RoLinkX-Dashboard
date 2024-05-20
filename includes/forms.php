@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.68
+ *   RoLinkX Dashboard v3.7
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -90,16 +90,7 @@ function scanWifi($ext = 0)
 
     if (!empty($networks)) {
         $cnt = 1;
-        if ($ext != 1) {
-            $apList = '<div class="accordion mb-3" id="wifiNetworks">
-    <div class="accordion-item">
-     <h3 class="accordion-header" id="heading">
-        <button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks">Available Networks (click to open)</button>
-     </h3>
-     <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
-        <div id="updateList" class="accordion-body">';
-        }
-        $apList .= '<table class="table table-sm"><thead><tr>
+        $apList = '<table class="table table-sm"><thead><tr>
             <th scope="col">#</th>
             <th scope="col">SSID</th>
             <th scope="col">RSSI</th>
@@ -126,9 +117,6 @@ function scanWifi($ext = 0)
             ++$cnt;
         }
         $apList .= '</tbody></table>';
-        if ($ext != 1) {
-            $apList .= '</div></div></div></div>';
-        }
     }
     return $apList;
 }
@@ -174,7 +162,16 @@ function freqToChan($freq)
 function wifiForm()
 {
     $ssidList = getSSIDs();
-    $apsList  = scanWifi();
+    $apsList  = '<div class="accordion mb-3" id="wifiNetworks">
+    <div class="accordion-item">
+     <h3 class="accordion-header" id="heading">
+        <button class="bg-info text-white accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#availableNetworks" aria-expanded="false" aria-controls="availableNetworks"><span role="status" class="spinner-border spinner-border-sm mx-2"></span>Scanning  WiFi</button>
+     </h3>
+     <div id="availableNetworks" class="accordion-collapse collapse" aria-labelledby="heading" data-bs-parent="#wifiNetworks">
+        <div id="updateList" class="accordion-body"></div>
+    </div>
+    </div>
+    </div>';
     exec('/sbin/iwgetid --raw', $con);
     $wifiForm = '<h4 class="mt-2 alert alert-info fw-bold">Wi-Fi configuration</h4>';
     $wifiForm .= '<div id="wifiScanner">' . $apsList . '</div>';
@@ -210,7 +207,10 @@ function wifiForm()
     </div>' . PHP_EOL;
     $wifiForm .= '<script>
     var auto_refresh = setInterval( function () {
-        $("#updateList").load("includes/forms.php?scan");
+    	$("#heading button").html("<span role=\"status\" class=\"spinner-border spinner-border-sm mx-2\"></span>Scanning  WiFi").removeClass("bg-success").addClass("bg-info");
+        $("#updateList").load("includes/forms.php?scan", function() {
+            $("#heading button").text("Scan complete (click to open/close)").removeClass("bg-info").addClass("bg-success");
+        });
     }, 6000);
     </script>' . PHP_EOL;
     return $wifiForm;
@@ -1150,10 +1150,8 @@ function cfgForm()
     </div>
     <div class="form-floating m-2">
         <input id="accessPassword" type="text" class="form-control" aria-label="Password"';
-    $password = $label = null;
-    if (is_file(__DIR__ . '/../assets/pwd')) {
-        $password = file_get_contents(__DIR__ . '/../assets/pwd');
-    }
+    $label = null;
+    $password = dashPassword("get");
     if (empty($password)) {
         $configData .= ' placeholder=""';
         $label = ' (not set)';
