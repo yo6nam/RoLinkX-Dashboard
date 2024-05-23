@@ -189,7 +189,7 @@ function restartSVXLink()
 /* Restart Wi-Fi */
 function wifiRestart()
 {
-    exec("/usr/bin/sudo /sbin/wpa_cli -i wlan0 reconfigure");
+    exec("/usr/bin/sudo /opt/rolink/scripts/network reload");
     return true;
 }
 

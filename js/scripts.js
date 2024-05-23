@@ -30,7 +30,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   }
 });
 /*
- *   RoLinkX Dashboard v3.68
+ *   RoLinkX Dashboard v3.7
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -289,23 +289,25 @@ $(document).ready(function () {
   });
   // SVXLink restore config
   $('#restore').click(function () {
-    $(this).prop('disabled', true).fadeTo('fast', 0.15);
-    $.ajax({
-      type: 'POST',
-      url: 'ajax/svx.php',
-      data: {
-        restore: true
-      },
-      success: function (data) {
-        if (data) {
-          $('#restore').prop('disabled', false).fadeTo('fast', 1);
-          $('#sysmsg').showNotice(data, 3000);
-          setTimeout(function () {
-            location.reload(true);
-          }, 3500);
+    if (confirm("Are you sure you want to restore to defaults? This action cannot be undone.")) {
+      $(this).prop('disabled', true).fadeTo('fast', 0.15);
+      $.ajax({
+        type: 'POST',
+        url: 'ajax/svx.php',
+        data: {
+          restore: true
+        },
+        success: function (data) {
+          if (data) {
+            $('#restore').prop('disabled', false).fadeTo('fast', 1);
+            $('#sysmsg').showNotice(data, 3000);
+            setTimeout(function () {
+              location.reload(true);
+            }, 3500);
+          }
         }
-      }
-    });
+      });
+    }
   });
   // SVXLink config
   $('#savesvxcfg').click(function () {
@@ -333,21 +335,23 @@ $(document).ready(function () {
   });
   // SVXLink delete profile
   $('#delsvxprofile').click(function () {
-    $.ajax({
-      type: 'POST',
-      url: 'ajax/svx.php',
-      data: {
-        prd: $('#svx_spn').val()
-      },
-      success: function (data) {
-        if (data) {
-          $('#sysmsg').showNotice(data, 2000);
-          setTimeout(function () {
-            location.reload(true);
-          }, 3000);
+    if (confirm("Are you sure you want to delete this profile?")) {
+      $.ajax({
+        type: 'POST',
+        url: 'ajax/svx.php',
+        data: {
+          prd: $('#svx_spn').val()
+        },
+        success: function (data) {
+          if (data) {
+            $('#sysmsg').showNotice(data, 2000);
+            setTimeout(function () {
+              location.reload(true);
+            }, 3000);
+          }
         }
-      }
-    });
+      });
+    }
   });
   // Load selected SVX profile and populate fields
   $('#svx_spn').on('change', function (event) {
@@ -524,14 +528,16 @@ $(document).ready(function () {
   });
   // Power Off OS
   $('#halt').click(function () {
-    $(this).prop('disabled', true).fadeTo('fast', 0.15);
-    $.ajax({
-      type: 'POST',
-      url: 'ajax/sys.php',
-      data: {
-        halt: 1
-      }
-    });
+    if (confirm("Are you sure you want to power off?")) {
+      $(this).prop('disabled', true).fadeTo('fast', 0.15);
+      $.ajax({
+        type: 'POST',
+        url: 'ajax/sys.php',
+        data: {
+          halt: 1
+        }
+      });
+    }
   });
   // Reboot OS
   $('#reboot').click(function () {
@@ -556,7 +562,10 @@ $(document).ready(function () {
       success: function (data) {
         if (data) {
           $('#rewifi').prop('disabled', false).fadeTo('fast', 1);
-          $('#sysmsg').showNotice('Wi-Fi service restarted', 3000);
+          $('#sysmsg').showNotice('Wi-Fi interface reloaded', 3000);
+          setTimeout(function() {
+            location.reload(true);
+          }, 3200);
         }
       }
     });
@@ -745,7 +754,7 @@ $(document).ready(function () {
       icon: 'icon-warning',
       headerColor: '#941919',
       autoOpen: 5,
-      timeout: 90000,
+      timeout: 120000,
       timeoutProgressbar: true,
       closeOnEscape: false,
       closeButton: false,
@@ -799,7 +808,7 @@ $(document).ready(function () {
       icon: 'icon-warning',
       headerColor: '#941919',
       autoOpen: 5,
-      timeout: 90000,
+      timeout: 120000,
       timeoutProgressbar: true,
       closeOnEscape: false,
       closeButton: false,
@@ -832,7 +841,7 @@ $(document).ready(function () {
       icon: 'icon-warning',
       headerColor: '#941919',
       autoOpen: 5,
-      timeout: 90000,
+      timeout: 120000,
       timeoutProgressbar: true,
       closeOnEscape: false,
       closeButton: false,

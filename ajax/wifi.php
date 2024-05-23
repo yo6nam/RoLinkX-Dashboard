@@ -54,7 +54,7 @@ function getSSIDs($wpaFile, $maxNetworks)
         return false;
     }
 
-    // Store up to 4 SSIDs and passwords
+    // Store SSIDs and passwords
     for ($i = 0; $i < $maxNetworks; $i++) {
         if (isset($resultSSID[1][$i])) {
             $storedSSID[] = $resultSSID[1][$i];
@@ -68,7 +68,7 @@ function getSSIDs($wpaFile, $maxNetworks)
 }
 
 /* Check for user input data */
-for ($i = 1; $i <= 4; $i++) {
+for ($i = 1; $i <= $maxNetworks; $i++) {
     if (${"wn$i"} || ${"wk$i"}) {
         $weHaveData = true;
         break;
@@ -127,7 +127,7 @@ if ($weHaveData) {
     file_put_contents($wpaTemp, $wpaData);
     exec("/usr/bin/sudo /usr/bin/cp $wpaTemp $wpaFile");
     toggleFS(false);
-    echo 'New data stored.<br/>Reboot if you want to connect!';
+    echo 'New data stored.<br/>Restart Wi-Fi now or reboot!';
 } else {
     echo 'No new data, so nothing changed';
 }
