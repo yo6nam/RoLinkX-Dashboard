@@ -28,7 +28,7 @@ header("Content-Type: text/event-stream; charset=utf-8");
 header("Connection: keep-alive");
 header("Content-Encoding: none");
 header("Access-Control-Allow-Origin: *");
-ob_implicit_flush(true);
+ob_implicit_flush();
 ob_end_flush();
 $id       = $delay       = 0;
 $prevData = [
@@ -84,6 +84,7 @@ while (true) {
         ++$id;
         $prevData['gpio'] = $jsonGpio;
     }
+    $cpuLoad = null;
 
     // Add CPU Load & Temp to array
     if ($firstStart || $delay >= 15) {
@@ -97,7 +98,7 @@ while (true) {
         );
         $cpuTemp       = number_format((int) $rawTemp / 1000, 1);
         $cpuData["cl"] = $cpuLoad;
-        $cpuData["ct"] = ($config['cfgTempOffset'] == 'true') ? $cpuTemp + 38 : $cpuTemp;
+        $cpuData["ct"] = ($config['cfgTempOffset'] == 'true') ? (int)$cpuTemp + 38 : $cpuTemp;
         $delay         = 0;
         if ($prevData['cpuLoad'] == $cpuLoad) {
             continue;

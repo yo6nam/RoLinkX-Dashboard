@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.7
+ *   RoLinkX Dashboard v3.8
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -156,14 +156,14 @@ switch ($page) {
                     </a>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a class="<?php echo ($page == '') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./">Status</a>
-                    <a class="<?php echo ($page == 'wifi') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=wifi">WiFi</a>
-                    <a class="<?php echo ($page == 'svx') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=svx">SVXLink</a>
-                    <a class="<?php echo ($page == 'sa') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=sa">SA818</a>
-                    <a class="<?php echo ($page == 'aprs') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=aprs">APRS</a>
-                    <a class="<?php echo ($page == 'log') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=log">Logs</a>
-                    <a class="<?php echo ($page == 'tty') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=tty">Terminal</a>
-                    <a class="<?php echo ($page == 'cfg') ? 'active' : ''; ?> list-group-item list-group-item-action list-group-item-light p-3" href="./?p=cfg">Config</a>
+                    <a class="<?php echo ($page == '') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./">Status</a>
+                    <a class="<?php echo ($page == 'wifi') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=wifi">WiFi</a>
+                    <a class="<?php echo ($page == 'svx') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=svx">SVXLink</a>
+                    <a class="<?php echo ($page == 'sa') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=sa">SA818</a>
+                    <a class="<?php echo ($page == 'aprs') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=aprs">APRS</a>
+                    <a class="<?php echo ($page == 'log') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=log">Logs</a>
+                    <a class="<?php echo ($page == 'tty') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=tty">Terminal</a>
+                    <a class="<?php echo ($page == 'cfg') ? 'active ' : ''; ?>list-group-item list-group-item-action list-group-item-light p-3" href="./?p=cfg">Config</a>
                 </div>
             </div>
             <div id="page-content-wrapper">
@@ -176,14 +176,14 @@ switch ($page) {
                         <i class="icon-dashboard" style="font-size:40px;color:purple"></i>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                                <li class="nav-item"><a class="<?php echo ($page == '') ? 'active p-2' : ''; ?> nav-link" href="./">Status</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'wifi') ? 'active p-2' : ''; ?> nav-link" href="./?p=wifi">WiFi</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'svx') ? 'active p-2' : ''; ?> nav-link" href="./?p=svx">SVXLink</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'sa') ? 'active p-2' : ''; ?> nav-link" href="./?p=sa">SA818</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'aprs') ? 'active p-2' : ''; ?> nav-link" href="./?p=aprs">APRS</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'log') ? 'active p-2' : ''; ?> nav-link" href="./?p=log">Logs</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'tty') ? 'active p-2' : ''; ?> nav-link" href="./?p=tty">Terminal</a></li>
-                                <li class="nav-item"><a class="<?php echo ($page == 'cfg') ? 'active p-2' : ''; ?> nav-link" href="./?p=cfg">Config</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == '') ? 'active p-2 ' : ''; ?>nav-link" href="./">Status</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'wifi') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=wifi">WiFi</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'svx') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=svx">SVXLink</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'sa') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=sa">SA818</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'aprs') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=aprs">APRS</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'log') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=log">Logs</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'tty') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=tty">Terminal</a></li>
+                                <li class="nav-item"><a class="<?php echo ($page == 'cfg') ? 'active p-2 ' : ''; ?>nav-link" href="./?p=cfg">Config</a></li>
                             </ul>
                         </div>
                     </div>
@@ -195,7 +195,7 @@ switch ($page) {
             <div id="sysmsg"></div>
         </div>
         <footer class="page-footer fixed-bottom font-small bg-light">
-            <div class="text-center small p-2">v3.7 © 2024 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
+            <div class="text-center small p-2">v3.8 © 2024 Copyright <a class="text-primary" target="_blank" href="https://github.com/yo6nam/RoLinkX-Dashboard">Razvan / YO6NAM</a></div>
         </footer>
         <script><?php echo $eventsData; ?></script>
         <script src="js/jquery.js"></script>

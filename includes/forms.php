@@ -1,6 +1,6 @@
 <?php
 /*
- *   RoLinkX Dashboard v3.7
+ *   RoLinkX Dashboard v3.8
  *   Copyright (C) 2024 by Razvan Marin YO6NAM / www.xpander.ro
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ function scanWifi($ext = 0)
     }
 
     if (!empty($networks)) {
-        $cnt = 1;
+        $cnt    = 1;
         $apList = '<table class="table table-sm"><thead><tr>
             <th scope="col">#</th>
             <th scope="col">SSID</th>
@@ -206,12 +206,17 @@ function wifiForm()
         </div>
     </div>' . PHP_EOL;
     $wifiForm .= '<script>
-    var auto_refresh = setInterval( function () {
-    	$("#heading button").html("<span role=\"status\" class=\"spinner-border spinner-border-sm mx-2\"></span>Scanning  WiFi").removeClass("bg-success").addClass("bg-info");
-        $("#updateList").load("includes/forms.php?scan", function() {
-            $("#heading button").text("Scan complete (click to open/close)").removeClass("bg-info").addClass("bg-success");
+    var auto_refresh = setInterval(function () {
+        $("#heading button").html("<span role=\"status\" class=\"spinner-border spinner-border-sm mx-2\"></span>Scanning WiFi").removeClass("bg-success bg-danger").addClass("bg-info");
+        $.get("includes/forms.php?scan", function(data) {
+            if (data.trim() === "") {
+                $("#heading button").html("No WiFi found").removeClass("bg-info").addClass("bg-danger");
+            } else {
+                $("#updateList").html(data);
+                $("#heading button").html("Scan complete (click to open/close)").removeClass("bg-info").addClass("bg-success");
+            }
         });
-    }, 6000);
+    }, 9000);
     </script>' . PHP_EOL;
     return $wifiForm;
 }
@@ -1150,7 +1155,7 @@ function cfgForm()
     </div>
     <div class="form-floating m-2">
         <input id="accessPassword" type="text" class="form-control" aria-label="Password"';
-    $label = null;
+    $label    = null;
     $password = dashPassword("get");
     if (empty($password)) {
         $configData .= ' placeholder=""';
